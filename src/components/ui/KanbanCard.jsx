@@ -1,32 +1,39 @@
-import { AlertTriangle, Clock, Star, CalendarPlus, ArrowRight } from 'lucide-react'
+import { AlertTriangle, Clock, Star, History } from 'lucide-react'
 import Avatar from './Avatar'
-import ScoreBar from './ScoreBar'
+import Badge from './Badge'
 import './KanbanCard.css'
 
-export default function KanbanCard({ candidate, onClick, onSchedule, onMove }) {
-  const { name, initials, avatarColor, currentRole, source, aiScore, daysInStage, isDuplicate, isStale, isTopCandidate } = candidate
+// actions: [{ label, onClick, tone }] — tone: 'default' | 'accent' | 'danger', max 2
+export default function KanbanCard({ candidate, note, noteVariant = 'default', actions = [], showScore = true, dimmed = false, onClick }) {
+  const { name, initials, avatarColor, location, source, stage, aiScore, daysInStage, isDuplicate, isStale, isTopCandidate, priorInteraction } = candidate
 
   return (
-    <div className={`kanban-card${isTopCandidate ? ' kc-top-candidate' : ''}`} onClick={onClick}>
+    <div className={`kanban-card${isTopCandidate ? ' kc-top-candidate' : ''}${dimmed ? ' kc-dimmed' : ''}`} onClick={onClick}>
       {isTopCandidate && (
         <div className="kc-top-badge"><Star size={11} /> Top Candidate</div>
+      )}
+      {isDuplicate && (
+        <div className="kc-warning kc-warning-duplicate">
+          <AlertTriangle size={11} /> Possible duplicate
+        </div>
       )}
 
       <div className="kc-top">
         <Avatar initials={initials} color={avatarColor} size="sm" />
         <div>
           <div className="kc-name">{name}</div>
-          <div className="kc-role">{currentRole}</div>
+          <div className="kc-role">{location} · via {source}</div>
         </div>
       </div>
 
-      <span className="kc-tag">{source}</span>
+      {note && <div className={`kc-note kc-note-${noteVariant}`}>{note}</div>}
 
-      {isDuplicate && (
-        <div className="kc-warning kc-warning-duplicate">
-          <AlertTriangle size={11} /> Possible duplicate
+      {priorInteraction && (
+        <div className="kc-prior">
+          <History size={11} /> Spoke with in {priorInteraction.year} for a different role
         </div>
       )}
+
       {isStale && (
         <div className="kc-warning kc-warning-stale">
           <Clock size={11} /> Stale — {daysInStage}d no update
@@ -34,18 +41,19 @@ export default function KanbanCard({ candidate, onClick, onSchedule, onMove }) {
       )}
 
       <div className="kc-footer">
-        <ScoreBar value={aiScore} compact />
-        <span className="kc-day">{daysInStage}d</span>
+        <Badge variant={stage} />
+        {showScore && <span className="kc-score">{aiScore}%</span>}
       </div>
 
-      <div className="kc-actions" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="kc-act kca-sched" onClick={onSchedule}>
-          <CalendarPlus size={12} /> Schedule
-        </button>
-        <button type="button" className="kc-act kca-move" onClick={onMove}>
-          <ArrowRight size={12} /> Move
-        </button>
-      </div>
+      {actions.length > 0 && (
+        <div className="kc-actions" onClick={(e) => e.stopPropagation()}>
+          {actions.map((a) => (
+            <button key={a.label} type="button" className={`kc-act kc-act-${a.tone ?? 'default'}`} onClick={a.onClick}>
+              {a.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
