@@ -1,0 +1,9 @@
+.empty-state {
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  color: var(--color-gray-400);
+}
+.empty-icon { margin: 0 auto var(--space-3); display: block; }
+.empty-title { font-size: var(--text-lg); font-weight: 600; color: var(--color-gray-500); }
+.empty-subtitle { font-size: var(--text-sm); margin-top: var(--space-1); }
+.empty-cta { margin-top: var(--space-5); }

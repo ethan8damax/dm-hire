@@ -530,19 +530,19 @@ Each sprint is a focused, shippable increment. The goal is that after every spri
 ### Sprint 0b — Component Library
 **Goal:** Every shared UI component built, documented with a usage example, ready to be dropped into any view.
 
-- [ ] Button (variants: primary, accent, outline, ghost, danger; sizes: sm, default, lg; icon-only variant)
-- [ ] Badge (all candidate stage and job status variants with dot indicator)
-- [ ] Card (header, body, footer slots)
-- [ ] Avatar (sizes: sm, md, lg, xl; color variants; stacked group variant)
-- [ ] MetricCard (icon, label, value, change indicator)
-- [ ] ScoreBar (label, value %, fill color)
-- [ ] FilterChip (active/inactive toggle)
-- [ ] DataTable (columns config, rows, clickable row, sortable headers)
-- [ ] Modal (overlay, close button, header/body/footer slots, focus trap)
-- [ ] Timeline (step list, dot variants: complete/active/pending, connector line)
-- [ ] EmptyState (icon, title, subtitle, optional CTA)
-- [ ] KanbanCard (avatar, name, role, source badge, score, days, action buttons, warning states)
-- [ ] Simple visual test page at `/test` that renders every component in every variant — removed before final deploy
+- [x] Button (variants: primary, accent, outline, ghost, danger; sizes: sm, default, lg; icon-only variant)
+- [x] Badge (all candidate stage and job status variants with dot indicator)
+- [x] Card (header, body, footer slots)
+- [x] Avatar (sizes: sm, md, lg, xl; color variants; stacked group variant)
+- [x] MetricCard (icon, label, value, change indicator)
+- [x] ScoreBar (label, value %, fill color)
+- [x] FilterChip (active/inactive toggle)
+- [x] DataTable (columns config, rows, clickable row, sortable headers)
+- [x] Modal (overlay, close button, header/body/footer slots, focus trap)
+- [x] Timeline (step list, dot variants: complete/active/pending, connector line)
+- [x] EmptyState (icon, title, subtitle, optional CTA)
+- [x] KanbanCard (avatar, name, role, source badge, score, days, action buttons, warning states)
+- [x] Simple visual test page at `/test` that renders every component in every variant — removed before final deploy
 
 **Deliverable:** All shared components built and visually verified. Views from Sprint 1 onward import from this library.
 
@@ -733,6 +733,7 @@ Each sprint is a focused, shippable increment. The goal is that after every spri
 |---|---|---|---|
 | 2026-07-02 | Spec | ✅ Complete | Design spec written and approved |
 | 2026-07-02 | 0a | ✅ Complete | Vite+React app scaffolded at repo root (`ethan8damax/dm-hire`, private). Design tokens + global reset ported from `dm-design-system.html`. AppShell (Sidebar/Topbar) built, all 11 routes wired with placeholder views, PersonaContext/TourContext scaffolded (no logic), mock data files populated (3–5 entries each) per Section 5a schemas. Deployed to Vercel: https://dm-hire.vercel.app — GitHub-connected for auto-deploy on push to `main`. Hard-refresh on nested routes verified (no 404s). Used React 19 (create-vite's current default) instead of React 18 — no behavioral difference for this app's usage. |
+| 2026-07-02 | 0b | ✅ Complete | All 12 shared UI components built in `src/components/ui/` (Button, Badge, Card, Avatar, MetricCard, ScoreBar, FilterChip, DataTable, Modal, Timeline, EmptyState, KanbanCard), each co-located with its CSS. Visual patterns ported directly from `dm-design-system.html` and `dm-hire-demo.html` reference files rather than redesigned from scratch. `/test` route added rendering every variant — flagged for removal in Sprint 10. Modal has a real (dependency-free) focus trap + Escape/overlay-click close. Verified via `npm run build`, `npm run lint`, and route/module resolution checks; no browser/screenshot tool was available in this session so visual QA was code-trace + build-verified, not eyeballed in an actual browser — worth a manual look before Sprint 1. |
 
 ---
 

@@ -1,0 +1,38 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.badge-new           { background: #EFF6FF; color: #1D4ED8; }
+.badge-new .badge-dot          { background: #3B82F6; }
+.badge-screening     { background: #FFF7ED; color: #C2410C; }
+.badge-screening .badge-dot    { background: var(--color-dm-orange); }
+.badge-interviewing  { background: #F5F3FF; color: #6D28D9; }
+.badge-interviewing .badge-dot { background: #7C3AED; }
+.badge-offer         { background: #ECFDF5; color: #065F46; }
+.badge-offer .badge-dot        { background: var(--color-green); }
+.badge-hired         { background: #F0FDF4; color: #15803D; }
+.badge-hired .badge-dot        { background: var(--color-success); }
+.badge-rejected      { background: #FEF2F2; color: #991B1B; }
+.badge-rejected .badge-dot     { background: var(--color-danger); }
+.badge-open           { background: #ECFDF5; color: #065F46; }
+.badge-open .badge-dot         { background: var(--color-success); }
+.badge-pending_approval        { background: #FFFBEB; color: #B45309; }
+.badge-pending_approval .badge-dot { background: var(--color-warning); }
+.badge-draft          { background: var(--color-gray-100); color: var(--color-gray-500); }
+.badge-draft .badge-dot        { background: var(--color-gray-400); }
+.badge-closed          { background: var(--color-gray-100); color: var(--color-gray-500); }
+.badge-closed .badge-dot       { background: var(--color-gray-400); }

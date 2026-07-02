@@ -1,0 +1,24 @@
+import './Badge.css'
+
+// candidate stages + job statuses share one visual language
+const VARIANT_LABELS = {
+  new: 'New',
+  screening: 'Screening',
+  interviewing: 'Interviewing',
+  offer: 'Offer',
+  hired: 'Hired',
+  rejected: 'Not Selected',
+  open: 'Open',
+  pending_approval: 'Pending Approval',
+  draft: 'Draft',
+  closed: 'Closed',
+}
+
+export default function Badge({ variant, children, className = '' }) {
+  return (
+    <span className={`badge badge-${variant} ${className}`.trim()}>
+      <span className="badge-dot" />
+      {children ?? VARIANT_LABELS[variant] ?? variant}
+    </span>
+  )
+}

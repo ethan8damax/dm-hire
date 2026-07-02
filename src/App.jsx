@@ -13,6 +13,7 @@ import Settings from './views/Settings'
 import InternalJobs from './views/InternalJobs'
 import CandidatePortal from './views/CandidatePortal'
 import WhyDMHire from './views/WhyDMHire'
+import ComponentTest from './views/ComponentTest'
 
 export default function App() {
   return (
@@ -33,6 +34,8 @@ export default function App() {
               <Route path="/portal" element={<CandidatePortal />} />
               <Route path="/why-dm-hire" element={<WhyDMHire />} />
             </Route>
+            {/* Sprint 0b dev tool — remove before final deploy (Sprint 10) */}
+            <Route path="/test" element={<ComponentTest />} />
           </Routes>
         </BrowserRouter>
       </TourProvider>
