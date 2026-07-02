@@ -1,3 +1,473 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+  Plus, Link2, Check, X, Loader2, CheckCircle2,
+  Landmark, Users, Handshake, Code2, Briefcase,
+} from 'lucide-react'
+import Card from '../components/ui/Card'
+import Badge from '../components/ui/Badge'
+import Avatar from '../components/ui/Avatar'
+import Button from '../components/ui/Button'
+import FilterChip from '../components/ui/FilterChip'
+import Modal from '../components/ui/Modal'
+import EmptyState from '../components/ui/EmptyState'
+import { jobs as initialJobs } from '../data/jobs'
+import { offices } from '../data/offices'
+import { candidates } from '../data/candidates'
+import './JobRequisitions.css'
+
+const FILTERS = [
+  { key: 'all', label: 'All' },
+  { key: 'open', label: 'Open' },
+  { key: 'pending_approval', label: 'Pending Approval' },
+  { key: 'draft', label: 'Draft' },
+  { key: 'closed', label: 'Closed' },
+]
+
+const DEPT_ICONS = {
+  'Finance & Accounting': Landmark,
+  'Human Resources': Users,
+  'Client Services': Handshake,
+  'Engineering': Code2,
+}
+
+const ROLE_TEMPLATES = {
+  intern: {
+    label: 'Intern',
+    stages: ['Phone Screen', 'Team Interview', 'Offer'],
+    knockoutYears: 0,
+    approvalChain: ['hiring_manager'],
+  },
+  ic: {
+    label: 'Individual Contributor',
+    stages: ['Phone Screen', 'Interview', 'Offer'],
+    knockoutYears: 1,
+    approvalChain: ['hiring_manager'],
+  },
+  manager: {
+    label: 'Manager',
+    stages: ['Phone Screen', 'Interview', 'Panel Interview', 'Offer'],
+    knockoutYears: 3,
+    approvalChain: ['hiring_manager', 'hr_director'],
+  },
+  director: {
+    label: 'Director',
+    stages: ['Phone Screen', 'Interview', 'Panel Interview', 'Executive Interview', 'Offer'],
+    knockoutYears: 8,
+    approvalChain: ['hiring_manager', 'hr_director', 'vp_finance'],
+  },
+  csuite: {
+    label: 'C-Suite',
+    stages: ['Executive Screen', 'Board Interview', 'Offer'],
+    knockoutYears: 12,
+    approvalChain: ['hiring_manager', 'hr_director', 'vp_finance'],
+  },
+  floor: {
+    label: 'Production Floor',
+    stages: ['Phone Screen', 'In-Person Interview', 'Offer'],
+    knockoutYears: 0,
+    approvalChain: ['hiring_manager'],
+  },
+}
+
+const APPROVAL_ROLE_LABELS = {
+  hiring_manager: 'Hiring Manager',
+  hr_director: 'HR Director',
+  vp_finance: 'VP Finance',
+}
+
+const ALL_BOARDS = ['LinkedIn', 'Indeed', 'ZipRecruiter', 'Glassdoor', 'Career Site']
+
+function slugify(title) {
+  return title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+}
+
+function JobRow({ job, onShare, sharedId, onOpen }) {
+  const Icon = DEPT_ICONS[job.department] ?? Briefcase
+  const topCandidates = candidates.filter((c) => c.jobId === job.id)
+  const overflow = job.applicantCount - topCandidates.length
+
+  return (
+    <div className="job-row" onClick={() => onOpen(job)}>
+      <div className="job-dept-icon"><Icon size={19} /></div>
+
+      <div className="job-info">
+        <div className="job-title">{job.title}</div>
+        <div className="job-meta">
+          {job.department} · {job.location} · {job.compRange} · Posted {job.postedDate}
+        </div>
+        <div className="job-badges">
+          <Badge variant={job.status} />
+          {job.isInternal && <span className="job-tag">Internal Only</span>}
+          <span className="job-link-preview">
+            <Link2 size={11} /> dmhire.com/apply/<span className="job-slug">{slugify(job.title)}</span>
+          </span>
+        </div>
+      </div>
+
+      <div className="job-stats">
+        <div className="job-stat"><div className="js-val">{job.applicantCount}</div><div className="js-label">Applicants</div></div>
+        <div className="job-stat"><div className="js-val">{job.stageCounts.screening}</div><div className="js-label">Screening</div></div>
+        <div className="job-stat"><div className="js-val">{job.stageCounts.interviewing}</div><div className="js-label">Interview</div></div>
+        <div className="job-stat"><div className="js-val js-val-warn">{job.daysOpen}</div><div className="js-label">Days Open</div></div>
+      </div>
+
+      <div className="job-actions" onClick={(e) => e.stopPropagation()}>
+        {topCandidates.length > 0 && (
+          <Avatar.Group>
+            {topCandidates.slice(0, 2).map((c) => (
+              <Avatar key={c.id} initials={c.initials} color={c.avatarColor} size="sm" />
+            ))}
+            {overflow > 0 && <Avatar initials={`+${overflow}`} color="navy" size="sm" />}
+          </Avatar.Group>
+        )}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onShare(job)}
+        >
+          {sharedId === job.id ? <><Check size={13} /> Copied!</> : <><Link2 size={13} /> Share Link</>}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+const EMPTY_FORM = {
+  title: '',
+  department: 'Finance & Accounting',
+  officeId: 'office-detroit',
+  hiringManager: '',
+  compRange: '',
+  startDate: '',
+  headcountJustification: '',
+  description: '',
+  roleTemplate: 'ic',
+  boards: ['LinkedIn', 'Indeed', 'Career Site'],
+  internalOnly: false,
+  knockoutRules: [{ id: 1, text: 'Minimum years payroll experience: 1', declineNote: 'Auto-decline if < 1' }],
+}
+
+function NewRequisitionModal({ open, onClose, onCreate }) {
+  const [form, setForm] = useState(EMPTY_FORM)
+  const [phase, setPhase] = useState('form') // form | posting | success
+
+  function updateField(key, value) {
+    setForm((f) => ({ ...f, [key]: value }))
+  }
+
+  function handleRoleTemplateChange(key) {
+    const template = ROLE_TEMPLATES[key]
+    setForm((f) => ({
+      ...f,
+      roleTemplate: key,
+      knockoutRules: template.knockoutYears > 0
+        ? [{ id: Date.now(), text: `Minimum years experience: ${template.knockoutYears}`, declineNote: `Auto-decline if < ${template.knockoutYears}` }]
+        : [],
+    }))
+  }
+
+  function toggleBoard(board) {
+    setForm((f) => ({
+      ...f,
+      boards: f.boards.includes(board) ? f.boards.filter((b) => b !== board) : [...f.boards, board],
+    }))
+  }
+
+  function addKnockoutRule() {
+    setForm((f) => ({
+      ...f,
+      knockoutRules: [...f.knockoutRules, { id: Date.now(), text: '', declineNote: '' }],
+    }))
+  }
+
+  function updateKnockoutRule(id, key, value) {
+    setForm((f) => ({
+      ...f,
+      knockoutRules: f.knockoutRules.map((r) => (r.id === id ? { ...r, [key]: value } : r)),
+    }))
+  }
+
+  function removeKnockoutRule(id) {
+    setForm((f) => ({ ...f, knockoutRules: f.knockoutRules.filter((r) => r.id !== id) }))
+  }
+
+  function reset() {
+    setForm(EMPTY_FORM)
+    setPhase('form')
+  }
+
+  function handleClose() {
+    reset()
+    onClose()
+  }
+
+  function buildJob(status) {
+    const office = offices.find((o) => o.id === form.officeId)
+    const template = ROLE_TEMPLATES[form.roleTemplate]
+    return {
+      id: `job-${Date.now()}`,
+      title: form.title || 'Untitled Requisition',
+      department: form.department,
+      location: office ? `${office.city}, ${office.state}` : '',
+      officeId: form.officeId,
+      compRange: form.compRange,
+      postedDate: new Date().toISOString().slice(0, 10),
+      status,
+      isInternal: form.internalOnly,
+      roleTemplate: form.roleTemplate,
+      boards: form.internalOnly ? [] : form.boards,
+      knockoutRules: form.knockoutRules,
+      approvalChain: template.approvalChain,
+      hiringManagerId: null,
+      daysOpen: 0,
+      applicantCount: 0,
+      stageCounts: { new: 0, screening: 0, interviewing: 0, offer: 0, hired: 0, rejected: 0 },
+    }
+  }
+
+  function handleSaveDraft() {
+    onCreate(buildJob('draft'))
+    handleClose()
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    const template = ROLE_TEMPLATES[form.roleTemplate]
+    const status = template.approvalChain.length > 1 ? 'pending_approval' : 'open'
+    setPhase('posting')
+    setTimeout(() => setPhase('success'), 1100)
+    setTimeout(() => {
+      onCreate(buildJob(status))
+      handleClose()
+    }, 2300)
+  }
+
+  const template = ROLE_TEMPLATES[form.roleTemplate]
+
+  return (
+    <Modal open={open} onClose={handleClose} title={phase === 'form' ? 'New Job Requisition' : 'Submitting…'}>
+      {phase !== 'form' ? (
+        <div className="req-submit-state">
+          {phase === 'posting' ? (
+            <>
+              <Loader2 size={32} className="req-spinner" />
+              <div className="req-submit-title">
+                {form.internalOnly ? 'Submitting internal posting…' : `Posting to ${form.boards.length} board${form.boards.length === 1 ? '' : 's'}…`}
+              </div>
+            </>
+          ) : (
+            <>
+              <CheckCircle2 size={32} className="req-success-icon" />
+              <div className="req-submit-title">
+                {template.approvalChain.length > 1 ? 'Submitted for approval' : `Posted to ${form.boards.length} board${form.boards.length === 1 ? '' : 's'}`}
+              </div>
+              <div className="req-submit-sub">
+                {template.approvalChain.length > 1
+                  ? `Routing through ${template.approvalChain.map((r) => APPROVAL_ROLE_LABELS[r]).join(' → ')}`
+                  : 'Knockout rules active · E-sig enabled on offer letter'}
+              </div>
+            </>
+          )}
+        </div>
+      ) : (
+        <form className="req-form" onSubmit={handleSubmit}>
+          <div className="req-grid">
+            <label className="req-field">
+              <span>Job Title</span>
+              <input required value={form.title} onChange={(e) => updateField('title', e.target.value)} placeholder="e.g. Sr. Payroll Analyst" />
+            </label>
+            <label className="req-field">
+              <span>Department</span>
+              <select value={form.department} onChange={(e) => updateField('department', e.target.value)}>
+                {Object.keys(DEPT_ICONS).concat('Operations').map((d) => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </label>
+            <label className="req-field">
+              <span>Location</span>
+              <select value={form.officeId} onChange={(e) => updateField('officeId', e.target.value)}>
+                {offices.map((o) => <option key={o.id} value={o.id}>{o.name} — {o.city}, {o.state}</option>)}
+              </select>
+            </label>
+            <label className="req-field">
+              <span>Hiring Manager</span>
+              <input value={form.hiringManager} onChange={(e) => updateField('hiringManager', e.target.value)} placeholder="e.g. A. Chen" />
+            </label>
+            <label className="req-field">
+              <span>Comp Range</span>
+              <input value={form.compRange} onChange={(e) => updateField('compRange', e.target.value)} placeholder="e.g. $85K–$105K" />
+            </label>
+            <label className="req-field">
+              <span>Start Date</span>
+              <input type="date" value={form.startDate} onChange={(e) => updateField('startDate', e.target.value)} />
+            </label>
+          </div>
+
+          <label className="req-field">
+            <span>Headcount Justification</span>
+            <textarea rows={2} value={form.headcountJustification} onChange={(e) => updateField('headcountJustification', e.target.value)} placeholder="Why is this role needed?" />
+          </label>
+
+          <label className="req-field">
+            <span>Job Description</span>
+            <textarea rows={3} value={form.description} onChange={(e) => updateField('description', e.target.value)} placeholder="Role summary, responsibilities, requirements…" />
+          </label>
+
+          <div className="req-section">
+            <div className="req-section-label">Role Template</div>
+            <div className="req-role-grid">
+              {Object.entries(ROLE_TEMPLATES).map(([key, t]) => (
+                <button
+                  type="button"
+                  key={key}
+                  className={`req-role-btn${form.roleTemplate === key ? ' active' : ''}`}
+                  onClick={() => handleRoleTemplateChange(key)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <div className="req-role-preview">Interview stages: {template.stages.join(' → ')}</div>
+          </div>
+
+          <div className="req-section req-boards">
+            <div className="req-section-label">
+              Distribute to Job Boards <span className="req-pill">One-click posting</span>
+            </div>
+            <label className="req-checkbox req-internal-toggle">
+              <input type="checkbox" checked={form.internalOnly} onChange={(e) => updateField('internalOnly', e.target.checked)} />
+              Internal Only (skip external job boards)
+            </label>
+            {!form.internalOnly && (
+              <div className="req-checkbox-row">
+                {ALL_BOARDS.map((board) => (
+                  <label className="req-checkbox" key={board}>
+                    <input type="checkbox" checked={form.boards.includes(board)} onChange={() => toggleBoard(board)} />
+                    {board}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="req-section req-knockout">
+            <div className="req-knockout-hdr">
+              <div>
+                <div className="req-section-label">
+                  Knockout Questions <span className="req-pill req-pill-navy">New in DM Hire</span>
+                </div>
+                <div className="req-hint">Unqualified applicants are auto-declined after a 24-hour delay — no abrupt rejections.</div>
+              </div>
+              <Button type="button" size="sm" onClick={addKnockoutRule}><Plus size={13} /> Add</Button>
+            </div>
+            <div className="req-knockout-list">
+              {form.knockoutRules.map((rule) => (
+                <div className="req-knockout-row" key={rule.id}>
+                  <input
+                    className="req-knockout-text"
+                    value={rule.text}
+                    placeholder="Rule description, e.g. Minimum years experience: 3"
+                    onChange={(e) => updateKnockoutRule(rule.id, 'text', e.target.value)}
+                  />
+                  <input
+                    className="req-knockout-decline"
+                    value={rule.declineNote}
+                    placeholder="Auto-decline condition"
+                    onChange={(e) => updateKnockoutRule(rule.id, 'declineNote', e.target.value)}
+                  />
+                  <button type="button" className="req-knockout-remove" onClick={() => removeKnockoutRule(rule.id)} aria-label="Remove rule">
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+              {form.knockoutRules.length === 0 && <div className="req-hint">No knockout rules for this role template.</div>}
+            </div>
+          </div>
+
+          <div className="req-section req-approval-preview">
+            <div className="req-section-label">Approval Workflow Preview</div>
+            <div className="req-approval-chain">
+              {template.approvalChain.map((role, i) => (
+                <span key={role} className="req-approval-step">
+                  {i > 0 && <span className="req-approval-arrow">→</span>}
+                  {APPROVAL_ROLE_LABELS[role]}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="req-actions">
+            <Button type="button" variant="ghost" onClick={handleSaveDraft}>Save Draft</Button>
+            <Button type="submit" variant="primary">Submit for Approval →</Button>
+          </div>
+        </form>
+      )}
+    </Modal>
+  )
+}
+
 export default function JobRequisitions() {
-  return <div>Coming soon — Job Requisitions</div>
+  const navigate = useNavigate()
+  const [jobsList, setJobsList] = useState(initialJobs)
+  const [filter, setFilter] = useState('all')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [sharedId, setSharedId] = useState(null)
+
+  const counts = FILTERS.reduce((acc, f) => {
+    acc[f.key] = f.key === 'all' ? jobsList.length : jobsList.filter((j) => j.status === f.key).length
+    return acc
+  }, {})
+
+  const filteredJobs = filter === 'all' ? jobsList : jobsList.filter((j) => j.status === filter)
+
+  function handleShare(job) {
+    const url = `https://dmhire.com/apply/${slugify(job.title)}`
+    navigator.clipboard?.writeText(url).catch(() => {})
+    setSharedId(job.id)
+    setTimeout(() => setSharedId(null), 1500)
+  }
+
+  function handleCreate(job) {
+    setJobsList((prev) => [job, ...prev])
+  }
+
+  return (
+    <div className="job-requisitions">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Job Requisitions</h1>
+          <div className="page-subtitle">{counts.open} open position{counts.open === 1 ? '' : 's'} across {new Set(jobsList.map((j) => j.department)).size} departments</div>
+        </div>
+        <Button variant="primary" size="lg" onClick={() => setModalOpen(true)}>
+          <Plus size={16} /> New Requisition
+        </Button>
+      </div>
+
+      <div className="filter-strip">
+        {FILTERS.map((f) => (
+          <FilterChip key={f.key} active={filter === f.key} onClick={() => setFilter(f.key)}>
+            {f.label} ({counts[f.key]})
+          </FilterChip>
+        ))}
+      </div>
+
+      {filteredJobs.length === 0 ? (
+        <Card><EmptyState icon={Briefcase} title="No requisitions here" subtitle="Try a different filter, or create a new one." /></Card>
+      ) : (
+        <div className="jobs-grid">
+          {filteredJobs.map((job) => (
+            <JobRow
+              key={job.id}
+              job={job}
+              onShare={handleShare}
+              sharedId={sharedId}
+              onOpen={(j) => navigate(`/pipeline?job=${j.id}`)}
+            />
+          ))}
+        </div>
+      )}
+
+      <NewRequisitionModal open={modalOpen} onClose={() => setModalOpen(false)} onCreate={handleCreate} />
+    </div>
+  )
 }

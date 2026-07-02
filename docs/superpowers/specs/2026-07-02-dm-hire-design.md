@@ -568,12 +568,12 @@ Each sprint is a focused, shippable increment. The goal is that after every spri
 ### Sprint 2 — Job Requisitions + New Requisition
 **Goal:** Show the full job creation workflow including job board distribution, knockout questions, role templates, and approval routing.
 
-- [ ] Job Requisitions list view with filter chips
-- [ ] Job row component: title, meta, stats, avatar stack, share link, status badge
-- [ ] "Share Link" button copies per-job URL (clipboard API)
-- [ ] New Requisition modal: all fields, role template selector, job board checkboxes, knockout question builder, approval chain preview
-- [ ] Submit → success state with "posting to boards" animation
-- [ ] Pending Approval state visible in job list
+- [x] Job Requisitions list view with filter chips
+- [x] Job row component: title, meta, stats, avatar stack, share link, status badge
+- [x] "Share Link" button copies per-job URL (clipboard API)
+- [x] New Requisition modal: all fields, role template selector, job board checkboxes, knockout question builder, approval chain preview
+- [x] Submit → success state with "posting to boards" animation
+- [x] Pending Approval state visible in job list
 
 **Deliverable:** Full job creation flow demonstrable.
 
@@ -735,6 +735,7 @@ Each sprint is a focused, shippable increment. The goal is that after every spri
 | 2026-07-02 | 0a | ✅ Complete | Vite+React app scaffolded at repo root (`ethan8damax/dm-hire`, private). Design tokens + global reset ported from `dm-design-system.html`. AppShell (Sidebar/Topbar) built, all 11 routes wired with placeholder views, PersonaContext/TourContext scaffolded (no logic), mock data files populated (3–5 entries each) per Section 5a schemas. Deployed to Vercel: https://dm-hire.vercel.app — GitHub-connected for auto-deploy on push to `main`. Hard-refresh on nested routes verified (no 404s). Used React 19 (create-vite's current default) instead of React 18 — no behavioral difference for this app's usage. |
 | 2026-07-02 | 0b | ✅ Complete | All 12 shared UI components built in `src/components/ui/` (Button, Badge, Card, Avatar, MetricCard, ScoreBar, FilterChip, DataTable, Modal, Timeline, EmptyState, KanbanCard), each co-located with its CSS. Visual patterns ported directly from `dm-design-system.html` and `dm-hire-demo.html` reference files rather than redesigned from scratch. `/test` route added rendering every variant — flagged for removal in Sprint 10. Modal has a real (dependency-free) focus trap + Escape/overlay-click close. Verified via `npm run build`, `npm run lint`, and route/module resolution checks; no browser/screenshot tool was available in this session so visual QA was code-trace + build-verified, not eyeballed in an actual browser — worth a manual look before Sprint 1. |
 | 2026-07-02 | 1 | ✅ Complete | Dashboard built with real data derived from `src/data/*` (no hardcoded numbers except the two-tier ink-color ramp). Added `PipelineFunnel` to `components/ui/` (reusable — Sprint 6's "Per-Opening Stats" funnel will reuse it) using the dataviz skill's procedure: funnel stage is an **ordinal** encoding (position in a sequence), not categorical, so it's a single-hue green ramp with monotone lightness, not 5 arbitrary hues. Validated with `validate_palette.js --ordinal` (all 4 checks pass) plus a manual WCAG contrast pass to place the navy/white ink crossover so every segment's label clears 4.5:1. Topbar filled in (search, + New Requisition → `/jobs`, notification bell, persona switcher wired to `PersonaContext` for visual state only — no filtering behavior yet, that's Sprint 8). Fixed a data inconsistency from Sprint 0a: `cand-001` was `interviewing` while its linked `offer-003` was already accepted/signed/synced — moved to `hired` so the payroll status card tells a coherent story. Action Items panel substitutes a stale-candidate-review item for the spec's "interviews today" — there's no interview-scheduling data model yet (arrives with the Schedule tab in Sprint 4), so a fabricated calendar entry would've been disconnected from real data; used what the mock data actually supports instead. `Card`'s Header/Body/Footer subcomponents now forward arbitrary props (`style`, etc.) — needed for the payroll card's inverted button and avoided `!important` overrides. |
+| 2026-07-02 | 2 | ✅ Complete | Job Requisitions list + New Requisition modal, per spec kept in `JobRequisitions.jsx` (single file, matches the Section 5 file tree note). Jobs held in local component state seeded from `data/jobs.js` so submitting the modal actually appends a new row with the correct computed status — `pending_approval` when the role template's approval chain has more than one step, `open` otherwise, `draft` via "Save Draft". Role Template selector (6 templates) drives three things at once from one config object: interview-stage preview, default knockout rule, and the approval-chain preview — avoids maintaining three separate mappings. Knockout question builder is fully add/remove/edit, not just static display. Submit runs a two-phase (posting → success) inline state inside the same `Modal`, no separate route. Promoted `.page-header`/`.page-title`/`.page-subtitle`/`.filter-strip` from one-off Dashboard styles to `global.css` — the reference demo uses this exact page-chrome pattern on every remaining view, so this avoids re-declaring it 6 more times. |
 
 ---
 

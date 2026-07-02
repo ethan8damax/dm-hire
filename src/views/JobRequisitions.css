@@ -1,0 +1,159 @@
+.jobs-grid { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.job-row {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-100);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+.job-row:hover { box-shadow: var(--shadow-md); border-color: var(--color-gray-300); }
+
+.job-dept-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  background: rgba(13,45,92,.07);
+  color: var(--color-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.job-info { flex: 1; min-width: 0; }
+.job-title { font-size: var(--text-base); font-weight: 700; color: var(--color-gray-800); }
+.job-meta { font-size: var(--text-xs); color: var(--color-gray-400); margin-top: 3px; }
+.job-badges { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-2); flex-wrap: wrap; }
+.job-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-navy);
+  background: rgba(13,45,92,.08);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+.job-link-preview {
+  font-size: 11px;
+  color: var(--color-gray-400);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.job-slug { font-family: monospace; color: var(--color-navy); }
+
+.job-stats { display: flex; align-items: center; gap: var(--space-6); flex-shrink: 0; }
+.job-stat { text-align: center; }
+.js-val { font-size: var(--text-lg); font-weight: 800; color: var(--color-navy); }
+.js-val-warn { color: var(--color-dm-orange); }
+.js-label { font-size: 10px; color: var(--color-gray-400); text-transform: uppercase; letter-spacing: .05em; }
+
+.job-actions { display: flex; align-items: center; gap: var(--space-3); margin-left: var(--space-3); flex-shrink: 0; }
+
+/* ── New Requisition modal ─────────────────────────────── */
+.req-form { display: flex; flex-direction: column; gap: var(--space-5); }
+.req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+
+.req-field { display: flex; flex-direction: column; gap: var(--space-2); }
+.req-field span { font-size: var(--text-xs); font-weight: 600; color: var(--color-gray-600); }
+.req-field input,
+.req-field select,
+.req-field textarea {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  color: var(--color-gray-800);
+  outline: none;
+  background: white;
+  transition: border-color var(--transition-fast);
+}
+.req-field input:focus,
+.req-field select:focus,
+.req-field textarea:focus { border-color: var(--color-navy); }
+.req-field textarea { resize: vertical; font-family: var(--font-family); }
+
+.req-section { background: var(--color-gray-50); border: 1px solid var(--color-gray-200); border-radius: var(--radius-lg); padding: var(--space-4); }
+.req-section-label { font-size: var(--text-xs); font-weight: 700; color: var(--color-gray-700); display: flex; align-items: center; gap: var(--space-2); }
+.req-hint { font-size: 11px; color: var(--color-gray-400); margin-top: 2px; }
+.req-pill {
+  background: rgba(109,179,63,.12);
+  color: var(--color-green-dark);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+.req-pill-navy { background: rgba(13,45,92,.08); color: var(--color-navy); }
+
+.req-role-grid { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+.req-role-btn {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-gray-200);
+  background: white;
+  font-family: var(--font-family);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.req-role-btn:hover { border-color: var(--color-navy); }
+.req-role-btn.active { background: var(--color-navy); border-color: var(--color-navy); color: white; }
+.req-role-preview { font-size: var(--text-xs); color: var(--color-gray-500); margin-top: var(--space-3); }
+
+.req-internal-toggle { margin-bottom: var(--space-3); font-weight: 600; }
+.req-checkbox-row { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.req-checkbox { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-gray-700); cursor: pointer; }
+
+.req-knockout-hdr { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+.req-knockout-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.req-knockout-row { display: flex; align-items: center; gap: var(--space-2); }
+.req-knockout-text { flex: 2; }
+.req-knockout-decline { flex: 1; }
+.req-knockout-text,
+.req-knockout-decline {
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: var(--text-xs);
+  outline: none;
+  background: white;
+}
+.req-knockout-remove {
+  background: var(--color-gray-100);
+  border: none;
+  border-radius: var(--radius-sm);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-gray-500);
+  flex-shrink: 0;
+}
+.req-knockout-remove:hover { background: #FEF2F2; color: var(--color-danger); }
+
+.req-approval-chain { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-1); margin-top: var(--space-3); }
+.req-approval-step { font-size: var(--text-sm); font-weight: 600; color: var(--color-navy); display: inline-flex; align-items: center; gap: var(--space-1); }
+.req-approval-arrow { color: var(--color-gray-300); margin-right: var(--space-1); }
+
+.req-actions { display: flex; justify-content: flex-end; gap: var(--space-3); }
+
+.req-submit-state { text-align: center; padding: var(--space-8) var(--space-4); }
+.req-spinner { color: var(--color-navy); animation: req-spin 0.9s linear infinite; }
+.req-success-icon { color: var(--color-green); }
+.req-submit-title { font-size: var(--text-lg); font-weight: 700; color: var(--color-gray-800); margin-top: var(--space-4); }
+.req-submit-sub { font-size: var(--text-sm); color: var(--color-gray-400); margin-top: var(--space-2); }
+
+@keyframes req-spin { to { transform: rotate(360deg); } }
