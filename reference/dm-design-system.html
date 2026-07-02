@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DM Hire — Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     DM HIRE DESIGN SYSTEM
+     Griffin Global Technologies × DoerenMayhew
+  ============================================================ */
+
+  /* ── Tokens ─────────────────────────────────────────── */
+  :root {
+    /* Brand Colors */
+    --color-navy:        #0D2D5C;
+    --color-navy-light:  #1A4080;
+    --color-navy-dark:   #081D3F;
+    --color-green:       #6DB33F;
+    --color-green-light: #8DC85C;
+    --color-green-dark:  #4E8A28;
+    --color-dm-orange:   #E5541C;
+    --color-dm-orange-light: #F0724A;
+
+    /* Neutrals */
+    --color-white:    #FFFFFF;
+    --color-gray-50:  #F8FAFC;
+    --color-gray-100: #F1F5F9;
+    --color-gray-200: #E2E8F0;
+    --color-gray-300: #CBD5E1;
+    --color-gray-400: #94A3B8;
+    --color-gray-500: #64748B;
+    --color-gray-600: #475569;
+    --color-gray-700: #334155;
+    --color-gray-800: #1E293B;
+    --color-gray-900: #0F172A;
+
+    /* Semantic */
+    --color-success:  #22C55E;
+    --color-warning:  #F59E0B;
+    --color-danger:   #EF4444;
+    --color-info:     #3B82F6;
+
+    /* Typography */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --text-xs:   0.75rem;
+    --text-sm:   0.875rem;
+    --text-base: 1rem;
+    --text-lg:   1.125rem;
+    --text-xl:   1.25rem;
+    --text-2xl:  1.5rem;
+    --text-3xl:  1.875rem;
+    --text-4xl:  2.25rem;
+    --text-5xl:  3rem;
+
+    /* Spacing */
+    --space-1:  0.25rem;
+    --space-2:  0.5rem;
+    --space-3:  0.75rem;
+    --space-4:  1rem;
+    --space-5:  1.25rem;
+    --space-6:  1.5rem;
+    --space-8:  2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+
+    /* Radius */
+    --radius-sm:   4px;
+    --radius-md:   8px;
+    --radius-lg:   12px;
+    --radius-xl:   16px;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-sm:  0 1px 2px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.1);
+    --shadow-md:  0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+    --shadow-lg:  0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.05);
+    --shadow-xl:  0 20px 25px rgba(0,0,0,.1), 0 10px 10px rgba(0,0,0,.04);
+
+    /* Transitions */
+    --transition-fast:   120ms ease;
+    --transition-base:   200ms ease;
+    --transition-slow:   300ms ease;
+  }
+
+  /* ── Reset ───────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-family);
+    background: var(--color-gray-50);
+    color: var(--color-gray-800);
+    line-height: 1.6;
+  }
+
+  /* ── Layout ──────────────────────────────────────────── */
+  .ds-header {
+    background: var(--color-navy);
+    color: white;
+    padding: var(--space-10) var(--space-16);
+    position: relative;
+    overflow: hidden;
+  }
+  .ds-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 400px; height: 400px;
+    background: var(--color-green);
+    opacity: .08;
+    border-radius: 50%;
+    transform: translate(30%, 50%);
+  }
+  .ds-header .logo {
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-2);
+  }
+  .ds-header .logo span { color: var(--color-green); }
+  .ds-header .subtitle {
+    font-size: var(--text-sm);
+    color: var(--color-gray-400);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .ds-header .tagline {
+    margin-top: var(--space-6);
+    font-size: var(--text-lg);
+    color: var(--color-gray-300);
+    max-width: 480px;
+    font-weight: 300;
+  }
+
+  .ds-nav {
+    background: white;
+    border-bottom: 1px solid var(--color-gray-200);
+    padding: 0 var(--space-16);
+    display: flex;
+    gap: var(--space-8);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .ds-nav a {
+    display: block;
+    padding: var(--space-4) 0;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-gray-500);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+  }
+  .ds-nav a:hover { color: var(--color-navy); border-bottom-color: var(--color-green); }
+
+  .ds-body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-12) var(--space-8);
+  }
+
+  .ds-section {
+    margin-bottom: var(--space-16);
+  }
+  .ds-section-title {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-gray-400);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+  .ds-section h2 {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--color-navy);
+    margin-bottom: var(--space-2);
+  }
+  .ds-section p.desc {
+    font-size: var(--text-sm);
+    color: var(--color-gray-500);
+    margin-bottom: var(--space-8);
+  }
+
+  /* ── Color Swatches ──────────────────────────────────── */
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--space-4);
+  }
+  .swatch {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .swatch-color {
+    height: 80px;
+  }
+  .swatch-info {
+    background: white;
+    padding: var(--space-3);
+    border-top: 1px solid var(--color-gray-100);
+  }
+  .swatch-name {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-gray-700);
+    display: block;
+  }
+  .swatch-value {
+    font-size: var(--text-xs);
+    color: var(--color-gray-400);
+    font-family: monospace;
+  }
+
+  .swatch-group-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-gray-500);
+    margin-bottom: var(--space-3);
+    margin-top: var(--space-6);
+  }
+  .swatch-group-label:first-child { margin-top: 0; }
+
+  /* ── Typography ──────────────────────────────────────── */
+  .type-scale {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-6);
+    padding: var(--space-4);
+    background: white;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-gray-100);
+  }
+  .type-meta {
+    min-width: 120px;
+    flex-shrink: 0;
+  }
+  .type-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: block;
+  }
+  .type-size-val {
+    font-size: var(--text-xs);
+    color: var(--color-gray-300);
+    font-family: monospace;
+  }
+  .type-sample {
+    flex: 1;
+    color: var(--color-gray-800);
+  }
+
+  /* ── Buttons ─────────────────────────────────────────── */
+  .btn-showcase {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    font-family: var(--font-family);
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--color-navy);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--color-navy-light); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn-accent {
+    background: var(--color-green);
+    color: white;
+  }
+  .btn-accent:hover { background: var(--color-green-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn-outline {
+    background: transparent;
+    color: var(--color-navy);
+    border: 1.5px solid var(--color-navy);
+  }
+  .btn-outline:hover { background: var(--color-navy); color: white; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-gray-600);
+    border: 1.5px solid var(--color-gray-200);
+  }
+  .btn-ghost:hover { background: var(--color-gray-50); color: var(--color-gray-800); }
+  .btn-danger {
+    background: var(--color-danger);
+    color: white;
+  }
+  .btn-danger:hover { background: #DC2626; transform: translateY(-1px); }
+  .btn-sm { padding: var(--space-2) var(--space-3); font-size: var(--text-xs); }
+  .btn-lg { padding: var(--space-4) var(--space-8); font-size: var(--text-base); }
+  .btn-icon {
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    background: var(--color-gray-100);
+    color: var(--color-gray-500);
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+  }
+  .btn-icon:hover { background: var(--color-gray-200); color: var(--color-gray-700); }
+
+  /* ── Badges / Status Pills ───────────────────────────── */
+  .badge-showcase {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .badge-new       { background: #EFF6FF; color: #1D4ED8; }
+  .badge-new .badge-dot { background: #3B82F6; }
+  .badge-screening { background: #FFF7ED; color: #C2410C; }
+  .badge-screening .badge-dot { background: var(--color-dm-orange); }
+  .badge-interview { background: #F5F3FF; color: #6D28D9; }
+  .badge-interview .badge-dot { background: #7C3AED; }
+  .badge-offer     { background: #ECFDF5; color: #065F46; }
+  .badge-offer .badge-dot { background: var(--color-green); }
+  .badge-hired     { background: #F0FDF4; color: #15803D; }
+  .badge-hired .badge-dot { background: #22C55E; }
+  .badge-rejected  { background: #FEF2F2; color: #991B1B; }
+  .badge-rejected .badge-dot { background: #EF4444; }
+  .badge-open      { background: #ECFDF5; color: #065F46; }
+  .badge-open .badge-dot { background: #22C55E; }
+  .badge-draft     { background: var(--color-gray-100); color: var(--color-gray-500); }
+  .badge-draft .badge-dot { background: var(--color-gray-400); }
+  .badge-closed    { background: var(--color-gray-100); color: var(--color-gray-500); }
+  .badge-closed .badge-dot { background: var(--color-gray-400); }
+
+  /* ── Form Controls ───────────────────────────────────── */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .form-label {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-gray-700);
+  }
+  .form-input {
+    padding: var(--space-3) var(--space-4);
+    border: 1.5px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-family: var(--font-family);
+    color: var(--color-gray-800);
+    background: white;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    outline: none;
+  }
+  .form-input:focus {
+    border-color: var(--color-navy);
+    box-shadow: 0 0 0 3px rgba(13,45,92,.1);
+  }
+  .form-input::placeholder { color: var(--color-gray-300); }
+  .form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: var(--space-10);
+  }
+  .form-hint { font-size: var(--text-xs); color: var(--color-gray-400); }
+  .form-error { font-size: var(--text-xs); color: var(--color-danger); }
+  .form-input.has-error { border-color: var(--color-danger); }
+  .form-input.has-error:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.1); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+
+  /* ── Cards ───────────────────────────────────────────── */
+  .card {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-gray-100);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--color-gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--color-gray-800);
+  }
+  .card-body {
+    padding: var(--space-6);
+  }
+  .card-footer {
+    padding: var(--space-4) var(--space-6);
+    background: var(--color-gray-50);
+    border-top: 1px solid var(--color-gray-100);
+  }
+
+  /* Metric Card */
+  .metric-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-gray-100);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-6);
+  }
+  .metric-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-gray-400);
+    margin-bottom: var(--space-3);
+  }
+  .metric-value {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: var(--color-navy);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: var(--space-2);
+  }
+  .metric-change {
+    font-size: var(--text-xs);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  .metric-change.up { color: var(--color-green-dark); }
+  .metric-change.down { color: var(--color-danger); }
+  .metric-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: var(--space-4);
+  }
+  .metric-icon.navy { background: rgba(13,45,92,.08); }
+  .metric-icon.green { background: rgba(109,179,63,.12); }
+  .metric-icon.orange { background: rgba(229,84,28,.1); }
+  .metric-icon.blue { background: rgba(59,130,246,.1); }
+
+  /* ── Avatar ──────────────────────────────────────────── */
+  .avatar {
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+  .avatar-sm { width: 28px; height: 28px; font-size: 11px; }
+  .avatar-md { width: 36px; height: 36px; font-size: 13px; }
+  .avatar-lg { width: 48px; height: 48px; font-size: 17px; }
+  .avatar-xl { width: 64px; height: 64px; font-size: 22px; }
+  .av-navy  { background: var(--color-navy); }
+  .av-green { background: var(--color-green); }
+  .av-orange{ background: var(--color-dm-orange); }
+  .av-purple{ background: #7C3AED; }
+  .av-blue  { background: #3B82F6; }
+
+  /* ── Kanban Card ─────────────────────────────────────── */
+  .kanban-card {
+    background: white;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-gray-100);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-4);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .kanban-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .kanban-card-name { font-size: var(--text-sm); font-weight: 600; color: var(--color-gray-800); margin-bottom: var(--space-1); }
+  .kanban-card-role { font-size: var(--text-xs); color: var(--color-gray-400); margin-bottom: var(--space-3); }
+  .kanban-card-footer { display: flex; align-items: center; justify-content: space-between; }
+
+  /* ── Progress Bar ────────────────────────────────────── */
+  .progress-bar-wrap {
+    background: var(--color-gray-100);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    height: 6px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    background: var(--color-green);
+    transition: width var(--transition-slow);
+  }
+
+  /* ── Timeline Step ───────────────────────────────────── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .timeline-item {
+    display: flex;
+    gap: var(--space-4);
+    padding-bottom: var(--space-6);
+    position: relative;
+  }
+  .timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 28px;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-gray-200);
+  }
+  .timeline-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+    z-index: 1;
+  }
+  .td-complete { background: var(--color-green); color: white; }
+  .td-active   { background: var(--color-navy); color: white; box-shadow: 0 0 0 4px rgba(13,45,92,.15); }
+  .td-pending  { background: var(--color-gray-200); color: var(--color-gray-400); }
+  .timeline-content { flex: 1; }
+  .timeline-label { font-size: var(--text-sm); font-weight: 600; color: var(--color-gray-800); }
+  .timeline-date  { font-size: var(--text-xs); color: var(--color-gray-400); margin-top: 2px; }
+
+  /* ── Divider ─────────────────────────────────────────── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--color-gray-200);
+    margin: var(--space-8) 0;
+  }
+
+  /* ── Showcase row ────────────────────────────────────── */
+  .showcase-row {
+    display: flex;
+    gap: var(--space-6);
+    flex-wrap: wrap;
+  }
+  .showcase-col { flex: 1; min-width: 280px; }
+
+  .token-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+  .token-table th { text-align: left; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .06em; color: var(--color-gray-400); padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-gray-200); }
+  .token-table td { padding: var(--space-3); border-bottom: 1px solid var(--color-gray-100); vertical-align: middle; }
+  .token-table tr:last-child td { border-bottom: none; }
+  .token-name { font-family: monospace; font-size: var(--text-xs); color: var(--color-navy); background: var(--color-gray-50); padding: 2px 6px; border-radius: 4px; }
+  .token-preview { display: inline-block; height: 16px; border-radius: var(--radius-sm); }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: var(--radius-full); background: var(--color-gray-100); color: var(--color-gray-500); font-size: var(--text-xs); font-weight: 500; }
+  .tag-navy { background: rgba(13,45,92,.08); color: var(--color-navy); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="ds-header">
+  <div class="logo">DM <span>Hire</span></div>
+  <div class="subtitle">Design System · v1.0 · Griffin Global Technologies</div>
+  <p class="tagline">A modern, accessible component library for the DoerenMayhew Applicant Tracking System.</p>
+</div>
+
+<!-- NAV -->
+<nav class="ds-nav">
+  <a href="#colors">Colors</a>
+  <a href="#typography">Typography</a>
+  <a href="#buttons">Buttons</a>
+  <a href="#badges">Status Badges</a>
+  <a href="#inputs">Form Controls</a>
+  <a href="#cards">Cards</a>
+  <a href="#data">Data Components</a>
+  <a href="#tokens">Tokens</a>
+</nav>
+
+<div class="ds-body">
+
+  <!-- ── COLORS ── -->
+  <section class="ds-section" id="colors">
+    <div class="ds-section-title">01 · Foundation</div>
+    <h2>Color Palette</h2>
+    <p class="desc">All colors are defined as CSS custom properties (tokens). Never use raw hex values in components — always reference a token.</p>
+
+    <div class="swatch-group-label">Brand</div>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#0D2D5C"></div>
+        <div class="swatch-info"><span class="swatch-name">Navy</span><span class="swatch-value">--color-navy · #0D2D5C</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#1A4080"></div>
+        <div class="swatch-info"><span class="swatch-name">Navy Light</span><span class="swatch-value">--color-navy-light · #1A4080</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#081D3F"></div>
+        <div class="swatch-info"><span class="swatch-name">Navy Dark</span><span class="swatch-value">--color-navy-dark · #081D3F</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#6DB33F"></div>
+        <div class="swatch-info"><span class="swatch-name">Green</span><span class="swatch-value">--color-green · #6DB33F</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#8DC85C"></div>
+        <div class="swatch-info"><span class="swatch-name">Green Light</span><span class="swatch-value">--color-green-light · #8DC85C</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#4E8A28"></div>
+        <div class="swatch-info"><span class="swatch-name">Green Dark</span><span class="swatch-value">--color-green-dark · #4E8A28</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#E5541C"></div>
+        <div class="swatch-info"><span class="swatch-name">DM Orange</span><span class="swatch-value">--color-dm-orange · #E5541C</span></div>
+      </div>
+    </div>
+
+    <div class="swatch-group-label">Neutrals</div>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch-color" style="background:#F8FAFC;border:1px solid #e2e8f0"></div><div class="swatch-info"><span class="swatch-name">Gray 50</span><span class="swatch-value">#F8FAFC</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F1F5F9"></div><div class="swatch-info"><span class="swatch-name">Gray 100</span><span class="swatch-value">#F1F5F9</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#E2E8F0"></div><div class="swatch-info"><span class="swatch-name">Gray 200</span><span class="swatch-value">#E2E8F0</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#94A3B8"></div><div class="swatch-info"><span class="swatch-name">Gray 400</span><span class="swatch-value">#94A3B8</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#64748B"></div><div class="swatch-info"><span class="swatch-name">Gray 500</span><span class="swatch-value">#64748B</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#334155"></div><div class="swatch-info"><span class="swatch-name">Gray 700</span><span class="swatch-value">#334155</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#1E293B"></div><div class="swatch-info"><span class="swatch-name">Gray 800</span><span class="swatch-value">#1E293B</span></div></div>
+    </div>
+
+    <div class="swatch-group-label">Semantic</div>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch-color" style="background:#22C55E"></div><div class="swatch-info"><span class="swatch-name">Success</span><span class="swatch-value">#22C55E</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F59E0B"></div><div class="swatch-info"><span class="swatch-name">Warning</span><span class="swatch-value">#F59E0B</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#EF4444"></div><div class="swatch-info"><span class="swatch-name">Danger</span><span class="swatch-value">#EF4444</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#3B82F6"></div><div class="swatch-info"><span class="swatch-name">Info</span><span class="swatch-value">#3B82F6</span></div></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── TYPOGRAPHY ── -->
+  <section class="ds-section" id="typography">
+    <div class="ds-section-title">02 · Foundation</div>
+    <h2>Typography</h2>
+    <p class="desc">Inter is the system typeface. Use weight 400 for body, 500–600 for UI labels, 700–800 for headings. Letter-spacing -0.02em on large display text.</p>
+
+    <div class="type-scale">
+      <div class="type-row">
+        <div class="type-meta"><span class="type-label">Display</span><span class="type-size-val">3rem / 800</span></div>
+        <div class="type-sample" style="font-size:3rem;font-weight:800;letter-spacing:-0.02em;line-height:1.1;color:var(--color-navy)">Hire smarter.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="type-label">H1</span><span class="type-size-val">2.25rem / 700</span></div>
+        <div class="type-sample" style="font-size:2.25rem;font-weight:700;letter-spacing:-0.02em;line-height:1.2;color:var(--color-navy)">Candidate Pipeline</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="type-label">H2</span><span class="type-size-val">1.5rem / 700</span></div>
+        <div class="type-sample" style="font-size:1.5rem;font-weight:700;color:var(--color-navy)">Job Requisitions</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="type-label">H3</span><span class="type-size-val">1.25rem / 600</span></div>
+        <div class="type-sample" style="font-size:1.25rem;font-weight:600;color:var(--color-gray-800)">Senior Software Engineer</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="type-label">Body</span><span class="type-size-val">1rem / 400</span></div>
+        <div class="type-sample" style="font-size:1rem;font-weight:400;color:var(--color-gray-600)">The DM Hire platform streamlines every stage of your recruiting workflow — from job requisition to payroll handoff — in one unified system.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="type-label">Small</span><span class="type-size-val">0.875rem / 400</span></div>
+        <div class="type-sample" style="font-size:0.875rem;color:var(--color-gray-500)">Applied 3 days ago · Chicago, IL · $95,000–$115,000</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="type-label">Label</span><span class="type-size-val">0.75rem / 700 · CAPS</span></div>
+        <div class="type-sample" style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-gray-400)">Hiring Stage · Days to Fill · Source</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── BUTTONS ── -->
+  <section class="ds-section" id="buttons">
+    <div class="ds-section-title">03 · Components</div>
+    <h2>Buttons</h2>
+    <p class="desc">Four intent variants × three sizes. Primary for the main CTA, Accent for confirm/approve, Outline for secondary actions, Ghost for tertiary/destructive.</p>
+
+    <div style="display:flex;flex-direction:column;gap:var(--space-6)">
+      <div>
+        <div class="swatch-group-label">Variants (default size)</div>
+        <div class="btn-showcase">
+          <button class="btn btn-primary">Post Job</button>
+          <button class="btn btn-accent">✓ Approve Offer</button>
+          <button class="btn btn-outline">View Profile</button>
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-danger">Reject</button>
+        </div>
+      </div>
+      <div>
+        <div class="swatch-group-label">Sizes</div>
+        <div class="btn-showcase">
+          <button class="btn btn-primary btn-sm">Small</button>
+          <button class="btn btn-primary">Default</button>
+          <button class="btn btn-primary btn-lg">Large — Post New Job</button>
+        </div>
+      </div>
+      <div>
+        <div class="swatch-group-label">With Icons</div>
+        <div class="btn-showcase">
+          <button class="btn btn-primary">＋ New Requisition</button>
+          <button class="btn btn-accent">📅 Schedule Interview</button>
+          <button class="btn btn-outline">↓ Export Candidates</button>
+          <button class="btn-icon">✉</button>
+          <button class="btn-icon">☎</button>
+          <button class="btn-icon">⋯</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── BADGES ── -->
+  <section class="ds-section" id="badges">
+    <div class="ds-section-title">04 · Components</div>
+    <h2>Status Badges</h2>
+    <p class="desc">Used on candidate cards and requisition rows to communicate pipeline stage at a glance. Always paired with a dot indicator for color-blind accessibility.</p>
+
+    <div style="display:flex;flex-direction:column;gap:var(--space-6)">
+      <div>
+        <div class="swatch-group-label">Candidate Stages</div>
+        <div class="badge-showcase">
+          <span class="badge badge-new"><span class="badge-dot"></span>New Applicant</span>
+          <span class="badge badge-screening"><span class="badge-dot"></span>Screening</span>
+          <span class="badge badge-interview"><span class="badge-dot"></span>Interviewing</span>
+          <span class="badge badge-offer"><span class="badge-dot"></span>Offer Sent</span>
+          <span class="badge badge-hired"><span class="badge-dot"></span>Hired</span>
+          <span class="badge badge-rejected"><span class="badge-dot"></span>Not Selected</span>
+        </div>
+      </div>
+      <div>
+        <div class="swatch-group-label">Job Requisition Status</div>
+        <div class="badge-showcase">
+          <span class="badge badge-draft"><span class="badge-dot"></span>Draft</span>
+          <span class="badge badge-open"><span class="badge-dot"></span>Open</span>
+          <span class="badge badge-closed"><span class="badge-dot"></span>Closed</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── FORM CONTROLS ── -->
+  <section class="ds-section" id="inputs">
+    <div class="ds-section-title">05 · Components</div>
+    <h2>Form Controls</h2>
+    <p class="desc">Used in job requisition creation, candidate intake, and filter drawers. All inputs share the same height and border-radius for visual consistency.</p>
+
+    <div class="card" style="max-width:600px">
+      <div class="card-header"><span class="card-title">New Job Requisition</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:var(--space-5)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Job Title</label>
+              <input class="form-input" type="text" placeholder="e.g. Senior Payroll Analyst" value="Senior Payroll Analyst" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Department</label>
+              <select class="form-input form-select">
+                <option>Finance & Accounting</option>
+                <option>Engineering</option>
+                <option>Human Resources</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Hiring Manager</label>
+              <input class="form-input" type="text" placeholder="Search employees…" />
+              <span class="form-hint">Must be an active DM employee</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Target Start Date</label>
+              <input class="form-input" type="date" value="2026-08-01" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Compensation Range</label>
+            <div style="display:flex;gap:var(--space-3)">
+              <input class="form-input" type="text" placeholder="Min" value="$85,000" style="flex:1" />
+              <input class="form-input" type="text" placeholder="Max" value="$105,000" style="flex:1" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Job Description</label>
+            <textarea class="form-input" rows="3" placeholder="Describe the role, responsibilities, and qualifications…" style="resize:vertical"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Headcount Justification <span style="color:var(--color-danger)">*</span></label>
+            <input class="form-input has-error" type="text" placeholder="Why is this role needed?" />
+            <span class="form-error">Required — must be completed before routing for approval</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer" style="display:flex;justify-content:flex-end;gap:var(--space-3)">
+        <button class="btn btn-ghost btn-sm">Save Draft</button>
+        <button class="btn btn-primary btn-sm">Submit for Approval →</button>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── CARDS ── -->
+  <section class="ds-section" id="cards">
+    <div class="ds-section-title">06 · Components</div>
+    <h2>Cards</h2>
+    <p class="desc">Cards are the primary content container. Metric cards live in dashboard header rows; content cards contain tables, lists, or detail views.</p>
+
+    <div class="swatch-group-label">Metric Cards</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--space-4);margin-bottom:var(--space-8)">
+      <div class="metric-card">
+        <div class="metric-icon navy">📋</div>
+        <div class="metric-label">Open Requisitions</div>
+        <div class="metric-value">24</div>
+        <div class="metric-change up">↑ 3 from last month</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon green">👥</div>
+        <div class="metric-label">Active Candidates</div>
+        <div class="metric-value">187</div>
+        <div class="metric-change up">↑ 12% this week</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon orange">⏱</div>
+        <div class="metric-label">Avg. Days to Fill</div>
+        <div class="metric-value">18.4</div>
+        <div class="metric-change down">↓ 2.1 days vs. goal</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon blue">✅</div>
+        <div class="metric-label">Offers Accepted</div>
+        <div class="metric-value">92%</div>
+        <div class="metric-change up">↑ +4% vs. last qtr</div>
+      </div>
+    </div>
+
+    <div class="swatch-group-label">Candidate Kanban Cards</div>
+    <div style="display:flex;gap:var(--space-4);flex-wrap:wrap">
+      <div class="kanban-card" style="width:220px">
+        <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3)">
+          <div class="avatar avatar-md av-navy">JA</div>
+          <div>
+            <div class="kanban-card-name">Jordan Alvarez</div>
+            <div class="kanban-card-role">Payroll Analyst · Chicago</div>
+          </div>
+        </div>
+        <div style="margin-bottom:var(--space-3)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:.7rem;color:var(--color-gray-400)">Match Score</span><span style="font-size:.7rem;font-weight:600;color:var(--color-green-dark)">87%</span></div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:87%"></div></div>
+        </div>
+        <div class="kanban-card-footer">
+          <span class="badge badge-interview" style="font-size:10px"><span class="badge-dot"></span>Interviewing</span>
+          <span style="font-size:.7rem;color:var(--color-gray-400)">Day 12</span>
+        </div>
+      </div>
+      <div class="kanban-card" style="width:220px">
+        <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3)">
+          <div class="avatar avatar-md av-green">MS</div>
+          <div>
+            <div class="kanban-card-name">Maya Solis</div>
+            <div class="kanban-card-role">Sr. Payroll Analyst · Remote</div>
+          </div>
+        </div>
+        <div style="margin-bottom:var(--space-3)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:.7rem;color:var(--color-gray-400)">Match Score</span><span style="font-size:.7rem;font-weight:600;color:var(--color-green-dark)">94%</span></div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:94%"></div></div>
+        </div>
+        <div class="kanban-card-footer">
+          <span class="badge badge-offer" style="font-size:10px"><span class="badge-dot"></span>Offer Sent</span>
+          <span style="font-size:.7rem;color:var(--color-gray-400)">Day 21</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── DATA COMPONENTS ── -->
+  <section class="ds-section" id="data">
+    <div class="ds-section-title">07 · Components</div>
+    <h2>Data Components</h2>
+
+    <div class="showcase-row">
+      <div class="showcase-col">
+        <div class="swatch-group-label">Candidate Timeline</div>
+        <div class="card">
+          <div class="card-body">
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-dot td-complete">✓</div>
+                <div class="timeline-content">
+                  <div class="timeline-label">Application Received</div>
+                  <div class="timeline-date">Jun 15 · via LinkedIn</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot td-complete">✓</div>
+                <div class="timeline-content">
+                  <div class="timeline-label">Phone Screen Completed</div>
+                  <div class="timeline-date">Jun 18 · Recruiter: T. Smith</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot td-active">→</div>
+                <div class="timeline-content">
+                  <div class="timeline-label">Panel Interview</div>
+                  <div class="timeline-date">Jun 25 · 2:00 PM · Teams</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot td-pending">4</div>
+                <div class="timeline-content">
+                  <div class="timeline-label">Offer Management</div>
+                  <div class="timeline-date">Pending</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot td-pending">5</div>
+                <div class="timeline-content">
+                  <div class="timeline-label">Payroll Handoff</div>
+                  <div class="timeline-date">Pending</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="showcase-col">
+        <div class="swatch-group-label">Avatars & Identity</div>
+        <div class="card">
+          <div class="card-body" style="display:flex;flex-direction:column;gap:var(--space-5)">
+            <div style="display:flex;align-items:center;gap:var(--space-3)">
+              <div class="avatar avatar-xl av-navy">JA</div>
+              <div>
+                <div style="font-weight:600;color:var(--color-gray-800)">Jordan Alvarez</div>
+                <div style="font-size:var(--text-sm);color:var(--color-gray-400)">Candidate · Payroll Analyst</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:var(--space-2)">
+              <div class="avatar avatar-lg av-navy">JA</div>
+              <div class="avatar avatar-lg av-green">MS</div>
+              <div class="avatar avatar-lg av-orange">RK</div>
+              <div class="avatar avatar-lg av-purple">TN</div>
+              <div class="avatar avatar-lg av-blue">CL</div>
+            </div>
+            <div style="display:flex;gap:var(--space-2)">
+              <div class="avatar avatar-sm av-navy">JA</div>
+              <div class="avatar avatar-sm av-green">MS</div>
+              <div class="avatar avatar-sm av-orange">RK</div>
+              <div class="avatar avatar-sm av-purple">TN</div>
+              <span class="avatar avatar-sm" style="background:var(--color-gray-200);color:var(--color-gray-500);font-size:10px">+4</span>
+            </div>
+            <div>
+              <div class="swatch-group-label" style="margin-top:0">Skill Tags</div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+                <span class="tag tag-navy">ADP Workforce</span>
+                <span class="tag tag-navy">Payroll Processing</span>
+                <span class="tag">Excel</span>
+                <span class="tag">CPP Certified</span>
+                <span class="tag">Multi-state Tax</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── TOKENS TABLE ── -->
+  <section class="ds-section" id="tokens">
+    <div class="ds-section-title">08 · Foundation</div>
+    <h2>Design Tokens Reference</h2>
+    <p class="desc">Copy these CSS variables into any component file. They're defined on <code>:root</code> in <code>dm-tokens.css</code>.</p>
+
+    <div class="card">
+      <div class="card-body" style="overflow-x:auto">
+        <table class="token-table">
+          <thead><tr><th>Token</th><th>Value</th><th>Preview</th><th>Usage</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">--color-navy</span></td><td>#0D2D5C</td><td><span class="token-preview" style="width:48px;background:#0D2D5C"></span></td><td>Sidebar, headers, primary buttons</td></tr>
+            <tr><td><span class="token-name">--color-green</span></td><td>#6DB33F</td><td><span class="token-preview" style="width:48px;background:#6DB33F"></span></td><td>CTAs, success, hiring stage accent</td></tr>
+            <tr><td><span class="token-name">--color-dm-orange</span></td><td>#E5541C</td><td><span class="token-preview" style="width:48px;background:#E5541C"></span></td><td>DM brand, alerts, urgent states</td></tr>
+            <tr><td><span class="token-name">--color-gray-50</span></td><td>#F8FAFC</td><td><span class="token-preview" style="width:48px;background:#F8FAFC;border:1px solid #e2e8f0"></span></td><td>Page background</td></tr>
+            <tr><td><span class="token-name">--color-gray-100</span></td><td>#F1F5F9</td><td><span class="token-preview" style="width:48px;background:#F1F5F9"></span></td><td>Card footer, chip background</td></tr>
+            <tr><td><span class="token-name">--color-gray-200</span></td><td>#E2E8F0</td><td><span class="token-preview" style="width:48px;background:#E2E8F0"></span></td><td>Borders, dividers</td></tr>
+            <tr><td><span class="token-name">--color-gray-500</span></td><td>#64748B</td><td><span class="token-preview" style="width:48px;background:#64748B"></span></td><td>Secondary body text</td></tr>
+            <tr><td><span class="token-name">--color-gray-800</span></td><td>#1E293B</td><td><span class="token-preview" style="width:48px;background:#1E293B"></span></td><td>Primary body text</td></tr>
+            <tr><td><span class="token-name">--radius-md</span></td><td>8px</td><td>—</td><td>Buttons, inputs, chips</td></tr>
+            <tr><td><span class="token-name">--radius-lg</span></td><td>12px</td><td>—</td><td>Cards, panels</td></tr>
+            <tr><td><span class="token-name">--shadow-sm</span></td><td>0 1px 2px…</td><td>—</td><td>Cards at rest</td></tr>
+            <tr><td><span class="token-name">--shadow-md</span></td><td>0 4px 6px…</td><td>—</td><td>Cards on hover, dropdowns</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /ds-body -->
+
+</body>
+</html>

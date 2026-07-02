@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DM Hire — ATS Platform Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --navy:        #0D2D5C;
+  --navy-light:  #1A4080;
+  --navy-dark:   #081D3F;
+  --green:       #6DB33F;
+  --green-light: #8DC85C;
+  --green-dark:  #4E8A28;
+  --orange:      #E5541C;
+  --white:       #FFFFFF;
+  --gray-50:     #F8FAFC;
+  --gray-100:    #F1F5F9;
+  --gray-200:    #E2E8F0;
+  --gray-300:    #CBD5E1;
+  --gray-400:    #94A3B8;
+  --gray-500:    #64748B;
+  --gray-600:    #475569;
+  --gray-700:    #334155;
+  --gray-800:    #1E293B;
+  --success:     #22C55E;
+  --warning:     #F59E0B;
+  --danger:      #EF4444;
+  --info:        #3B82F6;
+  --font:        'Inter', -apple-system, sans-serif;
+  --sidebar-w:   240px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--gray-50); color: var(--gray-800); height: 100vh; display: flex; overflow: hidden; }
+
+/* ─── Sidebar ─────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--navy-dark);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.logo-mark {
+  font-size: 22px;
+  font-weight: 900;
+  color: white;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.logo-mark span { color: var(--green); }
+.logo-sub { font-size: 10px; color: rgba(255,255,255,.3); letter-spacing: .1em; text-transform: uppercase; margin-top: 4px; }
+
+.sidebar-section { padding: 20px 12px 8px; }
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s;
+  color: rgba(255,255,255,.6);
+  font-size: 13.5px;
+  font-weight: 500;
+  margin-bottom: 2px;
+  user-select: none;
+}
+.nav-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
+.nav-item.active { background: rgba(109,179,63,.15); color: var(--green-light); }
+.nav-item .icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--orange);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 99px;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 16px 12px;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.user-row:hover { background: rgba(255,255,255,.06); }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--green);
+  color: white; font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.user-name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.8); }
+.user-role { font-size: 11px; color: rgba(255,255,255,.3); }
+
+/* ─── Main ────────────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.topbar {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 56px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+.topbar-title { font-size: 18px; font-weight: 700; color: var(--navy); flex: 1; }
+.topbar-search {
+  display: flex; align-items: center;
+  background: var(--gray-50);
+  border: 1.5px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 0 12px;
+  gap: 8px;
+  width: 240px;
+}
+.topbar-search input {
+  background: none; border: none; outline: none;
+  font-family: var(--font); font-size: 13px; color: var(--gray-700);
+  padding: 7px 0; width: 100%;
+}
+.topbar-search input::placeholder { color: var(--gray-400); }
+.topbar-icon { font-size: 15px; color: var(--gray-400); }
+.topbar-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--navy);
+  color: white; border: none; border-radius: 8px;
+  padding: 8px 16px; font-size: 13px; font-weight: 600;
+  font-family: var(--font); cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.topbar-btn:hover { background: var(--navy-light); transform: translateY(-1px); }
+.topbar-notif {
+  width: 36px; height: 36px;
+  border-radius: 8px; background: var(--gray-100);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; cursor: pointer; position: relative;
+}
+.notif-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--orange);
+  border: 2px solid white;
+}
+
+.content { flex: 1; overflow-y: auto; padding: 28px; }
+
+/* ─── Views ───────────────────────────────────────── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── Dashboard ───────────────────────────────────── */
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.page-title { font-size: 24px; font-weight: 800; color: var(--navy); letter-spacing: -0.02em; }
+.page-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 3px; }
+
+.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.metric-card {
+  background: white; border-radius: 12px;
+  border: 1px solid var(--gray-100);
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  padding: 20px;
+}
+.metric-icon-wrap {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 16px;
+}
+.mi-navy { background: rgba(13,45,92,.08); }
+.mi-green { background: rgba(109,179,63,.12); }
+.mi-orange { background: rgba(229,84,28,.1); }
+.mi-blue { background: rgba(59,130,246,.1); }
+.metric-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--gray-400); margin-bottom: 8px; }
+.metric-val { font-size: 32px; font-weight: 800; color: var(--navy); letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px; }
+.metric-change { font-size: 12px; font-weight: 500; }
+.mc-up { color: var(--green-dark); }
+.mc-down { color: var(--danger); }
+.mc-neutral { color: var(--gray-400); }
+
+.dash-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; margin-bottom: 20px; }
+.dash-grid-full { display: grid; grid-template-columns: 1fr; gap: 20px; }
+
+.card {
+  background: white; border-radius: 12px;
+  border: 1px solid var(--gray-100);
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  overflow: hidden;
+}
+.card-hdr {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-hdr-title { font-size: 15px; font-weight: 700; color: var(--gray-800); }
+.card-body { padding: 20px; }
+
+/* Pipeline visualization */
+.pipeline-stages {
+  display: flex; gap: 0; margin: 4px 0 16px;
+}
+.pipeline-stage { flex: 1; text-align: center; position: relative; }
+.pipeline-stage:not(:last-child)::after {
+  content: '';
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-left: 10px solid white;
+  z-index: 2;
+}
+.ps-inner {
+  padding: 10px 4px;
+  margin-right: 1px;
+  position: relative;
+}
+.ps-inner::after {
+  content: '';
+  position: absolute; right: -10px; top: 0;
+  width: 0; height: 0;
+  border-top: 22px solid transparent;
+  border-bottom: 22px solid transparent;
+  z-index: 1;
+}
+.ps-count { font-size: 20px; font-weight: 800; color: white; line-height: 1; }
+.ps-label { font-size: 10px; color: rgba(255,255,255,.8); margin-top: 3px; font-weight: 500; }
+.ps-1 .ps-inner { background: #3B82F6; border-radius: 8px 0 0 8px; }
+.ps-2 .ps-inner { background: #8B5CF6; }
+.ps-3 .ps-inner { background: #F59E0B; }
+.ps-4 .ps-inner { background: var(--orange); }
+.ps-5 .ps-inner { background: var(--green); border-radius: 0 8px 8px 0; }
+
+/* Table */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.data-table th {
+  text-align: left; padding: 10px 16px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--gray-400); border-bottom: 1px solid var(--gray-100);
+  background: var(--gray-50);
+}
+.data-table td { padding: 12px 16px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr { transition: background .1s; cursor: pointer; }
+.data-table tbody tr:hover { background: var(--gray-50); }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 99px;
+  font-size: 11px; font-weight: 600;
+}
+.bd { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.b-new       { background: #EFF6FF; color: #1D4ED8; } .b-new .bd { background: #3B82F6; }
+.b-screen    { background: #FFF7ED; color: #C2410C; } .b-screen .bd { background: var(--orange); }
+.b-interview { background: #F5F3FF; color: #6D28D9; } .b-interview .bd { background: #7C3AED; }
+.b-offer     { background: #ECFDF5; color: #065F46; } .b-offer .bd { background: var(--green); }
+.b-hired     { background: #F0FDF4; color: #15803D; } .b-hired .bd { background: var(--success); }
+.b-rejected  { background: #FEF2F2; color: #991B1B; } .b-rejected .bd { background: var(--danger); }
+.b-open      { background: #F0FDF4; color: #15803D; } .b-open .bd { background: var(--success); }
+.b-draft     { background: var(--gray-100); color: var(--gray-500); } .b-draft .bd { background: var(--gray-400); }
+.b-closed    { background: var(--gray-100); color: var(--gray-500); } .b-closed .bd { background: var(--gray-400); }
+.b-urgent    { background: #FFF7ED; color: #C2410C; } .b-urgent .bd { background: var(--orange); }
+
+/* Avatar */
+.av {
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 700; color: white; flex-shrink: 0;
+}
+.av-sm { width: 28px; height: 28px; font-size: 10px; }
+.av-md { width: 36px; height: 36px; font-size: 13px; }
+.av-lg { width: 48px; height: 48px; font-size: 17px; }
+.av-xl { width: 56px; height: 56px; font-size: 20px; }
+.av-a { background: var(--navy); }
+.av-b { background: var(--green); }
+.av-c { background: #7C3AED; }
+.av-d { background: var(--orange); }
+.av-e { background: #3B82F6; }
+.av-f { background: #EC4899; }
+
+/* Candidate name+role in table */
+.cand-row { display: flex; align-items: center; gap: 10px; }
+.cand-name { font-size: 13.5px; font-weight: 600; color: var(--gray-800); }
+.cand-detail { font-size: 11.5px; color: var(--gray-400); margin-top: 1px; }
+
+/* Score bar */
+.score-wrap { display: flex; align-items: center; gap: 8px; }
+.score-bar {
+  flex: 1; max-width: 80px;
+  height: 4px; background: var(--gray-100); border-radius: 99px; overflow: hidden;
+}
+.score-fill { height: 100%; border-radius: 99px; background: var(--green); }
+.score-num { font-size: 12px; font-weight: 700; color: var(--green-dark); }
+
+/* Progress bar */
+.prog-bar { height: 6px; background: var(--gray-100); border-radius: 99px; overflow: hidden; margin-top: 4px; }
+.prog-fill { height: 100%; border-radius: 99px; }
+.pf-green { background: var(--green); }
+.pf-orange { background: var(--orange); }
+.pf-blue { background: var(--info); }
+
+/* Action btn */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 7px;
+  font-size: 12.5px; font-weight: 600; font-family: var(--font);
+  cursor: pointer; border: none; transition: all .15s; text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--navy); color: white; }
+.btn-primary:hover { background: var(--navy-light); transform: translateY(-1px); box-shadow: 0 4px 8px rgba(13,45,92,.2); }
+.btn-accent { background: var(--green); color: white; }
+.btn-accent:hover { background: var(--green-dark); }
+.btn-outline { background: transparent; color: var(--navy); border: 1.5px solid var(--gray-200); }
+.btn-outline:hover { border-color: var(--navy); }
+.btn-ghost { background: transparent; color: var(--gray-500); border: 1.5px solid var(--gray-200); }
+.btn-ghost:hover { background: var(--gray-50); color: var(--gray-700); }
+.btn-danger-ghost { background: transparent; color: var(--danger); border: 1.5px solid #FECACA; }
+.btn-danger-ghost:hover { background: #FEF2F2; }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-lg { padding: 10px 20px; font-size: 14px; }
+.btn-icon {
+  width: 32px; height: 32px; border-radius: 7px;
+  background: var(--gray-100); border: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; cursor: pointer; color: var(--gray-500); transition: all .15s;
+}
+.btn-icon:hover { background: var(--gray-200); color: var(--gray-700); }
+
+/* Filter strip */
+.filter-strip {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.filter-chip {
+  padding: 6px 13px; border-radius: 99px;
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  border: 1.5px solid var(--gray-200);
+  background: white; color: var(--gray-500);
+  transition: all .15s;
+}
+.filter-chip:hover { border-color: var(--navy); color: var(--navy); }
+.filter-chip.active {
+  background: var(--navy); color: white; border-color: var(--navy);
+}
+
+/* ─── Kanban ──────────────────────────────────────── */
+.kanban-board {
+  display: flex; gap: 16px;
+  overflow-x: auto; padding-bottom: 12px;
+  min-height: calc(100vh - 200px);
+}
+.kanban-col {
+  background: var(--gray-100);
+  border-radius: 12px;
+  min-width: 240px; width: 240px; flex-shrink: 0;
+  display: flex; flex-direction: column;
+  max-height: calc(100vh - 220px);
+}
+.kanban-col-hdr {
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.col-name { font-size: 12px; font-weight: 700; color: var(--gray-700); }
+.col-count {
+  margin-left: auto; background: white;
+  color: var(--gray-500); font-size: 11px; font-weight: 700;
+  padding: 1px 7px; border-radius: 99px;
+  border: 1px solid var(--gray-200);
+}
+.kanban-cards { padding: 0 10px 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.kanban-card {
+  background: white; border-radius: 10px;
+  border: 1px solid var(--gray-100);
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  padding: 12px; cursor: pointer;
+  transition: all .15s;
+}
+.kanban-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.1); transform: translateY(-2px); }
+.kc-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+.kc-name { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+.kc-role { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+.kc-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.kc-day { font-size: 11px; color: var(--gray-400); }
+.kc-score { font-size: 11px; font-weight: 700; color: var(--green-dark); }
+.kc-actions { display: flex; gap: 4px; margin-top: 8px; }
+.kc-act {
+  flex: 1; padding: 5px; border-radius: 6px;
+  font-size: 11px; font-weight: 600; font-family: var(--font);
+  cursor: pointer; border: none; text-align: center; transition: all .12s;
+}
+.kca-sched { background: rgba(13,45,92,.08); color: var(--navy); }
+.kca-sched:hover { background: var(--navy); color: white; }
+.kca-move { background: rgba(109,179,63,.12); color: var(--green-dark); }
+.kca-move:hover { background: var(--green); color: white; }
+
+/* ─── Candidate Profile ───────────────────────────── */
+.profile-layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
+.profile-card { }
+.profile-hero {
+  background: var(--navy);
+  border-radius: 12px 12px 0 0;
+  padding: 24px 20px;
+  text-align: center;
+}
+.profile-name { font-size: 18px; font-weight: 700; color: white; margin-top: 12px; }
+.profile-role { font-size: 13px; color: rgba(255,255,255,.6); margin-top: 3px; }
+.profile-info { background: white; border: 1px solid var(--gray-100); border-top: none; padding: 16px; }
+.info-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--gray-100);
+  font-size: 13px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-icon { font-size: 14px; color: var(--gray-400); width: 18px; text-align: center; }
+.info-label { color: var(--gray-400); min-width: 80px; font-size: 11.5px; }
+.info-val { color: var(--gray-700); font-weight: 500; }
+
+.profile-actions { background: white; border: 1px solid var(--gray-100); border-top: none; border-radius: 0 0 12px 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+.detail-tabs { display: flex; border-bottom: 1px solid var(--gray-200); margin-bottom: 20px; gap: 0; }
+.dtab {
+  padding: 10px 20px; font-size: 13.5px; font-weight: 600;
+  color: var(--gray-500); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
+}
+.dtab:hover { color: var(--navy); }
+.dtab.active { color: var(--navy); border-bottom-color: var(--green); }
+
+/* Timeline */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item { display: flex; gap: 14px; padding-bottom: 20px; position: relative; }
+.tl-item:not(:last-child)::before {
+  content: ''; position: absolute;
+  left: 13px; top: 28px; bottom: 0; width: 2px;
+  background: var(--gray-200);
+}
+.tl-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 12px; z-index: 1;
+}
+.td-done   { background: var(--green); color: white; }
+.td-active { background: var(--navy); color: white; box-shadow: 0 0 0 4px rgba(13,45,92,.12); }
+.td-pend   { background: var(--gray-200); color: var(--gray-400); }
+.tl-content { flex: 1; padding-top: 4px; }
+.tl-title { font-size: 13.5px; font-weight: 600; color: var(--gray-800); }
+.tl-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+.tl-note { font-size: 12.5px; color: var(--gray-600); margin-top: 6px; padding: 8px 12px; background: var(--gray-50); border-radius: 8px; border-left: 3px solid var(--green); }
+
+/* Scorecard */
+.scorecard { display: flex; flex-direction: column; gap: 14px; }
+.sc-item { }
+.sc-hdr { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.sc-label { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+.sc-val { font-size: 13px; font-weight: 700; color: var(--green-dark); }
+.sc-bar { height: 8px; background: var(--gray-100); border-radius: 99px; overflow: hidden; }
+.sc-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--green-dark), var(--green-light)); }
+
+/* Offer panel */
+.offer-panel {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  border-radius: 12px; padding: 24px; color: white;
+  margin-bottom: 16px;
+}
+.offer-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.offer-sub { font-size: 13px; color: rgba(255,255,255,.6); margin-bottom: 20px; }
+.offer-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.1); }
+.offer-row:last-child { border-bottom: none; }
+.offer-key { font-size: 12px; color: rgba(255,255,255,.5); }
+.offer-val { font-size: 13px; font-weight: 600; }
+.offer-accent { color: var(--green-light); }
+
+/* Payroll handoff badge */
+.payroll-ready {
+  background: linear-gradient(135deg, var(--green-dark), var(--green));
+  border-radius: 12px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.pr-icon { font-size: 28px; }
+.pr-title { font-size: 14px; font-weight: 700; color: white; }
+.pr-sub { font-size: 12px; color: rgba(255,255,255,.7); margin-top: 2px; }
+
+/* Tag */
+.tag {
+  display: inline-block; padding: 3px 9px;
+  border-radius: 99px; font-size: 11.5px; font-weight: 500;
+}
+.t-navy { background: rgba(13,45,92,.08); color: var(--navy); }
+.t-gray { background: var(--gray-100); color: var(--gray-500); }
+
+/* Empty state */
+.empty-state {
+  text-align: center; padding: 48px 24px;
+  color: var(--gray-400);
+}
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-text { font-size: 15px; font-weight: 600; color: var(--gray-500); }
+.empty-sub { font-size: 13px; margin-top: 4px; }
+
+/* Divider */
+hr.div { border: none; border-top: 1px solid var(--gray-200); margin: 16px 0; }
+
+/* Notification strip */
+.notif-strip {
+  background: rgba(229,84,28,.08);
+  border: 1px solid rgba(229,84,28,.2);
+  border-radius: 8px; padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px; font-size: 13px;
+}
+.notif-icon { font-size: 16px; flex-shrink: 0; }
+.notif-text { color: var(--gray-700); flex: 1; }
+.notif-text strong { color: var(--orange); }
+
+/* Tooltip-style chip */
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--gray-400); }
+.chip svg { width: 12px; height: 12px; }
+
+/* ─── Jobs page ───────────────────────────────────── */
+.jobs-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.job-row {
+  background: white; border-radius: 10px;
+  border: 1px solid var(--gray-100);
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px;
+  transition: all .15s; cursor: pointer;
+}
+.job-row:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); border-color: var(--gray-300); }
+.job-dept-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  background: rgba(13,45,92,.07);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.job-info { flex: 1; min-width: 0; }
+.job-title { font-size: 14.5px; font-weight: 700; color: var(--gray-800); }
+.job-meta { font-size: 12px; color: var(--gray-400); margin-top: 3px; }
+.job-stats { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+.job-stat { text-align: center; }
+.js-val { font-size: 18px; font-weight: 800; color: var(--navy); }
+.js-label { font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: .05em; }
+
+/* ─── Settings / Reports placeholder ─────────────── */
+.placeholder-view {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 400px; color: var(--gray-400); gap: 12px;
+}
+.placeholder-icon { font-size: 56px; }
+.placeholder-title { font-size: 20px; font-weight: 700; color: var(--gray-600); }
+.placeholder-sub { font-size: 14px; }
+
+</style>
+</head>
+<body>
+
+<!-- ─────────── SIDEBAR ─────────── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">DM <span>Hire</span></div>
+    <div class="logo-sub">Applicant Tracking</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Recruiting</div>
+    <div class="nav-item active" onclick="switchView('dashboard', this)">
+      <span class="icon">◉</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="switchView('jobs', this)">
+      <span class="icon">📋</span> Job Requisitions
+      <span class="nav-badge">24</span>
+    </div>
+    <div class="nav-item" onclick="switchView('pipeline', this)">
+      <span class="icon">⬛</span> Candidate Pipeline
+    </div>
+    <div class="nav-item" onclick="switchView('candidate', this)">
+      <span class="icon">👤</span> Candidate Profile
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Tools</div>
+    <div class="nav-item" onclick="switchView('offers', this)">
+      <span class="icon">📄</span> Offers
+      <span class="nav-badge">3</span>
+    </div>
+    <div class="nav-item" onclick="switchView('reports', this)">
+      <span class="icon">📊</span> Reports & Analytics
+    </div>
+    <div class="nav-item" onclick="switchView('integrations', this)">
+      <span class="icon">🔗</span> Integrations
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Demo</div>
+    <div class="nav-item" onclick="switchView('why-dm-hire', this)" style="background:rgba(109,179,63,.12);color:var(--green-light)">
+      <span class="icon">✦</span> Why DM Hire
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Settings</div>
+    <div class="nav-item" onclick="switchView('settings', this)">
+      <span class="icon">⚙</span> Settings
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-row">
+      <div class="user-avatar">EM</div>
+      <div>
+        <div class="user-name">Ethan Maxey</div>
+        <div class="user-role">Recruiter · DM</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ─────────── MAIN ─────────── -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-search">
+      <span class="topbar-icon">🔍</span>
+      <input type="text" placeholder="Search candidates, jobs, notes…" />
+    </div>
+    <button class="topbar-btn" onclick="document.getElementById('req-modal').style.display='flex'">＋ New Requisition</button>
+    <div class="topbar-notif">🔔<div class="notif-dot"></div></div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════ DASHBOARD ══════ -->
+    <div class="view active" id="view-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Good morning, Ethan 👋</div>
+          <div class="page-subtitle">Thursday, July 2, 2026 · 3 actions need your attention today</div>
+        </div>
+        <button class="btn btn-ghost">Download Report ↓</button>
+      </div>
+
+      <!-- Notification -->
+      <div class="notif-strip">
+        <span class="notif-icon">⚠</span>
+        <span class="notif-text"><strong>2 offers expiring in 48 hours</strong> — Maya Solis and Raj Kumar haven't responded yet. <a href="#" onclick="switchView('offers',null)" style="color:var(--orange);text-decoration:none;font-weight:600">Send reminders →</a></span>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-icon-wrap mi-navy">📋</div>
+          <div class="metric-label">Open Requisitions</div>
+          <div class="metric-val">24</div>
+          <div class="metric-change mc-up">↑ 3 from last month</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon-wrap mi-green">👥</div>
+          <div class="metric-label">Active Candidates</div>
+          <div class="metric-val">187</div>
+          <div class="metric-change mc-up">↑ 12% this week</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon-wrap mi-orange">⏱</div>
+          <div class="metric-label">Avg. Days to Fill</div>
+          <div class="metric-val">18.4</div>
+          <div class="metric-change mc-neutral">vs. 20.5 last quarter</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon-wrap mi-blue">✅</div>
+          <div class="metric-label">Offer Acceptance</div>
+          <div class="metric-val">92%</div>
+          <div class="metric-change mc-up">↑ +4pts vs. last qtr</div>
+        </div>
+      </div>
+
+      <!-- Pipeline + Activity -->
+      <div class="dash-grid">
+        <div>
+          <!-- Pipeline funnel -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-hdr">
+              <span class="card-hdr-title">Candidate Pipeline — All Jobs</span>
+              <button class="btn btn-ghost btn-sm" onclick="switchView('pipeline',null)">View Board →</button>
+            </div>
+            <div class="card-body">
+              <div class="pipeline-stages">
+                <div class="pipeline-stage ps-1"><div class="ps-inner"><div class="ps-count">48</div><div class="ps-label">New</div></div></div>
+                <div class="pipeline-stage ps-2"><div class="ps-inner"><div class="ps-count">63</div><div class="ps-label">Screening</div></div></div>
+                <div class="pipeline-stage ps-3"><div class="ps-inner"><div class="ps-count">39</div><div class="ps-label">Interview</div></div></div>
+                <div class="pipeline-stage ps-4"><div class="ps-inner"><div class="ps-count">14</div><div class="ps-label">Offer</div></div></div>
+                <div class="pipeline-stage ps-5"><div class="ps-inner"><div class="ps-count">23</div><div class="ps-label">Hired</div></div></div>
+              </div>
+              <!-- Recent activity table -->
+              <table class="data-table">
+                <thead><tr><th>Candidate</th><th>Role</th><th>Stage</th><th>Days</th><th>Score</th></tr></thead>
+                <tbody>
+                  <tr onclick="switchView('candidate',null)">
+                    <td><div class="cand-row"><div class="av av-sm av-a">JA</div><span class="cand-name">Jordan Alvarez</span></div></td>
+                    <td><span class="cand-detail">Payroll Analyst</span></td>
+                    <td><span class="badge b-interview"><span class="bd"></span>Interview</span></td>
+                    <td style="color:var(--gray-500);font-size:13px">12</td>
+                    <td><div class="score-wrap"><div class="score-bar"><div class="score-fill" style="width:87%"></div></div><span class="score-num">87%</span></div></td>
+                  </tr>
+                  <tr onclick="switchView('candidate',null)">
+                    <td><div class="cand-row"><div class="av av-sm av-b">MS</div><span class="cand-name">Maya Solis</span></div></td>
+                    <td><span class="cand-detail">Sr. Payroll Analyst</span></td>
+                    <td><span class="badge b-offer"><span class="bd"></span>Offer Sent</span></td>
+                    <td style="color:var(--gray-500);font-size:13px">21</td>
+                    <td><div class="score-wrap"><div class="score-bar"><div class="score-fill" style="width:94%"></div></div><span class="score-num">94%</span></div></td>
+                  </tr>
+                  <tr onclick="switchView('candidate',null)">
+                    <td><div class="cand-row"><div class="av av-sm av-c">RK</div><span class="cand-name">Raj Kumar</span></div></td>
+                    <td><span class="cand-detail">HR Manager</span></td>
+                    <td><span class="badge b-offer"><span class="bd"></span>Offer Sent</span></td>
+                    <td style="color:var(--gray-500);font-size:13px">19</td>
+                    <td><div class="score-wrap"><div class="score-bar"><div class="score-fill" style="width:91%"></div></div><span class="score-num">91%</span></div></td>
+                  </tr>
+                  <tr>
+                    <td><div class="cand-row"><div class="av av-sm av-d">TP</div><span class="cand-name">Tanya Patel</span></div></td>
+                    <td><span class="cand-detail">Tax Specialist</span></td>
+                    <td><span class="badge b-screen"><span class="bd"></span>Screening</span></td>
+                    <td style="color:var(--gray-500);font-size:13px">5</td>
+                    <td><div class="score-wrap"><div class="score-bar"><div class="score-fill" style="width:79%"></div></div><span class="score-num">79%</span></div></td>
+                  </tr>
+                  <tr>
+                    <td><div class="cand-row"><div class="av av-sm av-e">CL</div><span class="cand-name">Chris Lawson</span></div></td>
+                    <td><span class="cand-detail">Software Engineer</span></td>
+                    <td><span class="badge b-new"><span class="bd"></span>New</span></td>
+                    <td style="color:var(--gray-500);font-size:13px">1</td>
+                    <td><div class="score-wrap"><div class="score-bar"><div class="score-fill" style="width:82%"></div></div><span class="score-num">82%</span></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <!-- Urgent actions -->
+          <div class="card">
+            <div class="card-hdr"><span class="card-hdr-title">Action Items</span><span class="badge b-urgent" style="font-size:11px"><span class="bd"></span>5 pending</span></div>
+            <div class="card-body" style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100)">
+                <span style="font-size:14px;margin-top:1px">📅</span>
+                <div style="flex:1">
+                  <div style="font-size:12.5px;font-weight:600;color:var(--gray-800)">Jordan Alvarez — Final Interview</div>
+                  <div style="font-size:11.5px;color:var(--gray-400)">Jun 25 · 2:00 PM · Microsoft Teams</div>
+                </div>
+                <button class="btn-icon" style="font-size:11px;width:auto;padding:0 8px;height:26px;background:rgba(13,45,92,.07);color:var(--navy);font-weight:600">Join</button>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100)">
+                <span style="font-size:14px;margin-top:1px">📄</span>
+                <div style="flex:1">
+                  <div style="font-size:12.5px;font-weight:600;color:var(--gray-800)">Maya Solis — Offer Expiring</div>
+                  <div style="font-size:11.5px;color:var(--orange)">Expires in 36 hours · No response</div>
+                </div>
+                <button class="btn-icon" style="font-size:11px;width:auto;padding:0 8px;height:26px;background:rgba(229,84,28,.1);color:var(--orange);font-weight:600">Nudge</button>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100)">
+                <span style="font-size:14px;margin-top:1px">✅</span>
+                <div style="flex:1">
+                  <div style="font-size:12.5px;font-weight:600;color:var(--gray-800)">3 new applications to review</div>
+                  <div style="font-size:11.5px;color:var(--gray-400)">Sr. Payroll Analyst · 2 days old</div>
+                </div>
+                <button class="btn-icon" style="font-size:11px;width:auto;padding:0 8px;height:26px;background:rgba(13,45,92,.07);color:var(--navy);font-weight:600">Review</button>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0">
+                <span style="font-size:14px;margin-top:1px">🤝</span>
+                <div style="flex:1">
+                  <div style="font-size:12.5px;font-weight:600;color:var(--gray-800)">Hiring approval pending</div>
+                  <div style="font-size:11.5px;color:var(--gray-400)">Tax Specialist req · 3 days waiting</div>
+                </div>
+                <button class="btn-icon" style="font-size:11px;width:auto;padding:0 8px;height:26px;background:rgba(13,45,92,.07);color:var(--navy);font-weight:600">Chase</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- DM Payroll integration status -->
+          <div class="card">
+            <div class="card-hdr"><span class="card-hdr-title">DM Payroll Integration</span><span class="badge b-open" style="font-size:11px"><span class="bd"></span>Connected</span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+              <div style="font-size:12.5px;color:var(--gray-500)">Employees ready for payroll handoff:</div>
+              <div class="payroll-ready">
+                <div class="pr-icon">💸</div>
+                <div>
+                  <div class="pr-title">2 New Hires Ready</div>
+                  <div class="pr-sub">Data queued → DM Payroll on Jul 7</div>
+                </div>
+                <button class="btn btn-sm" style="margin-left:auto;background:white;color:var(--green-dark);border:none;font-family:var(--font)">Sync</button>
+              </div>
+              <div style="font-size:11.5px;color:var(--gray-400);display:flex;align-items:center;gap:5px">
+                ✓ Last sync: today at 6:00 AM · <span style="color:var(--green-dark);font-weight:600">All records current</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ JOB REQUISITIONS ══════ -->
+    <div class="view" id="view-jobs">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Job Requisitions</div>
+          <div class="page-subtitle">24 open positions across 6 departments</div>
+        </div>
+        <button class="btn btn-primary btn-lg" onclick="document.getElementById('req-modal').style.display='flex'">＋ New Requisition</button>
+      </div>
+
+      <div class="filter-strip">
+        <div class="filter-chip active">All (24)</div>
+        <div class="filter-chip">Open (18)</div>
+        <div class="filter-chip">Pending Approval (4)</div>
+        <div class="filter-chip">Draft (2)</div>
+        <div class="filter-chip">Closed (7)</div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm">⬇ Export</button>
+          <button class="btn btn-ghost btn-sm">Filter ▾</button>
+        </div>
+      </div>
+
+      <div class="jobs-grid">
+        <div class="job-row" onclick="switchView('pipeline',null)">
+          <div class="job-dept-icon">💼</div>
+          <div class="job-info">
+            <div class="job-title">Senior Payroll Analyst</div>
+            <div class="job-meta">Finance & Accounting · Detroit, MI · $85K–$105K · Posted Jun 12</div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <span class="badge b-open"><span class="bd"></span>Open</span>
+              <span class="tag t-navy" style="font-size:11px">Priority</span>
+              <span style="font-size:11px;color:var(--gray-400);display:flex;align-items:center;gap:3px">🔗 dmhire.com/apply/<span style="font-family:monospace;color:var(--navy)">sr-payroll-det</span></span>
+            </div>
+          </div>
+          <div class="job-stats">
+            <div class="job-stat"><div class="js-val">42</div><div class="js-label">Applicants</div></div>
+            <div class="job-stat"><div class="js-val">8</div><div class="js-label">Screening</div></div>
+            <div class="job-stat"><div class="js-val">3</div><div class="js-label">Interview</div></div>
+            <div class="job-stat"><div class="js-val" style="color:var(--orange)">18</div><div class="js-label">Days Open</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:12px">
+            <div style="display:flex">
+              <div class="av av-sm av-a" style="margin-right:-6px;border:2px solid white">JA</div>
+              <div class="av av-sm av-b" style="margin-right:-6px;border:2px solid white">MS</div>
+              <div class="av av-sm av-c" style="border:2px solid white">+5</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('✓ Direct apply link copied!\n\ndmhire.com/apply/sr-payroll-det\n\nPaste into LinkedIn, Indeed, or your careers page.')">📋 Share Link</button>
+            <button class="btn-icon">⋯</button>
+          </div>
+        </div>
+
+        <div class="job-row" onclick="switchView('pipeline',null)">
+          <div class="job-dept-icon">🏛</div>
+          <div class="job-info">
+            <div class="job-title">HR Manager</div>
+            <div class="job-meta">Human Resources · Remote · $90K–$110K · Posted Jun 5</div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <span class="badge b-open"><span class="bd"></span>Open</span>
+            </div>
+          </div>
+          <div class="job-stats">
+            <div class="job-stat"><div class="js-val">31</div><div class="js-label">Applicants</div></div>
+            <div class="job-stat"><div class="js-val">6</div><div class="js-label">Screening</div></div>
+            <div class="job-stat"><div class="js-val">2</div><div class="js-label">Interview</div></div>
+            <div class="job-stat"><div class="js-val" style="color:var(--orange)">25</div><div class="js-label">Days Open</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:12px">
+            <div style="display:flex">
+              <div class="av av-sm av-c" style="margin-right:-6px;border:2px solid white">RK</div>
+              <div class="av av-sm av-d" style="border:2px solid white">+3</div>
+            </div>
+            <button class="btn-icon">⋯</button>
+          </div>
+        </div>
+
+        <div class="job-row" onclick="switchView('pipeline',null)">
+          <div class="job-dept-icon">💻</div>
+          <div class="job-info">
+            <div class="job-title">Software Engineer II</div>
+            <div class="job-meta">Engineering · Alpharetta, GA · $110K–$140K · Posted Jun 18</div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <span class="badge b-open"><span class="bd"></span>Open</span>
+            </div>
+          </div>
+          <div class="job-stats">
+            <div class="job-stat"><div class="js-val">58</div><div class="js-label">Applicants</div></div>
+            <div class="job-stat"><div class="js-val">12</div><div class="js-label">Screening</div></div>
+            <div class="job-stat"><div class="js-val">5</div><div class="js-label">Interview</div></div>
+            <div class="job-stat"><div class="js-val">12</div><div class="js-label">Days Open</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:12px">
+            <div style="display:flex">
+              <div class="av av-sm av-e" style="margin-right:-6px;border:2px solid white">CL</div>
+              <div class="av av-sm av-f" style="border:2px solid white">+7</div>
+            </div>
+            <button class="btn-icon">⋯</button>
+          </div>
+        </div>
+
+        <div class="job-row">
+          <div class="job-dept-icon">📊</div>
+          <div class="job-info">
+            <div class="job-title">Tax Compliance Specialist</div>
+            <div class="job-meta">Finance & Accounting · Detroit, MI · $75K–$95K · Posted Jun 28</div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <span class="badge b-draft"><span class="bd"></span>Pending Approval</span>
+            </div>
+          </div>
+          <div class="job-stats">
+            <div class="job-stat"><div class="js-val">—</div><div class="js-label">Applicants</div></div>
+            <div class="job-stat"><div class="js-val">—</div><div class="js-label">Screening</div></div>
+            <div class="job-stat"><div class="js-val">—</div><div class="js-label">Interview</div></div>
+            <div class="job-stat"><div class="js-val">3</div><div class="js-label">Days Waiting</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:12px">
+            <button class="btn btn-ghost btn-sm">Chase Approval</button>
+            <button class="btn-icon">⋯</button>
+          </div>
+        </div>
+
+        <div class="job-row">
+          <div class="job-dept-icon">🎓</div>
+          <div class="job-info">
+            <div class="job-title">Payroll Implementation Consultant</div>
+            <div class="job-meta">Client Services · Remote · $80K–$100K · Draft</div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <span class="badge b-draft"><span class="bd"></span>Draft</span>
+            </div>
+          </div>
+          <div class="job-stats">
+            <div class="job-stat"><div class="js-val">—</div><div class="js-label">Applicants</div></div>
+            <div class="job-stat"><div class="js-val">—</div><div class="js-label">Screening</div></div>
+            <div class="job-stat"><div class="js-val">—</div><div class="js-label">Interview</div></div>
+            <div class="job-stat"><div class="js-val">—</div><div class="js-label">Days Open</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:12px">
+            <button class="btn btn-accent btn-sm">Complete & Post</button>
+            <button class="btn-icon">⋯</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ KANBAN PIPELINE ══════ -->
+    <div class="view" id="view-pipeline">
+      <div class="page-header" style="margin-bottom:16px">
+        <div>
+          <div class="page-title">Candidate Pipeline</div>
+          <div class="page-subtitle">Sr. Payroll Analyst · 42 candidates · 18 days open</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost">⬇ Export</button>
+          <button class="btn btn-primary">＋ Add Candidate</button>
+        </div>
+      </div>
+
+      <div class="filter-strip">
+        <div class="filter-chip active">All Candidates</div>
+        <div class="filter-chip">My Candidates</div>
+        <div class="filter-chip">Needs Action</div>
+        <div class="filter-chip">Stale (&gt;7 days)</div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm">Source ▾</button>
+          <button class="btn btn-ghost btn-sm">Score ▾</button>
+        </div>
+      </div>
+
+      <div class="kanban-board">
+
+        <!-- New -->
+        <div class="kanban-col">
+          <div class="kanban-col-hdr">
+            <div class="col-dot" style="background:#3B82F6"></div>
+            <span class="col-name">New Applicants</span>
+            <span class="col-count">8</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="kanban-card" onclick="switchView('candidate',null)">
+              <div style="font-size:10px;font-weight:700;background:#FFF7ED;color:#C2410C;border-radius:6px;padding:3px 8px;margin-bottom:6px;display:inline-flex;align-items:center;gap:4px">⚠ Possible duplicate — merged profile available</div>
+              <div class="kc-top">
+                <div class="av av-sm av-e">CL</div>
+                <div><div class="kc-name">Chris Lawson</div><div class="kc-role">Chicago · via LinkedIn</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--gray-400);margin-bottom:6px">Applied 1 day ago</div>
+              <div class="kc-footer"><span class="badge b-new" style="font-size:10px"><span class="bd"></span>New</span><span class="kc-score">82%</span></div>
+              <div class="kc-actions">
+                <button class="kc-act kca-sched">Phone Screen</button>
+                <button class="kc-act" style="background:rgba(239,68,68,.08);color:var(--danger);">Decline</button>
+              </div>
+            </div>
+            <div class="kanban-card" onclick="switchView('candidate',null)">
+              <div class="kc-top">
+                <div class="av av-sm av-f">SP</div>
+                <div><div class="kc-name">Sara Park</div><div class="kc-role">Detroit · via Indeed</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--gray-400);margin-bottom:6px">Applied 2 days ago</div>
+              <div class="kc-footer"><span class="badge b-new" style="font-size:10px"><span class="bd"></span>New</span><span class="kc-score">76%</span></div>
+              <div class="kc-actions">
+                <button class="kc-act kca-sched">Phone Screen</button>
+                <button class="kc-act" style="background:rgba(239,68,68,.08);color:var(--danger);">Decline</button>
+              </div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-top">
+                <div class="av av-sm av-a">DM</div>
+                <div><div class="kc-name">David Marsh</div><div class="kc-role">Remote · Employee Referral</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--gray-400);margin-bottom:6px">Applied today · 🌟 Referral</div>
+              <div class="kc-footer"><span class="badge b-new" style="font-size:10px"><span class="bd"></span>New</span><span class="kc-score">89%</span></div>
+              <div class="kc-actions">
+                <button class="kc-act kca-sched">Phone Screen</button>
+                <button class="kc-act" style="background:rgba(239,68,68,.08);color:var(--danger);">Decline</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone Screen -->
+        <div class="kanban-col">
+          <div class="kanban-col-hdr">
+            <div class="col-dot" style="background:var(--orange)"></div>
+            <span class="col-name">Phone Screen</span>
+            <span class="col-count">12</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="kanban-card" onclick="switchView('candidate',null)">
+              <div class="kc-top">
+                <div class="av av-sm av-d">TP</div>
+                <div><div class="kc-name">Tanya Patel</div><div class="kc-role">Detroit · via ZipRecruiter</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--gray-400);margin-bottom:6px">📞 Scheduled: Jul 3 · 10am</div>
+              <div class="kc-footer"><span class="badge b-screen" style="font-size:10px"><span class="bd"></span>Screening</span><span class="kc-score">79%</span></div>
+              <div class="kc-actions">
+                <button class="kc-act kca-sched">📝 Scorecard</button>
+                <button class="kc-act kca-move">Advance →</button>
+              </div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-top">
+                <div class="av av-sm av-b">KW</div>
+                <div><div class="kc-name">Kim Wallace</div><div class="kc-role">Remote · via Career Site</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--warning);font-weight:600;margin-bottom:6px">⚠ Stale — 8 days, no update</div>
+              <div class="kc-footer"><span class="badge b-screen" style="font-size:10px"><span class="bd"></span>Screening</span><span class="kc-score">73%</span></div>
+              <div class="kc-actions">
+                <button class="kc-act kca-sched">Contact</button>
+                <button class="kc-act" style="background:rgba(239,68,68,.08);color:var(--danger);">Decline</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interview -->
+        <div class="kanban-col">
+          <div class="kanban-col-hdr">
+            <div class="col-dot" style="background:#7C3AED"></div>
+            <span class="col-name">Interviewing</span>
+            <span class="col-count">7</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="kanban-card" onclick="switchView('candidate',null)" style="border-color:rgba(13,45,92,.15);box-shadow:0 0 0 2px rgba(13,45,92,.08)">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);margin-bottom:6px">⭐ Top Candidate</div>
+              <div class="kc-top">
+                <div class="av av-sm av-a">JA</div>
+                <div><div class="kc-name">Jordan Alvarez</div><div class="kc-role">Chicago · via LinkedIn</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">📅 Final Interview: Jun 25 · 2pm</div>
+              <div style="font-size:10.5px;background:rgba(59,130,246,.08);color:#1D4ED8;border-radius:6px;padding:4px 8px;margin-bottom:6px;display:flex;align-items:center;gap:4px">🗓 Outlook invite sent · Candidate self-scheduled</div>
+              <div class="kc-footer"><span class="badge b-interview" style="font-size:10px"><span class="bd"></span>Final Round</span><span class="kc-score">87%</span></div>
+              <div class="kc-actions">
+                <button class="kc-act kca-sched">📝 Feedback</button>
+                <button class="kc-act kca-move">Move to Offer</button>
+              </div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-top">
+                <div class="av av-sm av-c">NK</div>
+                <div><div class="kc-name">Nadia Khan</div><div class="kc-role">Remote · via LinkedIn</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--gray-400);margin-bottom:6px">📅 Panel Interview: Jun 26 · 3pm</div>
+              <div class="kc-footer"><span class="badge b-interview" style="font-size:10px"><span class="bd"></span>Interviewing</span><span class="kc-score">84%</span></div>
+              <div class="kc-actions">
+                <button class="kc-act kca-sched">📝 Feedback</button>
+                <button class="kc-act kca-move">Move to Offer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Offer -->
+        <div class="kanban-col">
+          <div class="kanban-col-hdr">
+            <div class="col-dot" style="background:var(--green)"></div>
+            <span class="col-name">Offer Stage</span>
+            <span class="col-count">3</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="kanban-card" onclick="switchView('candidate',null)">
+              <div class="kc-top">
+                <div class="av av-sm av-b">MS</div>
+                <div><div class="kc-name">Maya Solis</div><div class="kc-role">Remote · Sr. Analyst</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--orange);font-weight:600;margin-bottom:6px">⚠ Offer expires Jul 4</div>
+              <div class="kc-footer"><span class="badge b-offer" style="font-size:10px"><span class="bd"></span>Offer Sent</span><span class="kc-score">94%</span></div>
+              <div class="kc-actions">
+                <button class="kc-act" style="background:rgba(229,84,28,.1);color:var(--orange);">Send Reminder</button>
+                <button class="kc-act" style="background:rgba(109,179,63,.1);color:var(--green-dark);">Extend</button>
+              </div>
+            </div>
+            <div class="kanban-card" onclick="switchView('candidate',null)">
+              <div class="kc-top">
+                <div class="av av-sm av-c">RK</div>
+                <div><div class="kc-name">Raj Kumar</div><div class="kc-role">Detroit · HR Manager</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--orange);font-weight:600;margin-bottom:6px">⚠ Offer expires Jul 5</div>
+              <div class="kc-footer"><span class="badge b-offer" style="font-size:10px"><span class="bd"></span>Offer Sent</span><span class="kc-score">91%</span></div>
+              <div class="kc-actions">
+                <button class="kc-act" style="background:rgba(229,84,28,.1);color:var(--orange);">Send Reminder</button>
+                <button class="kc-act" style="background:rgba(109,179,63,.1);color:var(--green-dark);">Extend</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hired -->
+        <div class="kanban-col">
+          <div class="kanban-col-hdr">
+            <div class="col-dot" style="background:var(--success)"></div>
+            <span class="col-name">Hired → Payroll</span>
+            <span class="col-count">5</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="kanban-card" style="border-color:rgba(34,197,94,.2)">
+              <div class="kc-top">
+                <div class="av av-sm av-b">AM</div>
+                <div><div class="kc-name">Alex Morgan</div><div class="kc-role">Payroll Analyst · Start Aug 1</div></div>
+              </div>
+              <div class="payroll-ready" style="padding:8px 10px;margin-top:6px;border-radius:8px">
+                <span style="font-size:14px">💸</span>
+                <div>
+                  <div style="font-size:10px;font-weight:700;color:white">Synced to DM Payroll</div>
+                  <div style="font-size:10px;color:rgba(255,255,255,.7)">Record created · Jul 1</div>
+                </div>
+              </div>
+            </div>
+            <div class="kanban-card" style="border-color:rgba(34,197,94,.2)">
+              <div class="kc-top">
+                <div class="av av-sm av-d">JL</div>
+                <div><div class="kc-name">Jamie Lee</div><div class="kc-role">Tax Specialist · Start Jul 15</div></div>
+              </div>
+              <div class="payroll-ready" style="padding:8px 10px;margin-top:6px;border-radius:8px">
+                <span style="font-size:14px">💸</span>
+                <div>
+                  <div style="font-size:10px;font-weight:700;color:white">Synced to DM Payroll</div>
+                  <div style="font-size:10px;color:rgba(255,255,255,.7)">Record created · Jun 29</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Declined -->
+        <div class="kanban-col">
+          <div class="kanban-col-hdr">
+            <div class="col-dot" style="background:var(--gray-400)"></div>
+            <span class="col-name">Not Selected</span>
+            <span class="col-count">12</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="kanban-card" style="opacity:.6">
+              <div class="kc-top">
+                <div class="av av-sm av-a" style="background:var(--gray-400)">BP</div>
+                <div><div class="kc-name">Brian Park</div><div class="kc-role">Did not meet qualifications</div></div>
+              </div>
+              <div class="kc-footer"><span class="badge b-rejected" style="font-size:10px"><span class="bd"></span>Not Selected</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /kanban-board -->
+    </div>
+
+    <!-- ══════ CANDIDATE PROFILE ══════ -->
+    <div class="view" id="view-candidate">
+      <div class="page-header" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="btn btn-ghost btn-sm" onclick="switchView('pipeline',null)">← Pipeline</button>
+          <div class="page-title">Jordan Alvarez</div>
+          <span class="badge b-interview"><span class="bd"></span>Final Interview</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost">📧 Email</button>
+          <button class="btn btn-ghost">📅 Schedule</button>
+          <button class="btn btn-accent">Generate Offer →</button>
+        </div>
+      </div>
+
+      <div class="profile-layout">
+        <!-- Left col: identity -->
+        <div>
+          <div class="profile-card card" style="border-radius:12px;margin-bottom:16px">
+            <div class="profile-hero">
+              <div class="av av-xl av-a" style="margin:0 auto">JA</div>
+              <div class="profile-name">Jordan Alvarez</div>
+              <div class="profile-role">Senior Payroll Analyst Candidate</div>
+              <div style="margin-top:6px;display:inline-flex;align-items:center;gap:5px;background:rgba(109,179,63,.18);border-radius:99px;padding:3px 10px;font-size:10.5px;font-weight:600;color:var(--green-light)">✦ Resume auto-parsed · 0 fields re-entered</div>
+              <div style="margin-top:12px;display:flex;justify-content:center;gap:6px">
+                <span class="badge b-interview" style="font-size:10.5px"><span class="bd"></span>Interviewing</span>
+                <span class="badge" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);font-size:10.5px">Day 12</span>
+              </div>
+            </div>
+            <div class="profile-info">
+              <div class="info-row"><span class="info-icon">📍</span><span class="info-label">Location</span><span class="info-val">Chicago, IL</span></div>
+              <div class="info-row"><span class="info-icon">📧</span><span class="info-label">Email</span><span class="info-val" style="color:var(--navy)">j.alvarez@email.com</span></div>
+              <div class="info-row"><span class="info-icon">📞</span><span class="info-label">Phone</span><span class="info-val">(312) 555-0142</span></div>
+              <div class="info-row"><span class="info-icon">🔗</span><span class="info-label">Source</span><span class="info-val">LinkedIn</span></div>
+              <div class="info-row"><span class="info-icon">💰</span><span class="info-label">Exp. Salary</span><span class="info-val">$95K–$105K</span></div>
+              <div class="info-row"><span class="info-icon">🏢</span><span class="info-label">Current Role</span><span class="info-val">Payroll Sr. Assoc. · ADP</span></div>
+              <div class="info-row"><span class="info-icon">📅</span><span class="info-label">Available</span><span class="info-val">2 weeks notice</span></div>
+            </div>
+            <div class="profile-actions">
+              <button class="btn btn-primary" style="width:100%;justify-content:center">Generate Offer Letter</button>
+              <button class="btn btn-ghost" style="width:100%;justify-content:center">📅 Schedule Interview</button>
+              <button class="btn btn-danger-ghost" style="width:100%;justify-content:center">Mark Not Selected</button>
+            </div>
+          </div>
+
+          <!-- AI Match Score Card -->
+          <div class="card">
+            <div class="card-hdr"><span class="card-hdr-title">AI Match Score</span><span style="font-size:20px;font-weight:800;color:var(--green-dark)">87%</span></div>
+            <div class="card-body" style="padding:16px">
+              <div class="scorecard">
+                <div class="sc-item">
+                  <div class="sc-hdr"><span class="sc-label">Payroll Expertise</span><span class="sc-val">96%</span></div>
+                  <div class="sc-bar"><div class="sc-fill" style="width:96%"></div></div>
+                </div>
+                <div class="sc-item">
+                  <div class="sc-hdr"><span class="sc-label">Software Systems</span><span class="sc-val">88%</span></div>
+                  <div class="sc-bar"><div class="sc-fill" style="width:88%"></div></div>
+                </div>
+                <div class="sc-item">
+                  <div class="sc-hdr"><span class="sc-label">Compliance & Tax</span><span class="sc-val">82%</span></div>
+                  <div class="sc-bar"><div class="sc-fill" style="width:82%"></div></div>
+                </div>
+                <div class="sc-item">
+                  <div class="sc-hdr"><span class="sc-label">Team Leadership</span><span class="sc-val">74%</span></div>
+                  <div class="sc-bar"><div class="sc-fill" style="width:74%"></div></div>
+                </div>
+                <div class="sc-item">
+                  <div class="sc-hdr"><span class="sc-label">Culture Fit</span><span class="sc-val">91%</span></div>
+                  <div class="sc-bar"><div class="sc-fill" style="width:91%"></div></div>
+                </div>
+              </div>
+              <hr class="div" />
+              <div style="display:flex;flex-wrap:wrap;gap:5px">
+                <span class="tag t-navy">ADP Workforce Now</span>
+                <span class="tag t-navy">Payroll Processing</span>
+                <span class="tag t-gray">CPP Certified</span>
+                <span class="tag t-gray">Multi-state Tax</span>
+                <span class="tag t-gray">Excel Expert</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right col: detail -->
+        <div>
+          <div class="detail-tabs">
+            <div class="dtab active" onclick="setTab(this,'tab-timeline')">Timeline</div>
+            <div class="dtab" onclick="setTab(this,'tab-notes')">Interview Notes</div>
+            <div class="dtab" onclick="setTab(this,'tab-offer')">Offer</div>
+            <div class="dtab" onclick="setTab(this,'tab-docs')">Documents</div>
+          </div>
+
+          <!-- Tab: Timeline -->
+          <div id="tab-timeline" class="card" style="padding:24px">
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-dot td-done">✓</div>
+                <div class="tl-content">
+                  <div class="tl-title">Application Received</div>
+                  <div class="tl-sub">Jun 15 · Applied via LinkedIn · Resume auto-parsed</div>
+                  <div class="tl-note">AI Match Score: 87% · Ranked #3 of 42 applicants</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot td-done">✓</div>
+                <div class="tl-content">
+                  <div class="tl-title">Phone Screen Completed</div>
+                  <div class="tl-sub">Jun 18 · 30 min · Recruiter: T. Smith</div>
+                  <div class="tl-note">Strong communication. 7 years ADP exp. Salary aligned. Recommend advance. — T. Smith</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot td-done">✓</div>
+                <div class="tl-content">
+                  <div class="tl-title">Technical Screen</div>
+                  <div class="tl-sub">Jun 21 · 60 min · Hiring Manager: A. Chen</div>
+                  <div class="tl-note">Excellent payroll systems knowledge. Familiar with multi-state. Minor gaps in benefits admin. — A. Chen</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot td-active">→</div>
+                <div class="tl-content">
+                  <div class="tl-title">Final Panel Interview</div>
+                  <div class="tl-sub">Jun 25 · 2:00 PM · Microsoft Teams · Panel of 3</div>
+                  <div style="margin-top:6px;display:flex;gap:8px">
+                    <a href="#" style="text-decoration:none"><button class="btn btn-primary btn-sm">📹 Join Teams</button></a>
+                    <button class="btn btn-ghost btn-sm">📋 Interview Guide</button>
+                  </div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot td-pend">5</div>
+                <div class="tl-content">
+                  <div class="tl-title">Offer Management</div>
+                  <div class="tl-sub" style="color:var(--gray-300)">Pending interview feedback</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot td-pend">6</div>
+                <div class="tl-content">
+                  <div class="tl-title">Background Check</div>
+                  <div class="tl-sub" style="color:var(--gray-300)">Pending offer acceptance</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot td-pend">7</div>
+                <div class="tl-content">
+                  <div class="tl-title">DM Payroll Handoff</div>
+                  <div class="tl-sub" style="color:var(--gray-300)">Employee record → DM Payroll · Pending hire</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Notes (hidden by default) -->
+          <div id="tab-notes" class="card" style="padding:24px;display:none">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;gap:12px">
+                <div class="av av-sm av-b">TS</div>
+                <div style="flex:1;background:var(--gray-50);border-radius:10px;padding:12px">
+                  <div style="font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:4px">T. Smith · Phone Screen · Jun 18</div>
+                  <div style="font-size:13px;color:var(--gray-600)">Strong first impression. 7 years at ADP in payroll processing, handled multi-state tax, CPP certified. Very clear communicator. Salary range aligns ($95–105K). Recommend advance to technical screen.</div>
+                  <div style="margin-top:8px;display:flex;gap:4px"><span class="tag t-navy">✓ Advance</span></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:12px">
+                <div class="av av-sm av-a">AC</div>
+                <div style="flex:1;background:var(--gray-50);border-radius:10px;padding:12px">
+                  <div style="font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:4px">A. Chen · Technical Screen · Jun 21</div>
+                  <div style="font-size:13px;color:var(--gray-600)">Excellent technical foundation. Knows ADP Workforce Now deeply, which is a big plus for our clients. Multi-state payroll experience is strong. Gaps noted in benefits admin — not a dealbreaker for this role. Recommend final panel.</div>
+                  <div style="margin-top:8px;display:flex;gap:4px"><span class="tag t-navy">✓ Advance</span></div>
+                </div>
+              </div>
+              <div style="background:var(--gray-50);border:1.5px dashed var(--gray-200);border-radius:10px;padding:16px;text-align:center;color:var(--gray-400);font-size:13px">
+                📝 Final panel interview notes — Jun 25 after 2 PM
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Offer (hidden) -->
+          <div id="tab-offer" style="display:none">
+            <div class="offer-panel">
+              <div class="offer-title">Offer Draft — Jordan Alvarez</div>
+              <div class="offer-sub">Sr. Payroll Analyst · Detroit, MI · Start Aug 1, 2026</div>
+              <div class="offer-row"><span class="offer-key">Base Salary</span><span class="offer-val offer-accent">$97,500 / year</span></div>
+              <div class="offer-row"><span class="offer-key">Bonus Target</span><span class="offer-val">10% of base ($9,750)</span></div>
+              <div class="offer-row"><span class="offer-key">PTO</span><span class="offer-val">15 days + 10 holidays</span></div>
+              <div class="offer-row"><span class="offer-key">Health</span><span class="offer-val">Medical / Dental / Vision — Day 1</span></div>
+              <div class="offer-row"><span class="offer-key">401(k)</span><span class="offer-val">4% DM match · vested 3 years</span></div>
+              <div class="offer-row"><span class="offer-key">Status</span><span class="offer-val" style="color:var(--warning)">⏳ Pending — awaiting final interview</span></div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-ghost" style="flex:1;justify-content:center">✏ Edit Offer</button>
+              <button class="btn btn-primary" style="flex:2;justify-content:center">Send for Approval →</button>
+            </div>
+          </div>
+
+          <!-- Tab: Docs (hidden) -->
+          <div id="tab-docs" class="card" style="padding:24px;display:none">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-100)">
+                <span style="font-size:22px">📄</span>
+                <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--gray-800)">Resume — Jordan_Alvarez_Resume.pdf</div><div style="font-size:11.5px;color:var(--gray-400)">Uploaded Jun 15 · 2 pages</div></div>
+                <button class="btn btn-ghost btn-sm">View</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-100)">
+                <span style="font-size:22px">✅</span>
+                <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--gray-800)">CPP Certification</div><div style="font-size:11.5px;color:var(--gray-400)">Self-reported · Verification pending</div></div>
+                <button class="btn btn-ghost btn-sm">Verify</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-100);opacity:.5">
+                <span style="font-size:22px">🔍</span>
+                <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--gray-800)">Background Check</div><div style="font-size:11.5px;color:var(--gray-400)">Not yet initiated — awaiting offer acceptance</div></div>
+                <button class="btn btn-ghost btn-sm" disabled>Initiate</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-100);opacity:.5">
+                <span style="font-size:22px">📝</span>
+                <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--gray-800)">Signed Offer Letter</div><div style="font-size:11.5px;color:var(--gray-400)">Pending — offer not yet sent</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /right col -->
+      </div>
+    </div>
+
+    <!-- ══════ OFFERS ══════ -->
+    <div class="view" id="view-offers">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Offer Management</div>
+          <div class="page-subtitle">3 active offers · 2 expiring soon</div>
+        </div>
+        <button class="btn btn-primary">＋ Create Offer</button>
+      </div>
+      <div class="notif-strip">
+        <span class="notif-icon">⏰</span>
+        <span class="notif-text"><strong>Maya Solis</strong> and <strong>Raj Kumar</strong> haven't responded. Their offers expire in 36–48 hours.</span>
+        <button class="btn btn-sm" style="background:var(--orange);color:white;border:none;font-family:var(--font)">Send Both Reminders</button>
+      </div>
+      <div class="jobs-grid">
+        <div class="job-row">
+          <div class="av av-md av-b">MS</div>
+          <div class="job-info">
+            <div class="job-title">Maya Solis — Sr. Payroll Analyst</div>
+            <div class="job-meta">Offer sent Jun 28 · $101,000 base · Expires Jul 4</div>
+            <div style="margin-top:4px"><span class="badge b-offer"><span class="bd"></span>Awaiting Response</span></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm">View Offer</button>
+            <button class="btn btn-sm" style="background:var(--orange);color:white;border:none;font-family:var(--font)">Send Reminder</button>
+          </div>
+        </div>
+        <div class="job-row">
+          <div class="av av-md av-c">RK</div>
+          <div class="job-info">
+            <div class="job-title">Raj Kumar — HR Manager</div>
+            <div class="job-meta">Offer sent Jun 29 · $106,500 base · Expires Jul 5</div>
+            <div style="margin-top:4px"><span class="badge b-offer"><span class="bd"></span>Awaiting Response</span></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm">View Offer</button>
+            <button class="btn btn-sm" style="background:var(--orange);color:white;border:none;font-family:var(--font)">Send Reminder</button>
+          </div>
+        </div>
+        <div class="job-row">
+          <div class="av av-md av-b">AM</div>
+          <div class="job-info">
+            <div class="job-title">Alex Morgan — Payroll Analyst</div>
+            <div class="job-meta">Offer accepted Jun 25 · $89,000 base · Start Aug 1</div>
+            <div style="margin-top:4px"><span class="badge b-hired"><span class="bd"></span>Accepted · Synced to DM Payroll</span></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm">View Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ REPORTS ══════ -->
+    <div class="view" id="view-reports">
+      <div class="page-header">
+        <div class="page-title">Reports & Analytics</div>
+        <div class="page-subtitle">Hiring performance, pipeline health, source ROI</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px">
+        <div class="metric-card"><div class="metric-icon-wrap mi-green">📈</div><div class="metric-label">Time to Fill (Avg)</div><div class="metric-val">18.4</div><div class="metric-change mc-up">↓ 2.1 days vs. last qtr</div></div>
+        <div class="metric-card"><div class="metric-icon-wrap mi-navy">🎯</div><div class="metric-label">Offer Acceptance Rate</div><div class="metric-val">92%</div><div class="metric-change mc-up">↑ 4pts</div></div>
+        <div class="metric-card"><div class="metric-icon-wrap mi-orange">💰</div><div class="metric-label">Cost Per Hire</div><div class="metric-val">$4,210</div><div class="metric-change mc-up">↓ $380 vs. last qtr</div></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-title">Source ROI — This Quarter</span></div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead><tr><th>Source</th><th>Applicants</th><th>Interviews</th><th>Hires</th><th>Conversion</th><th>Avg. Days</th></tr></thead>
+            <tbody>
+              <tr><td><span style="font-weight:600">LinkedIn</span></td><td>84</td><td>22</td><td>9</td><td><span style="color:var(--green-dark);font-weight:600">10.7%</span></td><td>16.2</td></tr>
+              <tr><td><span style="font-weight:600">Employee Referral</span></td><td>31</td><td>14</td><td>8</td><td><span style="color:var(--green-dark);font-weight:600">25.8%</span></td><td>12.4</td></tr>
+              <tr><td><span style="font-weight:600">Career Site</span></td><td>62</td><td>11</td><td>4</td><td>6.5%</td><td>21.1</td></tr>
+              <tr><td><span style="font-weight:600">Indeed</span></td><td>94</td><td>8</td><td>2</td><td>2.1%</td><td>24.7</td></tr>
+              <tr><td><span style="font-weight:600">ZipRecruiter</span></td><td>47</td><td>4</td><td>0</td><td style="color:var(--danger)">0%</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ INTEGRATIONS ══════ -->
+    <div class="view" id="view-integrations">
+      <div class="page-header">
+        <div class="page-title">Integrations</div>
+        <div class="page-subtitle">Connected tools and data sync status</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
+        <div class="card"><div class="card-body" style="display:flex;align-items:center;gap:14px"><span style="font-size:32px">💸</span><div style="flex:1"><div style="font-weight:700;color:var(--gray-800)">DM Payroll</div><div style="font-size:12.5px;color:var(--gray-400);margin-top:2px">Auto-syncs new hires on accept · Last sync: today 6am</div></div><span class="badge b-open"><span class="bd"></span>Connected</span></div></div>
+        <div class="card"><div class="card-body" style="display:flex;align-items:center;gap:14px"><span style="font-size:32px">🪟</span><div style="flex:1"><div style="font-weight:700;color:var(--gray-800)">Microsoft 365</div><div style="font-size:12.5px;color:var(--gray-400);margin-top:2px">Outlook calendar sync · Teams interview links</div></div><span class="badge b-open"><span class="bd"></span>Connected</span></div></div>
+        <div class="card"><div class="card-body" style="display:flex;align-items:center;gap:14px"><span style="font-size:32px">🔗</span><div style="flex:1"><div style="font-weight:700;color:var(--gray-800)">LinkedIn Recruiter</div><div style="font-size:12.5px;color:var(--gray-400);margin-top:2px">One-click apply · Candidate import</div></div><span class="badge b-open"><span class="bd"></span>Connected</span></div></div>
+        <div class="card"><div class="card-body" style="display:flex;align-items:center;gap:14px"><span style="font-size:32px">🛡</span><div style="flex:1"><div style="font-weight:700;color:var(--gray-800)">Background Check (Sterling)</div><div style="font-size:12.5px;color:var(--gray-400);margin-top:2px">Triggered automatically on offer accept</div></div><span class="badge b-open"><span class="bd"></span>Connected</span></div></div>
+        <div class="card"><div class="card-body" style="display:flex;align-items:center;gap:14px"><span style="font-size:32px">📢</span><div style="flex:1"><div style="font-weight:700;color:var(--gray-800)">Indeed / ZipRecruiter</div><div style="font-size:12.5px;color:var(--gray-400);margin-top:2px">Distribute postings to 8 job boards from one req</div></div><span class="badge b-draft"><span class="bd"></span>Paused</span></div></div>
+        <div class="card"><div class="card-body" style="display:flex;align-items:center;gap:14px"><span style="font-size:32px">📊</span><div style="flex:1"><div style="font-weight:700;color:var(--gray-800)">DM Payroll HRIS</div><div style="font-size:12.5px;color:var(--gray-400);margin-top:2px">Benefits eligibility · Employee record sync</div></div><button class="btn btn-primary btn-sm">Connect</button></div></div>
+      </div>
+    </div>
+
+    <!-- ══════ WHY DM HIRE ══════ -->
+    <div class="view" id="view-why-dm-hire">
+      <div class="page-header" style="margin-bottom:8px">
+        <div>
+          <div class="page-title">Why DM Hire</div>
+          <div class="page-subtitle">8 confirmed gaps in the current DM ATS — and exactly how we solve them</div>
+        </div>
+        <button class="btn btn-primary">↓ Export for Emma</button>
+      </div>
+
+      <!-- Context banner -->
+      <div style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);border-radius:12px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;gap:20px">
+        <div style="font-size:36px">🎯</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700;color:white;margin-bottom:4px">Directly from Brandon's walkthrough + Emma's scoping session</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.6)">Every item below was confirmed as a real gap in the current DM Payroll ATS — not assumed. DM Hire was designed to close all of them while keeping the seamless onboarding → payroll handoff that already works.</div>
+        </div>
+        <div style="background:rgba(109,179,63,.2);border:1px solid rgba(109,179,63,.3);border-radius:10px;padding:12px 20px;text-align:center;flex-shrink:0">
+          <div style="font-size:28px;font-weight:800;color:var(--green-light)">8</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em">Gaps Closed</div>
+        </div>
+      </div>
+
+      <!-- Gap grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+
+        <!-- 1. Resume Parsing -->
+        <div style="background:white;border:1px solid var(--gray-100);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+          <div style="background:var(--gray-50);border-bottom:1px solid var(--gray-100);padding:14px 18px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">📄</span>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy)">Resume Parsing</div>
+              <div style="font-size:11.5px;color:var(--gray-400)">Gap called out by Brandon as "a big one"</div>
+            </div>
+            <div style="margin-left:auto;background:#FEF2F2;color:#991B1B;border-radius:99px;font-size:11px;font-weight:700;padding:3px 10px">Gap Today</div>
+          </div>
+          <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;background:#FEF2F2;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#991B1B;margin-bottom:4px">Current DM ATS</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Applicants upload resume <em>and</em> manually re-enter every field — name, work history, education, references. Slow, friction-heavy, high drop-off.</div>
+              </div>
+              <div style="flex:1;background:#F0FDF4;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green-dark);margin-bottom:4px">DM Hire</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Upload resume once — AI auto-fills every field. Applicants review and confirm in 60 seconds. Recruiter sees parsed data instantly in candidate profile.</div>
+              </div>
+            </div>
+            <div style="background:rgba(109,179,63,.07);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-dark);font-weight:500">
+              ✦ See it in action → open any Candidate Profile and look for the "Resume auto-parsed" indicator
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Source Tracking -->
+        <div style="background:white;border:1px solid var(--gray-100);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+          <div style="background:var(--gray-50);border-bottom:1px solid var(--gray-100);padding:14px 18px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">📊</span>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy)">Applicant Source Tracking</div>
+              <div style="font-size:11.5px;color:var(--gray-400)">Flagged as important to DM specifically</div>
+            </div>
+            <div style="margin-left:auto;background:#FEF2F2;color:#991B1B;border-radius:99px;font-size:11px;font-weight:700;padding:3px 10px">Gap Today</div>
+          </div>
+          <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;background:#FEF2F2;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#991B1B;margin-bottom:4px">Current DM ATS</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Zero visibility into where applicants come from. LinkedIn, Indeed, ZipRecruiter — all look the same. No way to know which job boards are worth the spend.</div>
+              </div>
+              <div style="flex:1;background:#F0FDF4;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green-dark);margin-bottom:4px">DM Hire</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Every applicant is tagged by source at the moment they apply. Reports show conversion rate, time-to-hire, and cost-per-hire by source — down to the job level.</div>
+              </div>
+            </div>
+            <div style="background:rgba(109,179,63,.07);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-dark);font-weight:500">
+              ✦ See it in action → Reports & Analytics → Source ROI table
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Per-Job Direct URLs -->
+        <div style="background:white;border:1px solid var(--gray-100);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+          <div style="background:var(--gray-50);border-bottom:1px solid var(--gray-100);padding:14px 18px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">🔗</span>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy)">Per-Job Direct Apply Links</div>
+              <div style="font-size:11.5px;color:var(--gray-400)">Emma pushed on this directly — LinkedIn posts need a direct link</div>
+            </div>
+            <div style="margin-left:auto;background:#FEF2F2;color:#991B1B;border-radius:99px;font-size:11px;font-weight:700;padding:3px 10px">Gap Today</div>
+          </div>
+          <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;background:#FEF2F2;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#991B1B;margin-bottom:4px">Current DM ATS</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">One URL for the entire job list — no per-job links. LinkedIn posts land candidates on a wall of all open jobs. Individual job IDs in the URL are guessable integers (e.g. "/job/12").</div>
+              </div>
+              <div style="flex:1;background:#F0FDF4;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green-dark);margin-bottom:4px">DM Hire</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Every job gets a clean, obfuscated direct apply URL. One click copies it for LinkedIn, Indeed, email, or your careers page. QR code auto-generated for print.</div>
+              </div>
+            </div>
+            <div style="background:rgba(109,179,63,.07);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-dark);font-weight:500">
+              ✦ See it in action → Job Requisitions → click "Share Link" on any open job
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. True E-Signatures -->
+        <div style="background:white;border:1px solid var(--gray-100);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+          <div style="background:var(--gray-50);border-bottom:1px solid var(--gray-100);padding:14px 18px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">✍</span>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy)">True Electronic Signatures</div>
+              <div style="font-size:11.5px;color:var(--gray-400)">Emma flagged as high-priority — legal enforceability concern</div>
+            </div>
+            <div style="margin-left:auto;background:#FEF2F2;color:#991B1B;border-radius:99px;font-size:11px;font-weight:700;padding:3px 10px">Gap Today</div>
+          </div>
+          <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;background:#FEF2F2;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#991B1B;margin-bottom:4px">Current DM ATS</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Not a real e-signature — just a timestamped name entry. Brandon confirmed this explicitly. Offer letters, W-4s, and handbook acknowledgments are all using this weaker method.</div>
+              </div>
+              <div style="flex:1;background:#F0FDF4;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green-dark);margin-bottom:4px">DM Hire</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">ESIGN/UETA-compliant e-signature widget — reusable across offer letters, I-9s, W-4s, and handbook docs. Full audit trail with IP, timestamp, and signature certificate.</div>
+              </div>
+            </div>
+            <div style="background:rgba(109,179,63,.07);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-dark);font-weight:500">
+              ✦ Emma noted this should be a shared widget across MyInfo + ATS — that's exactly how it's built
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Outlook Self-Scheduling -->
+        <div style="background:white;border:1px solid var(--gray-100);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+          <div style="background:var(--gray-50);border-bottom:1px solid var(--gray-100);padding:14px 18px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">📅</span>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy)">Outlook Interview Self-Scheduling</div>
+              <div style="font-size:11.5px;color:var(--gray-400)">Multiple clients and prospects have asked for this</div>
+            </div>
+            <div style="margin-left:auto;background:#FEF2F2;color:#991B1B;border-radius:99px;font-size:11px;font-weight:700;padding:3px 10px">Gap Today</div>
+          </div>
+          <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;background:#FEF2F2;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#991B1B;margin-bottom:4px">Current DM ATS</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">No calendar integration. Recruiter emails candidate, candidate replies, recruiter manually creates the invite. Back-and-forth delays the process by 1–3 days on average.</div>
+              </div>
+              <div style="flex:1;background:#F0FDF4;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green-dark);margin-bottom:4px">DM Hire</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Recruiter shares available slots in one click. Candidate self-selects, confirms, and receives an Outlook/Teams invite automatically. Reschedules handled the same way.</div>
+              </div>
+            </div>
+            <div style="background:rgba(109,179,63,.07);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-dark);font-weight:500">
+              ✦ See it in action → Candidate Pipeline → click "📅 Self-Schedule" on any interview-stage card
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. True Knockout Questions -->
+        <div style="background:white;border:1px solid var(--gray-100);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+          <div style="background:var(--gray-50);border-bottom:1px solid var(--gray-100);padding:14px 18px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">🚦</span>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy)">True Knockout Questions</div>
+              <div style="font-size:11.5px;color:var(--gray-400)">Current "knockout" is just waiver acknowledgment — not real disqualifying logic</div>
+            </div>
+            <div style="margin-left:auto;background:#FEF2F2;color:#991B1B;border-radius:99px;font-size:11px;font-weight:700;padding:3px 10px">Gap Today</div>
+          </div>
+          <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;background:#FEF2F2;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#991B1B;margin-bottom:4px">Current DM ATS</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">No real disqualifying logic. Any applicant can complete and submit regardless of their answers. Recruiters manually identify unqualified candidates — wastes time reviewing every submission.</div>
+              </div>
+              <div style="flex:1;background:#F0FDF4;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green-dark);margin-bottom:4px">DM Hire</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Per-job knockout rules set in requisition. Unqualified applicants can still submit, but receive a delayed rejection (1–2 days, not instant) so it doesn't feel abrupt. Qualified applicants are auto-surfaced.</div>
+              </div>
+            </div>
+            <div style="background:rgba(109,179,63,.07);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-dark);font-weight:500">
+              ✦ See it in action → New Requisition form → "Knockout Questions" section
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. Duplicate Detection -->
+        <div style="background:white;border:1px solid var(--gray-100);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+          <div style="background:var(--gray-50);border-bottom:1px solid var(--gray-100);padding:14px 18px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">🔍</span>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy)">Duplicate Candidate Detection</div>
+              <div style="font-size:11.5px;color:var(--gray-400)">ClearCompany was named as the benchmark — DM ATS has nothing</div>
+            </div>
+            <div style="margin-left:auto;background:#FEF2F2;color:#991B1B;border-radius:99px;font-size:11px;font-weight:700;padding:3px 10px">Gap Today</div>
+          </div>
+          <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;background:#FEF2F2;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#991B1B;margin-bottom:4px">Current DM ATS</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Candidates matched only by email address. Same person applying with two email addresses creates two unlinked profiles — notes, history, and prior interviews aren't connected.</div>
+              </div>
+              <div style="flex:1;background:#F0FDF4;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green-dark);margin-bottom:4px">DM Hire</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Multi-signal matching: name + phone + resume fingerprint flags likely duplicates. Recruiters see a merge prompt. Full cross-application history is linked in one unified profile.</div>
+              </div>
+            </div>
+            <div style="background:rgba(109,179,63,.07);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-dark);font-weight:500">
+              ✦ See it in action → Candidate Pipeline → look for the duplicate warning badge on Chris Lawson
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. One-Click Job Board Posting -->
+        <div style="background:white;border:1px solid var(--gray-100);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+          <div style="background:var(--gray-50);border-bottom:1px solid var(--gray-100);padding:14px 18px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">📢</span>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy)">Automated Job Board Distribution</div>
+              <div style="font-size:11.5px;color:var(--gray-400)">Brandon confirmed this as a real gap — manual posting today</div>
+            </div>
+            <div style="margin-left:auto;background:#FEF2F2;color:#991B1B;border-radius:99px;font-size:11px;font-weight:700;padding:3px 10px">Gap Today</div>
+          </div>
+          <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;background:#FEF2F2;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#991B1B;margin-bottom:4px">Current DM ATS</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Clients manually post to each job board separately. No single-point distribution. No tracking of which boards are connected to which postings.</div>
+              </div>
+              <div style="flex:1;background:#F0FDF4;border-radius:8px;padding:10px 12px">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green-dark);margin-bottom:4px">DM Hire</div>
+                <div style="font-size:12.5px;color:var(--gray-600)">Approve a requisition → choose boards (LinkedIn, Indeed, ZipRecruiter, Glassdoor) → one click publishes everywhere simultaneously. All postings managed from one screen.</div>
+              </div>
+            </div>
+            <div style="background:rgba(109,179,63,.07);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green-dark);font-weight:500">
+              ✦ See it in action → Job Requisitions → Integrations tab → board sync status
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /gap grid -->
+
+      <!-- ATS → Onboarding → Payroll story -->
+      <div style="background:linear-gradient(135deg,#052040 0%,var(--navy) 60%,#1a5c28 100%);border-radius:12px;padding:24px 28px">
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.4);margin-bottom:8px">What doesn't change</div>
+        <div style="font-size:18px;font-weight:800;color:white;margin-bottom:6px">The ATS → Onboarding → DM Payroll handoff stays seamless.</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:20px;max-width:640px">Cassie's requirement: ATS must continue to feed directly into onboarding as an entry point. That's untouched. Candidate accepted → onboarding packet auto-assigned → employee record syncs to DM Payroll → time & attendance, benefits, and 401(k) recordkeeper all flow from that same record.</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:20px">✅</span>
+            <div>
+              <div style="font-size:12.5px;font-weight:700;color:white">ATS Kanban → Onboarding</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4)">Move to Hired → packet auto-triggered</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:20px">📝</span>
+            <div>
+              <div style="font-size:12.5px;font-weight:700;color:white">Onboarding → DM Payroll</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4)">W-4, I-9, direct deposit auto-sync</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:20px">💸</span>
+            <div>
+              <div style="font-size:12.5px;font-weight:700;color:white">First Payroll Run</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4)">401(k) recordkeeper → time & attendance</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:20px">🚀</span>
+            <div>
+              <div style="font-size:12.5px;font-weight:700;color:white">Quick Onboarding</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4)">Still available for non-ATS hires</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══════ SETTINGS ══════ -->
+    <div class="view" id="view-settings">
+      <div class="placeholder-view">
+        <div class="placeholder-icon">⚙</div>
+        <div class="placeholder-title">Settings</div>
+        <div class="placeholder-sub">User management, workflow configuration, notifications, and branding.</div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- New Requisition Modal -->
+<div id="req-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:white;border-radius:16px;width:580px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 48px rgba(0,0,0,.2)">
+    <div style="padding:20px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:white;z-index:1">
+      <div>
+        <div style="font-size:17px;font-weight:700;color:var(--navy)">New Job Requisition</div>
+        <div style="font-size:12px;color:var(--gray-400);margin-top:2px">Complete all sections to route for approval</div>
+      </div>
+      <button onclick="document.getElementById('req-modal').style.display='none'" style="background:var(--gray-100);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
+      <!-- Basic info -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--gray-600);display:block;margin-bottom:5px">Job Title</label>
+          <input style="width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:var(--font);font-size:13px;outline:none;color:var(--gray-800)" value="Sr. Payroll Analyst" />
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--gray-600);display:block;margin-bottom:5px">Department</label>
+          <select style="width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:var(--font);font-size:13px;outline:none;color:var(--gray-800);appearance:none;background:#fff">
+            <option>Finance & Accounting</option><option>Engineering</option><option>HR</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--gray-600);display:block;margin-bottom:5px">Location</label>
+          <input style="width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:var(--font);font-size:13px;outline:none;color:var(--gray-800)" value="Detroit, MI" />
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--gray-600);display:block;margin-bottom:5px">Comp Range</label>
+          <input style="width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:var(--font);font-size:13px;outline:none;color:var(--gray-800)" value="$85,000 – $105,000" />
+        </div>
+      </div>
+      <!-- Job board distribution -->
+      <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:14px 16px">
+        <div style="font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:10px">📢 Distribute to Job Boards <span style="background:rgba(109,179,63,.12);color:var(--green-dark);font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600;margin-left:6px">One-click posting — new in DM Hire</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--gray-700);cursor:pointer"><input type="checkbox" checked /> LinkedIn</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--gray-700);cursor:pointer"><input type="checkbox" checked /> Indeed</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--gray-700);cursor:pointer"><input type="checkbox" /> ZipRecruiter</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--gray-700);cursor:pointer"><input type="checkbox" /> Glassdoor</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--gray-700);cursor:pointer"><input type="checkbox" checked /> Career Site</label>
+        </div>
+      </div>
+      <!-- Knockout questions -->
+      <div style="border:1.5px solid rgba(13,45,92,.15);border-radius:10px;overflow:hidden">
+        <div style="background:rgba(13,45,92,.04);padding:12px 16px;border-bottom:1px solid rgba(13,45,92,.1);display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--navy)">🚦 Knockout Questions <span style="background:rgba(13,45,92,.08);color:var(--navy);font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600;margin-left:6px">New in DM Hire</span></div>
+            <div style="font-size:11px;color:var(--gray-400);margin-top:2px">Unqualified applicants auto-declined after 24hr delay — no abrupt rejections</div>
+          </div>
+          <button onclick="event.preventDefault()" style="background:var(--navy);color:white;border:none;border-radius:7px;padding:5px 12px;font-size:11.5px;font-weight:600;font-family:var(--font);cursor:pointer">＋ Add</button>
+        </div>
+        <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:10px;background:var(--gray-50);border-radius:8px;padding:10px 12px">
+            <span style="font-size:14px">🚦</span>
+            <div style="flex:1;font-size:12.5px;color:var(--gray-700)">Minimum years payroll experience: <strong>3 years</strong></div>
+            <span style="background:#FEF2F2;color:#991B1B;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px">Auto-decline if &lt; 3</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:var(--gray-50);border-radius:8px;padding:10px 12px">
+            <span style="font-size:14px">🚦</span>
+            <div style="flex:1;font-size:12.5px;color:var(--gray-700)">Authorized to work in US: <strong>Yes required</strong></div>
+            <span style="background:#FEF2F2;color:#991B1B;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px">Auto-decline if No</span>
+          </div>
+        </div>
+      </div>
+      <!-- E-sig notice -->
+      <div style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:10px;padding:12px 16px;display:flex;gap:10px">
+        <span style="font-size:18px">✍</span>
+        <div>
+          <div style="font-size:12.5px;font-weight:700;color:#1D4ED8">ESIGN-compliant e-signature on offer letters <span style="background:rgba(29,78,216,.1);font-size:10px;padding:2px 8px;border-radius:99px;margin-left:4px">New in DM Hire</span></div>
+          <div style="font-size:11.5px;color:var(--gray-500);margin-top:2px">Shared widget used across offer letters, W-4s, I-9s, and handbook — full audit trail, IP + timestamp certificate</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid var(--gray-100);display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:white">
+      <button onclick="document.getElementById('req-modal').style.display='none'" style="padding:8px 16px;border-radius:8px;border:1.5px solid var(--gray-200);background:white;font-family:var(--font);font-size:13px;font-weight:600;color:var(--gray-500);cursor:pointer">Save Draft</button>
+      <button onclick="document.getElementById('req-modal').style.display='none';alert('✓ Requisition submitted for approval!\n\nJob board posting queued for: LinkedIn, Indeed, Career Site\nKnockout rules active · E-sig enabled on offer letter')" style="padding:8px 20px;border-radius:8px;border:none;background:var(--navy);color:white;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer">Submit for Approval →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const views = {
+    dashboard: 'Dashboard',
+    jobs: 'Job Requisitions',
+    pipeline: 'Candidate Pipeline — Sr. Payroll Analyst',
+    candidate: 'Candidate Profile — Jordan Alvarez',
+    offers: 'Offer Management',
+    reports: 'Reports & Analytics',
+    integrations: 'Integrations',
+    settings: 'Settings',
+    'why-dm-hire': 'Why DM Hire — Feature Comparison',
+  };
+
+  function switchView(id, navEl) {
+    // Hide all views
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + id).classList.add('active');
+
+    // Update topbar title
+    document.getElementById('topbar-title').textContent = views[id] || id;
+
+    // Update nav highlight
+    if (navEl) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      navEl.classList.add('active');
+    }
+
+    // Scroll to top
+    document.querySelector('.content').scrollTop = 0;
+  }
+
+  function setTab(el, tabId) {
+    // Deactivate all tabs
+    el.closest('.detail-tabs').querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+
+    // Hide all tab content
+    const panel = el.closest('.view');
+    panel.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+    document.getElementById(tabId).style.display = '';
+  }
+
+  // Filter chip toggle
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.closest('.filter-strip').querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
