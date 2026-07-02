@@ -509,19 +509,19 @@ Each sprint is a focused, shippable increment. The goal is that after every spri
 ### Sprint 0a — Scaffold & Deploy
 **Goal:** Repo live, Vercel connected, design tokens in place, all routes wired to placeholder views. First deploy happens here.
 
-- [ ] Create private GitHub repo (`dm-hire`)
-- [ ] Initialize Vite + React 18 project (`npm create vite@latest`)
-- [ ] Add `vercel.json` with SPA rewrite rule
-- [ ] Add `README.md` with project overview and local dev instructions
-- [ ] Connect repo to Vercel (auto-deploy from `main`)
-- [ ] Port design tokens to `src/styles/tokens.css`
-- [ ] Port global reset + utilities to `src/styles/global.css`
-- [ ] Install dependencies: `react-router-dom`, `lucide-react`, `recharts`
-- [ ] Build AppShell (Sidebar + Topbar layout — visual only, no logic)
-- [ ] Wire React Router with placeholder `<div>Coming soon</div>` views for all routes in the route table
-- [ ] Add PersonaContext and TourContext (scaffolded, no logic yet)
-- [ ] Scaffold mock data files with 3–5 realistic entries each (candidates, jobs, offers, analytics, offices) matching schemas in Section 5a
-- [ ] First deploy — navigable shell with all routes live on Vercel
+- [x] Create private GitHub repo (`dm-hire`)
+- [x] Initialize Vite + React project (`npm create vite@latest`) — React 19, current create-vite default
+- [x] Add `vercel.json` with SPA rewrite rule
+- [x] Add `README.md` with project overview and local dev instructions
+- [x] Connect repo to Vercel (auto-deploy from `main`)
+- [x] Port design tokens to `src/styles/tokens.css`
+- [x] Port global reset + utilities to `src/styles/global.css`
+- [x] Install dependencies: `react-router-dom`, `lucide-react`, `recharts`
+- [x] Build AppShell (Sidebar + Topbar layout — visual only, no logic)
+- [x] Wire React Router with placeholder `<div>Coming soon</div>` views for all routes in the route table
+- [x] Add PersonaContext and TourContext (scaffolded, no logic yet)
+- [x] Scaffold mock data files with 3–5 realistic entries each (candidates, jobs, offers, analytics, offices) matching schemas in Section 5a
+- [x] First deploy — navigable shell with all routes live on Vercel
 
 **Deliverable:** Live Vercel URL, all routes reachable, design tokens applied, no 404s on refresh.
 
@@ -732,6 +732,7 @@ Each sprint is a focused, shippable increment. The goal is that after every spri
 | Date | Sprint | Status | Notes |
 |---|---|---|---|
 | 2026-07-02 | Spec | ✅ Complete | Design spec written and approved |
+| 2026-07-02 | 0a | ✅ Complete | Vite+React app scaffolded at repo root (`ethan8damax/dm-hire`, private). Design tokens + global reset ported from `dm-design-system.html`. AppShell (Sidebar/Topbar) built, all 11 routes wired with placeholder views, PersonaContext/TourContext scaffolded (no logic), mock data files populated (3–5 entries each) per Section 5a schemas. Deployed to Vercel: https://dm-hire.vercel.app — GitHub-connected for auto-deploy on push to `main`. Hard-refresh on nested routes verified (no 404s). Used React 19 (create-vite's current default) instead of React 18 — no behavioral difference for this app's usage. |
 
 ---
 
