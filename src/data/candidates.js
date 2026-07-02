@@ -5,7 +5,7 @@ export const candidates = [
     initials: 'JA',
     avatarColor: 'navy',
     jobId: 'job-001',
-    stage: 'interviewing',
+    stage: 'hired',
     source: 'LinkedIn',
     location: 'Chicago, IL',
     email: 'j.alvarez@email.com',
@@ -13,7 +13,7 @@ export const candidates = [
     currentRole: 'Payroll Sr. Assoc. · ADP',
     expectedSalary: '$95K–$105K',
     availability: '2 weeks notice',
-    daysInStage: 12,
+    daysInStage: 4,
     aiScore: 87,
     aiDimensions: {
       payrollExpertise: 96,

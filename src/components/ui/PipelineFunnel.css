@@ -1,0 +1,34 @@
+.pipeline-funnel {
+  display: flex;
+  gap: 0;
+}
+.funnel-stage {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+.funnel-stage:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-left: 10px solid white;
+  z-index: 2;
+}
+.funnel-stage-inner {
+  padding: var(--space-3) var(--space-1);
+  margin-right: 1px;
+  position: relative;
+}
+.funnel-count { font-size: var(--text-xl); font-weight: 800; line-height: 1; }
+.funnel-label { font-size: 10px; margin-top: 3px; font-weight: 500; }
+
+.ink-navy  { color: var(--color-navy); }
+.ink-navy .funnel-label  { color: var(--color-navy-light); }
+.ink-white { color: white; }
+.ink-white .funnel-label { color: rgba(255,255,255,.85); }
