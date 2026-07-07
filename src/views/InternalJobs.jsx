@@ -32,7 +32,7 @@ export default function InternalJobs() {
       {internalJobs.length === 0 ? (
         <EmptyState title="No internal postings right now" subtitle="Check back soon — new internal opportunities will appear here." />
       ) : (
-        <div className="internal-jobs-grid">
+        <div className="internal-jobs-grid" data-tour="tour-internal-jobs">
           {internalJobs.map((job) => {
             const applying = applyingId === job.id
             const applied = appliedIds.includes(job.id)

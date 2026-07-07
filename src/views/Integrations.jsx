@@ -46,7 +46,7 @@ export default function Integrations() {
         </div>
       </div>
 
-      <div className="integrations-grid">
+      <div className="integrations-grid" data-tour="tour-integrations">
         {integrations.map((i) => {
           const Icon = ICONS[i.category] ?? Globe2
           const isConnecting = connectingId === i.id

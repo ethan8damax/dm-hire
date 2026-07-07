@@ -249,7 +249,7 @@ export default function CandidateProfile() {
         <div className="cp-right">
           <div className="detail-tabs">
             {tabs.map((t) => (
-              <div key={t.key} className={`dtab${activeTab === t.key ? ' active' : ''}`} onClick={() => setActiveTab(t.key)}>
+              <div key={t.key} className={`dtab${activeTab === t.key ? ' active' : ''}`} onClick={() => setActiveTab(t.key)} data-tour={`tour-cp-${t.key}`}>
                 {t.label}
               </div>
             ))}

@@ -94,7 +94,7 @@ export default function Offers() {
       </div>
 
       {expiringOffers.length > 0 && (
-        <div className="notif-strip offer-notif-strip">
+        <div className="notif-strip offer-notif-strip" data-tour="tour-offers-notif">
           <AlertTriangle size={16} />
           <span>
             <strong>{expiringOffers.length} offer{expiringOffers.length === 1 ? '' : 's'} expiring soon</strong>
@@ -117,7 +117,7 @@ export default function Offers() {
       {filteredRows.length === 0 ? (
         <EmptyState title="No offers" subtitle="No offers match this filter." />
       ) : (
-        <Card>
+        <Card data-tour="tour-offers-list">
           <DataTable columns={columns} rows={filteredRows} onRowClick={openOffer} />
         </Card>
       )}

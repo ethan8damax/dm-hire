@@ -185,7 +185,7 @@ export default function Pipeline() {
         </div>
       </div>
 
-      <div className="kanban-board">
+      <div className="kanban-board" data-tour="tour-pipeline-board">
         {visibleColumns.map((col) => {
           const columnCandidates = sortCandidates(jobCandidates.filter((c) => c.stage === col.key), sort)
           return (

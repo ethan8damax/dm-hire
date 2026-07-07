@@ -35,7 +35,7 @@ export default function Settings() {
       </div>
 
       <div className="settings-layout">
-        <div className="settings-nav">
+        <div className="settings-nav" data-tour="tour-settings">
           {TABS.map((t) => (
             <button
               key={t.key}

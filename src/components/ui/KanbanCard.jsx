@@ -16,7 +16,7 @@ export default function KanbanCard({ candidate, note, noteVariant = 'default', a
         <div className="kc-internal-badge"><Building2 size={11} /> Internal Applicant</div>
       )}
       {isDuplicate && (
-        <div className="kc-warning kc-warning-duplicate">
+        <div className="kc-warning kc-warning-duplicate" data-tour="tour-candidate-intel">
           <AlertTriangle size={11} /> Possible duplicate
         </div>
       )}
@@ -45,7 +45,7 @@ export default function KanbanCard({ candidate, note, noteVariant = 'default', a
 
       <div className="kc-footer">
         <Badge variant={stage} />
-        {showScore && <span className="kc-score">{aiScore}%</span>}
+        {showScore && <span className="kc-score" data-tour="tour-ai-score">{aiScore}%</span>}
       </div>
 
       {actions.length > 0 && (

@@ -52,7 +52,7 @@ export default function Reports() {
         </select>
       </div>
 
-      <div className="metric-grid">
+      <div className="metric-grid" data-tour="tour-reports-metrics">
         {/* fewer days is the improvement, so invert the sign — MetricCard's "up" (green) means "good", not "increased" */}
         <MetricCard icon={Clock} iconColor="navy" label="Avg. Days to Fill" value={analytics.timeToFill.avg} change={-trendChange(analytics.timeToFill.trend)} />
         <MetricCard icon={Wallet} iconColor="orange" label="Cost Per Hire" value={money(analytics.costPerHire.avg)} />
@@ -131,7 +131,7 @@ export default function Reports() {
         </Card.Body>
       </Card>
 
-      <Card>
+      <Card data-tour="tour-reports-sourceroi">
         <Card.Header><Card.Title>Source ROI &amp; Job Board Performance</Card.Title></Card.Header>
         <Card.Body>
           <DataTable

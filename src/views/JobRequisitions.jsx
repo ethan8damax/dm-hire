@@ -58,10 +58,10 @@ function JobRow({ job, onShare, sharedId, onOpen }) {
         <div className="job-meta">
           {job.department} · {job.location} · {job.compRange} · Posted {job.postedDate}
         </div>
-        <div className="job-badges">
+        <div className="job-badges" data-tour="tour-approval-workflow">
           <Badge variant={job.status} />
           {job.isInternal && <span className="job-tag">Internal Only</span>}
-          <span className="job-link-preview">
+          <span className="job-link-preview" data-tour="tour-job-boards">
             <Link2 size={11} /> dmhire.com/apply/<span className="job-slug">{slugify(job.title)}</span>
           </span>
         </div>
@@ -400,7 +400,7 @@ export default function JobRequisitions() {
           <h1 className="page-title">Job Requisitions</h1>
           <div className="page-subtitle">{counts.open} open position{counts.open === 1 ? '' : 's'} across {new Set(jobsList.map((j) => j.department)).size} departments</div>
         </div>
-        <Button variant="primary" size="lg" onClick={() => setModalOpen(true)}>
+        <Button variant="primary" size="lg" onClick={() => setModalOpen(true)} data-tour="tour-new-req-btn">
           <Plus size={16} /> New Requisition
         </Button>
       </div>
