@@ -2,7 +2,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import './TrendChart.css'
 
 // data: [{ month, value }] — single series, format(value) for labels/tooltip
-export default function TrendChart({ data, color = 'var(--color-green)', format = (v) => v }) {
+export default function TrendChart({ data, color = 'var(--color-cyan)', format = (v) => v }) {
   const lastIndex = data.length - 1
 
   function renderEndDot(props) {

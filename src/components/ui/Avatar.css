@@ -12,8 +12,8 @@
 .avatar-lg { width: 48px; height: 48px; font-size: 17px; }
 .avatar-xl { width: 64px; height: 64px; font-size: 22px; }
 
-.av-navy   { background: var(--color-navy); }
-.av-green  { background: var(--color-green); }
+.av-navy   { background: var(--color-maroon); }
+.av-green  { background: var(--color-cyan); }
 .av-orange { background: var(--color-dm-orange); }
 .av-purple { background: #7C3AED; }
 .av-blue   { background: #3B82F6; }

@@ -9,12 +9,12 @@
   overflow: hidden;
 }
 .score-fill { height: 100%; border-radius: var(--radius-full); }
-.score-num { font-size: var(--text-xs); font-weight: 700; color: var(--color-green-dark); }
+.score-num { font-size: var(--text-xs); font-weight: 700; color: var(--color-cyan-dark); }
 
 /* full — labeled bar used for AI dimensions / scorecards */
 .scorebar-hdr { display: flex; justify-content: space-between; margin-bottom: var(--space-2); }
 .scorebar-label { font-size: var(--text-sm); font-weight: 600; color: var(--color-gray-700); }
-.scorebar-val { font-size: var(--text-sm); font-weight: 700; color: var(--color-green-dark); }
+.scorebar-val { font-size: var(--text-sm); font-weight: 700; color: var(--color-cyan-dark); }
 .scorebar-track {
   height: 8px;
   background: var(--color-gray-100);

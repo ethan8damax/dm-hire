@@ -23,7 +23,7 @@
 .badge-interviewing  { background: #F5F3FF; color: #6D28D9; }
 .badge-interviewing .badge-dot { background: #7C3AED; }
 .badge-offer         { background: #ECFDF5; color: #065F46; }
-.badge-offer .badge-dot        { background: var(--color-green); }
+.badge-offer .badge-dot        { background: var(--color-cyan); }
 .badge-hired         { background: #F0FDF4; color: #15803D; }
 .badge-hired .badge-dot        { background: var(--color-success); }
 .badge-rejected      { background: #FEF2F2; color: #991B1B; }

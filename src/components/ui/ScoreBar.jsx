@@ -1,6 +1,6 @@
 import './ScoreBar.css'
 
-export default function ScoreBar({ label, value, color = 'var(--color-green)', compact = false }) {
+export default function ScoreBar({ label, value, color = 'var(--color-cyan)', compact = false }) {
   if (compact) {
     return (
       <span className="score-wrap">

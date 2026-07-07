@@ -14,7 +14,7 @@
 .kc-dimmed { opacity: .6; }
 .kc-dimmed:hover { transform: none; }
 
-.kc-top-candidate { box-shadow: 0 0 0 2px var(--color-green), var(--shadow-sm); }
+.kc-top-candidate { box-shadow: 0 0 0 2px var(--color-cyan), var(--shadow-sm); }
 .kc-top-badge {
   display: inline-flex;
   align-items: center;
@@ -22,8 +22,8 @@
   align-self: flex-start;
   font-size: 10px;
   font-weight: 700;
-  color: var(--color-green-dark);
-  background: rgba(109,179,63,.12);
+  color: var(--color-cyan-dark);
+  background: rgba(40,166,188,.12);
   padding: 2px 8px;
   border-radius: var(--radius-full);
 }
@@ -76,7 +76,7 @@
 .kc-warning-stale { background: #FFFBEB; color: #B45309; }
 
 .kc-footer { display: flex; align-items: center; justify-content: space-between; margin-top: var(--space-1); }
-.kc-score { font-size: var(--text-xs); font-weight: 700; color: var(--color-green-dark); }
+.kc-score { font-size: var(--text-xs); font-weight: 700; color: var(--color-cyan-dark); }
 
 .kc-actions { display: flex; gap: var(--space-1); }
 .kc-act {
@@ -94,11 +94,11 @@
   gap: 4px;
   transition: all var(--transition-fast);
 }
-.kc-act-default { background: rgba(13,45,92,.08); color: var(--color-navy); }
-.kc-act-default:hover { background: var(--color-navy); color: white; }
-.kc-act-accent { background: rgba(109,179,63,.12); color: var(--color-green-dark); }
-.kc-act-accent:hover { background: var(--color-green); color: white; }
+.kc-act-default { background: rgba(109,23,78,.08); color: var(--color-maroon); }
+.kc-act-default:hover { background: var(--color-maroon); color: white; }
+.kc-act-accent { background: rgba(40,166,188,.12); color: var(--color-cyan-dark); }
+.kc-act-accent:hover { background: var(--color-cyan); color: white; }
 .kc-act-danger { background: rgba(239,68,68,.08); color: var(--color-danger); }
 .kc-act-danger:hover { background: var(--color-danger); color: white; }
-.kc-act-warn { background: rgba(229,84,28,.1); color: var(--color-dm-orange); }
+.kc-act-warn { background: rgba(242,111,45,.1); color: var(--color-dm-orange); }
 .kc-act-warn:hover { background: var(--color-dm-orange); color: white; }

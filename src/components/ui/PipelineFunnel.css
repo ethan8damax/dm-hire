@@ -28,7 +28,7 @@
 .funnel-count { font-size: var(--text-xl); font-weight: 800; line-height: 1; }
 .funnel-label { font-size: 10px; margin-top: 3px; font-weight: 500; }
 
-.ink-navy  { color: var(--color-navy); }
-.ink-navy .funnel-label  { color: var(--color-navy-light); }
+.ink-maroon  { color: var(--color-maroon); }
+.ink-maroon .funnel-label  { color: var(--color-maroon-light); }
 .ink-white { color: white; }
 .ink-white .funnel-label { color: rgba(255,255,255,.85); }

@@ -11,7 +11,7 @@
   height: 36px;
   border-radius: var(--radius-md);
   background: var(--color-gray-100);
-  color: var(--color-navy);
+  color: var(--color-maroon);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -23,7 +23,7 @@
 .integration-desc { font-size: var(--text-sm); color: var(--color-gray-600); margin-bottom: var(--space-3); }
 
 .integration-fact { font-size: var(--text-sm); color: var(--color-gray-700); margin-bottom: var(--space-3); }
-.integration-fact strong { color: var(--color-green-dark); }
+.integration-fact strong { color: var(--color-cyan-dark); }
 
 .integration-tags { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-bottom: var(--space-3); }
 .integration-tag {

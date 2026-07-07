@@ -21,8 +21,8 @@
   font-weight: 700;
   z-index: 1;
 }
-.td-complete { background: var(--color-green); color: white; }
-.td-active   { background: var(--color-navy); color: white; box-shadow: 0 0 0 4px rgba(13,45,92,.15); }
+.td-complete { background: var(--color-cyan); color: white; }
+.td-active   { background: var(--color-maroon); color: white; box-shadow: 0 0 0 4px rgba(109,23,78,.15); }
 .td-pending  { background: var(--color-gray-200); color: var(--color-gray-400); }
 .timeline-content { flex: 1; padding-top: 4px; }
 .timeline-label { font-size: var(--text-sm); font-weight: 600; color: var(--color-gray-800); }

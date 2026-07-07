@@ -5,10 +5,11 @@
   margin-bottom: var(--space-6);
 }
 .dashboard-greeting {
+  font-family: var(--font-family-display);
   font-size: var(--text-2xl);
-  font-weight: 800;
-  color: var(--color-navy);
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  color: var(--color-maroon);
+  letter-spacing: -0.01em;
 }
 .dashboard-subtitle {
   font-size: var(--text-sm);
@@ -17,8 +18,8 @@
 }
 
 .notif-strip {
-  background: rgba(229, 84, 28, .08);
-  border: 1px solid rgba(229, 84, 28, .2);
+  background: rgba(242,111,45, .08);
+  border: 1px solid rgba(242,111,45, .2);
   border-radius: var(--radius-md);
   padding: var(--space-3) var(--space-4);
   display: flex;
@@ -80,7 +81,7 @@
   border-bottom: 1px solid var(--color-gray-100);
 }
 .action-item:last-child { border-bottom: none; }
-.action-item-icon { color: var(--color-navy); margin-top: 2px; flex-shrink: 0; }
+.action-item-icon { color: var(--color-maroon); margin-top: 2px; flex-shrink: 0; }
 .action-item-icon.warn { color: var(--color-dm-orange); }
 .action-item-body { flex: 1; min-width: 0; }
 .action-item-title { font-size: var(--text-sm); font-weight: 600; color: var(--color-gray-800); }
@@ -90,7 +91,7 @@
 
 .payroll-card { display: flex; flex-direction: column; gap: var(--space-3); }
 .payroll-ready {
-  background: linear-gradient(135deg, var(--color-green-dark), var(--color-green));
+  background: linear-gradient(135deg, var(--color-cyan-dark), var(--color-cyan));
   border-radius: var(--radius-lg);
   padding: var(--space-4) var(--space-5);
   display: flex;

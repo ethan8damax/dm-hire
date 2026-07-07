@@ -12,7 +12,7 @@
   gap: var(--space-1);
   font-size: var(--text-xs);
   font-weight: 600;
-  color: var(--color-green-dark);
+  color: var(--color-cyan-dark);
 }
 
 .offer-spin { animation: offer-spin 1s linear infinite; }

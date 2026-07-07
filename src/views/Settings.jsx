@@ -405,18 +405,18 @@ function UsersTab() {
   )
 }
 
-const DEFAULT_NAVY_DARK = '#081D3F'
+const DEFAULT_MAROON_DARK = '#4A0F37'
 
 function BrandingTab() {
-  const [color, setColor] = useState(DEFAULT_NAVY_DARK)
+  const [color, setColor] = useState(DEFAULT_MAROON_DARK)
 
   function apply(hex) {
     setColor(hex)
-    document.documentElement.style.setProperty('--color-navy-dark', hex)
+    document.documentElement.style.setProperty('--color-maroon-dark', hex)
   }
   function reset() {
-    setColor(DEFAULT_NAVY_DARK)
-    document.documentElement.style.removeProperty('--color-navy-dark')
+    setColor(DEFAULT_MAROON_DARK)
+    document.documentElement.style.removeProperty('--color-maroon-dark')
   }
 
   return (
