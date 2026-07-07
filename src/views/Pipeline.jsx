@@ -59,19 +59,37 @@ function sortCandidates(list, sortKey) {
   return sorted
 }
 
+const DECLINE_ACTION = { label: 'Decline', tone: 'danger' }
+
 function cardPropsForColumn(columnKey, candidate) {
   if (columnKey === 'new') {
-    return { note: `Applied ${candidate.daysInStage}d ago` }
+    return {
+      note: `Applied ${candidate.daysInStage}d ago`,
+      actions: [{ label: 'Phone Screen' }, DECLINE_ACTION],
+    }
   }
-  if (columnKey === 'screening' || columnKey === 'interviewing') {
-    return candidate.isStale ? {} : { note: `${candidate.daysInStage}d in stage` }
+  if (columnKey === 'screening') {
+    if (candidate.isStale) {
+      return { actions: [{ label: 'Contact' }, DECLINE_ACTION] }
+    }
+    return {
+      note: `${candidate.daysInStage}d in stage`,
+      actions: [{ label: '📝 Scorecard' }, { label: 'Advance →', tone: 'accent' }],
+    }
+  }
+  if (columnKey === 'interviewing') {
+    return {
+      ...(candidate.isStale ? {} : { note: `${candidate.daysInStage}d in stage` }),
+      actions: [{ label: '📝 Feedback' }, { label: 'Move to Offer', tone: 'accent' }],
+    }
   }
   if (columnKey === 'offer') {
     const offer = offers.find((o) => o.candidateId === candidate.id)
+    const actions = [{ label: 'Send Reminder', tone: 'warn' }, { label: 'Extend', tone: 'accent' }]
     if (offer?.status === 'awaiting') {
-      return { note: `⚠ Offer expires ${offer.expiryDate}`, noteVariant: 'warn' }
+      return { note: `⚠ Offer expires ${offer.expiryDate}`, noteVariant: 'warn', actions }
     }
-    return { note: `${candidate.daysInStage}d in stage` }
+    return { note: `${candidate.daysInStage}d in stage`, actions }
   }
   if (columnKey === 'hired') {
     const offer = offers.find((o) => o.candidateId === candidate.id)
@@ -112,6 +130,8 @@ export default function Pipeline() {
     () => candidates.filter((c) => c.jobId === selectedJobId && matchesFilter(c, filter)),
     [selectedJobId, filter],
   )
+
+  const flatCandidateIds = COLUMNS.flatMap((c) => sortCandidates(jobCandidates.filter((jc) => jc.stage === c.key), sort).map((jc) => jc.id))
 
   if (!selectedJob) {
     return <EmptyState title="No requisitions yet" subtitle="Create a job requisition to start a pipeline." />
@@ -160,7 +180,7 @@ export default function Pipeline() {
                   <KanbanCard
                     key={candidate.id}
                     candidate={candidate}
-                    onClick={() => navigate(`/candidates/${candidate.id}`)}
+                    onClick={() => navigate(`/candidates/${candidate.id}`, { state: { candidateIds: flatCandidateIds } })}
                     {...cardPropsForColumn(col.key, candidate)}
                   />
                 ))}

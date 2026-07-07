@@ -87,3 +87,5 @@
 .kc-act-accent:hover { background: var(--color-green); color: white; }
 .kc-act-danger { background: rgba(239,68,68,.08); color: var(--color-danger); }
 .kc-act-danger:hover { background: var(--color-danger); color: white; }
+.kc-act-warn { background: rgba(229,84,28,.1); color: var(--color-dm-orange); }
+.kc-act-warn:hover { background: var(--color-dm-orange); color: white; }
