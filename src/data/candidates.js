@@ -91,7 +91,7 @@ export const candidates = [
     isDuplicate: true,
     isStale: false,
     isTopCandidate: false,
-    notes: [{ author: 'M. Reyes', office: 'Troy', date: '2026-06-24', body: 'Possible duplicate — matches candidate cand-003b on phone + resume similarity, different email domain.' }],
+    notes: [{ author: 'M. Reyes', office: 'Troy', date: '2026-06-24', body: 'Possible duplicate: matches candidate cand-003b on phone + resume similarity, different email domain.' }],
     timeline: [{ stage: 'Application', date: '2026-06-21', note: 'Applied via Indeed' }],
     scorecard: [],
   },

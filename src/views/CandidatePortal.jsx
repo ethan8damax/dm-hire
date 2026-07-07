@@ -139,7 +139,7 @@ export default function CandidatePortal() {
               <div className="portal-status-hero">
                 <CheckCircle2 size={28} />
                 <div className="portal-status-title">Application received!</div>
-                <div className="portal-status-sub">Thanks, {applyForm.name.split(' ')[0] || 'there'} — we'll be in touch about {selectedJob.title}.</div>
+                <div className="portal-status-sub">Thanks, {applyForm.name.split(' ')[0] || 'there'}. We'll be in touch about {selectedJob.title}.</div>
               </div>
               <Timeline steps={[
                 { status: 'complete', label: 'Application Received', date: 'Today' },
@@ -211,7 +211,7 @@ export default function CandidatePortal() {
             <div className="portal-body">
               <div className="portal-status-hero">
                 <CheckCircle2 size={32} />
-                <div className="portal-status-title">🎉 Welcome to the team!</div>
+                <div className="portal-status-title">Welcome to the team!</div>
                 <div className="portal-status-sub">Your signed offer has been sent to the hiring team. Onboarding details are on their way to your inbox.</div>
               </div>
             </div>

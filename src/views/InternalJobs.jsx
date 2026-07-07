@@ -30,7 +30,7 @@ export default function InternalJobs() {
       </div>
 
       {internalJobs.length === 0 ? (
-        <EmptyState title="No internal postings right now" subtitle="Check back soon — new internal opportunities will appear here." />
+        <EmptyState title="No internal postings right now" subtitle="Check back soon, new internal opportunities will appear here." />
       ) : (
         <div className="internal-jobs-grid" data-tour="tour-internal-jobs">
           {internalJobs.map((job) => {
@@ -47,7 +47,7 @@ export default function InternalJobs() {
 
                   {applied ? (
                     <div className="internal-job-applied">
-                      <CheckCircle2 size={14} /> Applied — your HRIS profile auto-populated the application
+                      <CheckCircle2 size={14} /> Applied, your HRIS profile auto-populated the application
                     </div>
                   ) : (
                     <Button variant="primary" disabled={applying} onClick={() => apply(job.id)} className="internal-job-apply">

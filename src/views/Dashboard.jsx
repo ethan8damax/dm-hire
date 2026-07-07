@@ -63,7 +63,7 @@ export default function Dashboard() {
     <div className="dashboard">
       <div className="dashboard-header">
         <div>
-          <h1 className="dashboard-greeting">{greetingForHour(now.getHours())}, T. Smith 👋</h1>
+          <h1 className="dashboard-greeting">{greetingForHour(now.getHours())}, T. Smith</h1>
           <div className="dashboard-subtitle">
             {dateLabel} · {pendingActionCount} action{pendingActionCount === 1 ? '' : 's'} need your attention today
           </div>
@@ -74,8 +74,8 @@ export default function Dashboard() {
         <div className="notif-strip">
           <AlertTriangle size={16} />
           <span>
-            <strong>{expiringOffers.length} offer{expiringOffers.length === 1 ? '' : 's'} expiring soon</strong>
-            {' — '}
+            <strong>{expiringOffers.length} offer{expiringOffers.length === 1 ? '' : 's'} expiring soon.</strong>
+            {' '}
             {expiringOffers.map((o) => candidates.find((c) => c.id === o.candidateId)?.name).filter(Boolean).join(', ')} {expiringOffers.length === 1 ? "hasn't" : "haven't"} responded yet.
             {' '}
             <button type="button" className="notif-link" onClick={() => navigate('/offers')}>Send reminders →</button>
@@ -93,7 +93,7 @@ export default function Dashboard() {
       <div className="dashboard-grid">
         <Card>
           <Card.Header>
-            <Card.Title>Candidate Pipeline — All Jobs</Card.Title>
+            <Card.Title>Candidate Pipeline: All Jobs</Card.Title>
             <Button variant="ghost" size="sm" onClick={() => navigate('/pipeline')}>
               View Board <ArrowRight size={14} />
             </Button>
@@ -137,7 +137,7 @@ export default function Dashboard() {
                   <div className="action-item" key={o.id}>
                     <FileWarning size={16} className="action-item-icon warn" />
                     <div className="action-item-body">
-                      <div className="action-item-title">{cand?.name} — Offer Expiring</div>
+                      <div className="action-item-title">{cand?.name}: Offer Expiring</div>
                       <div className="action-item-sub warn">Expires in {o.daysLeft} day{o.daysLeft === 1 ? '' : 's'} · No response</div>
                     </div>
                     <Button size="sm" variant="ghost" onClick={() => navigate('/offers')}>Nudge</Button>
@@ -191,7 +191,7 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="payroll-synced-note">
-                  ✓ All accepted offers synced.
+                  All accepted offers synced.
                   {mostRecentSync && (
                     <> Last: {candidates.find((c) => c.id === mostRecentSync.candidateId)?.name} on {mostRecentSync.esigSignedDate}.</>
                   )}

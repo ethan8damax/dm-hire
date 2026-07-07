@@ -248,7 +248,7 @@ function NewRequisitionModal({ open, onClose, onCreate }) {
             <label className="req-field">
               <span>Location</span>
               <select value={form.officeId} onChange={(e) => updateField('officeId', e.target.value)}>
-                {offices.map((o) => <option key={o.id} value={o.id}>{o.name} — {o.city}, {o.state}</option>)}
+                {offices.map((o) => <option key={o.id} value={o.id}>{o.name} - {o.city}, {o.state}</option>)}
               </select>
             </label>
             <label className="req-field">
@@ -318,7 +318,7 @@ function NewRequisitionModal({ open, onClose, onCreate }) {
                 <div className="req-section-label">
                   Knockout Questions <span className="req-pill req-pill-navy">New in DM Hire</span>
                 </div>
-                <div className="req-hint">Unqualified applicants are auto-declined after a 24-hour delay — no abrupt rejections.</div>
+                <div className="req-hint">Unqualified applicants are auto-declined after a 24-hour delay, so there are no abrupt rejections.</div>
               </div>
               <Button type="button" size="sm" onClick={addKnockoutRule}><Plus size={13} /> Add</Button>
             </div>

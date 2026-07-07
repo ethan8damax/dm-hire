@@ -147,8 +147,8 @@ export default function Reports() {
               { key: 'interviews', label: 'Interviews', sortable: true },
               { key: 'hires', label: 'Hires', sortable: true },
               { key: 'conversionRate', label: 'Conv. Rate', sortable: true, render: (r) => pct(r.conversionRate) },
-              { key: 'avgDays', label: 'Avg. Days', sortable: true, render: (r) => r.avgDays != null ? `${r.avgDays}d` : '—' },
-              { key: 'estCost', label: 'Est. Cost', sortable: true, render: (r) => r.estCost != null ? money(r.estCost) : '—' },
+              { key: 'avgDays', label: 'Avg. Days', sortable: true, render: (r) => r.avgDays != null ? `${r.avgDays}d` : '-' },
+              { key: 'estCost', label: 'Est. Cost', sortable: true, render: (r) => r.estCost != null ? money(r.estCost) : '-' },
               { key: 'performance', label: 'Performance', render: performanceBadge },
             ]}
             rows={sourceRows}

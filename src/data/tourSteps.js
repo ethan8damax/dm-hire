@@ -8,14 +8,14 @@ export const tourSteps = [
     elementSelector: '[data-tour="tour-job-boards"]',
     heading: 'One-click job board distribution',
     body: 'Every posting gets a clean, per-job apply link and distributes to every selected board at once.',
-    vsCompetition: 'The current DM ATS has one URL for the whole job list — no per-job links, no one-click distribution.',
+    vsCompetition: 'The current DM ATS has one URL for the whole job list. No per-job links, no one-click distribution.',
   },
   {
     id: 'step-02',
     route: '/jobs',
     elementSelector: '[data-tour="tour-new-req-btn"]',
     heading: 'Role-type posting templates',
-    body: 'Pick a role type — Intern, IC, Manager, Director, C-Suite, Production Floor — and interview stages, knockout defaults, and the approval chain are all pre-filled from one template.',
+    body: 'Pick a role type (Intern, IC, Manager, Director, C-Suite, Production Floor) and interview stages, knockout defaults, and the approval chain are all pre-filled from one template.',
     vsCompetition: 'ClearCompany builds every requisition from scratch, every time.',
   },
   {
@@ -23,7 +23,7 @@ export const tourSteps = [
     route: '/jobs',
     elementSelector: '[data-tour="tour-approval-workflow"]',
     heading: 'Built-in approval workflows',
-    body: 'Requisitions above a role-type threshold automatically route for approval — the status badge shows exactly where a job is in that chain.',
+    body: 'Requisitions above a role-type threshold automatically route for approval. The status badge shows exactly where a job is in that chain.',
     vsCompetition: 'No configurable approval routing in the current ATS.',
   },
   {
@@ -31,7 +31,7 @@ export const tourSteps = [
     route: '/pipeline',
     elementSelector: '[data-tour="tour-pipeline-board"]',
     heading: 'Visual, real-time candidate pipeline',
-    body: 'Every candidate, every stage, one board — filterable by recruiter, urgency, and staleness.',
+    body: 'Every candidate, every stage, one board, filterable by recruiter, urgency, and staleness.',
     vsCompetition: 'The current tool is list-based with no visual stage view.',
   },
   {
@@ -40,22 +40,22 @@ export const tourSteps = [
     elementSelector: '[data-tour="tour-ai-score"]',
     heading: 'AI qualification scoring',
     body: 'Every candidate gets an AI match score against the role, broken into five dimensions on their profile.',
-    vsCompetition: 'No scoring or qualification signal today — recruiters read every resume cold.',
+    vsCompetition: 'No scoring or qualification signal today. Recruiters read every resume cold.',
   },
   {
     id: 'step-06',
     route: '/pipeline?job=job-002',
     elementSelector: '[data-tour="tour-candidate-intel"]',
     heading: 'Automatic duplicate detection',
-    body: 'DM Hire flags likely duplicate applicants beyond just matching email address — before a recruiter wastes time on a repeat application.',
-    vsCompetition: 'ClearCompany was named as the benchmark here — the current DM ATS has nothing.',
+    body: 'DM Hire flags likely duplicate applicants beyond just matching email address, before a recruiter wastes time on a repeat application.',
+    vsCompetition: 'ClearCompany was named as the benchmark here. The current DM ATS has nothing.',
   },
   {
     id: 'step-07',
     route: '/candidates/cand-002',
     elementSelector: '[data-tour="tour-cp-notes"]',
     heading: 'Org-wide shared notes',
-    body: 'Notes on a candidate are visible across every office — no more re-asking a candidate the same question twice.',
+    body: 'Notes on a candidate are visible across every office. No more re-asking a candidate the same question twice.',
     vsCompetition: 'Notes today are siloed to whichever office entered them.',
   },
   {
@@ -63,7 +63,7 @@ export const tourSteps = [
     route: '/candidates/cand-002',
     elementSelector: '[data-tour="tour-cp-comms"]',
     heading: 'Built-in SMS + email communication',
-    body: 'Text and email threads live right on the candidate profile — no separate phone or inbox required.',
+    body: 'Text and email threads live right on the candidate profile. No separate phone or inbox required.',
     vsCompetition: 'No native candidate messaging in the current ATS.',
   },
   {
@@ -71,8 +71,8 @@ export const tourSteps = [
     route: '/candidates/cand-002',
     elementSelector: '[data-tour="tour-cp-schedule"]',
     heading: 'Calendly-style self-scheduling',
-    body: 'Candidates pick their own interview slot from the hiring manager\'s real availability — the invite goes out from the HM\'s own Outlook automatically.',
-    vsCompetition: 'Scheduling today is manual back-and-forth email, adding 1–3 days per interview.',
+    body: 'Candidates pick their own interview slot from the hiring manager\'s real availability, and the invite goes out from the HM\'s own Outlook automatically.',
+    vsCompetition: 'Scheduling today is manual back-and-forth email, adding 1-3 days per interview.',
   },
   {
     id: 'step-10',
@@ -80,14 +80,14 @@ export const tourSteps = [
     elementSelector: '[data-tour="tour-cp-scorecard"]',
     heading: 'Structured interview scorecards',
     body: 'Every interviewer submits a consistent, dimension-by-dimension scorecard instead of a freeform note.',
-    vsCompetition: 'No structured scorecard tool today — feedback is inconsistent email.',
+    vsCompetition: 'No structured scorecard tool today. Feedback is inconsistent email.',
   },
   {
     id: 'step-11',
     route: '/candidates/cand-002',
     elementSelector: '[data-tour="tour-cp-offer"]',
     heading: 'True electronic offer letters',
-    body: 'Offers route for approval, send for e-signature, and the audit trail — sent, opened, signed — updates live on this tab.',
+    body: 'Offers route for approval, send for e-signature, and the audit trail (sent, opened, signed) updates live on this tab.',
     vsCompetition: 'The current "e-signature" is just a timestamped name entry, not a legally binding e-sign.',
   },
   {
@@ -95,7 +95,7 @@ export const tourSteps = [
     route: '/offers',
     elementSelector: '[data-tour="tour-offers-list"]',
     heading: 'The full offer lifecycle in one view',
-    body: 'Every offer, its approval status, expiry, and whether it has synced to DM Payroll — all in one list.',
+    body: 'Every offer, its approval status, expiry, and whether it has synced to DM Payroll, all in one list.',
     vsCompetition: 'No dedicated offer-management view exists today.',
   },
   {
@@ -111,7 +111,7 @@ export const tourSteps = [
     route: '/reports',
     elementSelector: '[data-tour="tour-reports-metrics"]',
     heading: 'Advanced reporting, built in',
-    body: 'Time to Fill, Cost per Hire, Offer Acceptance Rate, and Interview-to-Offer Ratio — every metric Sarah asked for, live from real pipeline data.',
+    body: 'Time to Fill, Cost per Hire, Offer Acceptance Rate, and Interview-to-Offer Ratio: every metric Sarah asked for, live from real pipeline data.',
     vsCompetition: 'The current ATS has no analytics layer beyond raw candidate counts.',
   },
   {
@@ -119,7 +119,7 @@ export const tourSteps = [
     route: '/reports',
     elementSelector: '[data-tour="tour-reports-sourceroi"]',
     heading: 'Job board performance analytics',
-    body: 'See exactly which sources convert — applicants, interviews, hires, cost, and days to hire, by source.',
+    body: 'See exactly which sources convert: applicants, interviews, hires, cost, and days to hire, by source.',
     vsCompetition: 'No visibility today into which job board spend is actually working.',
   },
   {
@@ -127,7 +127,7 @@ export const tourSteps = [
     route: '/integrations',
     elementSelector: '[data-tour="tour-integrations"]',
     heading: 'One connected ecosystem',
-    body: 'LinkedIn Recruiter, Microsoft 365/Outlook, background checks, drug screens, and assessment tools (Criteria Corp, Predictive Index, Wonderlic) — all connected from one page.',
+    body: 'LinkedIn Recruiter, Microsoft 365/Outlook, background checks, drug screens, and assessment tools (Criteria Corp, Predictive Index, Wonderlic) all connected from one page.',
     vsCompetition: 'These are separate logins and manual handoffs in the current process.',
   },
   {
@@ -143,7 +143,7 @@ export const tourSteps = [
     route: '/settings',
     elementSelector: '[data-tour="tour-settings"]',
     heading: 'Configurable for any org structure',
-    body: 'Offices, per-role workflows, state-specific onboarding packets, department notifications, users, and branding — all configurable without a support ticket.',
+    body: 'Offices, per-role workflows, state-specific onboarding packets, department notifications, users, and branding: all configurable without a support ticket.',
     vsCompetition: 'Structural changes in the current ATS require a vendor request.',
   },
 ]

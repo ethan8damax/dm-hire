@@ -474,7 +474,7 @@ function ScheduleTab({ candidate }) {
           <CheckCircle2 size={32} className="cp-schedule-sent-icon" />
           <div className="cp-schedule-sent-title">Outlook invite sent</div>
           <div className="cp-schedule-sent-sub">
-            Calendar hold created for {candidate.name} — {selected.dayLabel} at {selected.slot}. Candidate can self-schedule via the link.
+            Calendar hold created for {candidate.name}: {selected.dayLabel} at {selected.slot}. Candidate can self-schedule via the link.
           </div>
           <Button variant="ghost" size="sm" onClick={() => { setPhase('idle'); setSelected(null) }}>Schedule Another</Button>
         </Card.Body>
@@ -577,7 +577,7 @@ function OfferTab({ offer, editing, phase, onGenerate, onEdit, onChange, onSendF
               <div className="cp-offer-row"><span>Base Salary</span><span className="cp-offer-accent">${offer.salary.toLocaleString()} / year</span></div>
               <div className="cp-offer-row"><span>Bonus Target</span><span>{offer.bonus}</span></div>
               <div className="cp-offer-row"><span>PTO</span><span>{offer.pto}</span></div>
-              <div className="cp-offer-row"><span>Start Date</span><span>{offer.startDate || '—'}</span></div>
+              <div className="cp-offer-row"><span>Start Date</span><span>{offer.startDate || '-'}</span></div>
             </>
           )}
           <div className="cp-offer-row"><span>Status</span><span className={`cp-offer-status cp-offer-status-${offer.status}`}>{offer.status.replace('_', ' ')}</span></div>
@@ -661,7 +661,7 @@ function DocsTab({ candidate, offer }) {
         <div className="cp-doc-row">
           <FileText size={20} />
           <div className="cp-doc-info">
-            <div className="cp-doc-title">Resume — {candidate.name.replace(' ', '_')}_Resume.pdf</div>
+            <div className="cp-doc-title">Resume: {candidate.name.replace(' ', '_')}_Resume.pdf</div>
             <div className="cp-doc-sub">Uploaded {candidate.timeline[0]?.date} · Auto-parsed</div>
           </div>
           <Button variant="ghost" size="sm">View</Button>
@@ -683,7 +683,7 @@ function DocsTab({ candidate, offer }) {
           <div className="cp-doc-info">
             <div className="cp-doc-title">Background Check</div>
             <div className="cp-doc-sub">
-              {status === 'cleared' ? 'Cleared' : status === 'in_progress' ? 'In progress' : 'Not yet initiated — awaiting offer acceptance'}
+              {status === 'cleared' ? 'Cleared' : status === 'in_progress' ? 'In progress' : 'Not yet initiated, awaiting offer acceptance'}
             </div>
           </div>
           <Button variant="ghost" size="sm" disabled={status === 'not_started'}>{status === 'cleared' ? 'View' : 'Initiate'}</Button>
@@ -694,7 +694,7 @@ function DocsTab({ candidate, offer }) {
           <div className="cp-doc-info">
             <div className="cp-doc-title">Drug Screen</div>
             <div className="cp-doc-sub">
-              {status === 'cleared' ? 'Cleared' : status === 'in_progress' ? 'In progress' : 'Not yet initiated — awaiting offer acceptance'}
+              {status === 'cleared' ? 'Cleared' : status === 'in_progress' ? 'In progress' : 'Not yet initiated, awaiting offer acceptance'}
             </div>
           </div>
           <Button variant="ghost" size="sm" disabled={status === 'not_started'}>{status === 'cleared' ? 'View' : 'Initiate'}</Button>
@@ -705,7 +705,7 @@ function DocsTab({ candidate, offer }) {
           <div className="cp-doc-info">
             <div className="cp-doc-title">Signed Offer Letter</div>
             <div className="cp-doc-sub">
-              {offer?.esigStatus === 'signed' ? `Signed ${offer.esigSignedDate}` : offer ? 'Pending — offer not yet signed' : 'Pending — offer not yet sent'}
+              {offer?.esigStatus === 'signed' ? `Signed ${offer.esigSignedDate}` : offer ? 'Pending, offer not yet signed' : 'Pending, offer not yet sent'}
             </div>
           </div>
         </div>
