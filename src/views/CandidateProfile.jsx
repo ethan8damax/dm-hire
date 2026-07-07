@@ -12,6 +12,7 @@ import Card from '../components/ui/Card'
 import EmptyState from '../components/ui/EmptyState'
 import Timeline from '../components/ui/Timeline'
 import ScoreBar from '../components/ui/ScoreBar'
+import { usePersona } from '../context/PersonaContext'
 import { candidates } from '../data/candidates'
 import { jobs } from '../data/jobs'
 import { offers as initialOffers } from '../data/offers'
@@ -86,6 +87,9 @@ export default function CandidateProfile() {
   const location = useLocation()
   const candidate = candidates.find((c) => c.id === id)
   const job = jobs.find((j) => j.id === candidate?.jobId)
+  const { persona } = usePersona()
+  const isHiringManager = persona === 'hiring_manager'
+  const tabs = isHiringManager ? TABS.filter((t) => t.key !== 'offer') : TABS
 
   const [activeTab, setActiveTab] = useState(location.state?.tab ?? 'timeline')
   const [notes, setNotes] = useState(candidate?.notes ?? [])
@@ -188,7 +192,7 @@ export default function CandidateProfile() {
         <div className="cp-header-actions">
           <Button variant="ghost" size="sm" onClick={() => setActiveTab('comms')}><Mail size={14} /> Email</Button>
           <Button variant="ghost" size="sm" onClick={() => setActiveTab('schedule')}><CalendarClock size={14} /> Schedule</Button>
-          <Button variant="accent" size="sm" onClick={() => setActiveTab('offer')}><FileSignature size={14} /> Generate Offer</Button>
+          {!isHiringManager && <Button variant="accent" size="sm" onClick={() => setActiveTab('offer')}><FileSignature size={14} /> Generate Offer</Button>}
         </div>
       </div>
 
@@ -220,7 +224,7 @@ export default function CandidateProfile() {
               )}
             </div>
             <div className="cp-actions">
-              <Button variant="primary" onClick={() => setActiveTab('offer')} className="cp-full-btn">Generate Offer Letter</Button>
+              {!isHiringManager && <Button variant="primary" onClick={() => setActiveTab('offer')} className="cp-full-btn">Generate Offer Letter</Button>}
               <Button variant="ghost" onClick={() => setActiveTab('schedule')} className="cp-full-btn"><CalendarClock size={14} /> Schedule Interview</Button>
               <Button variant="danger" className="cp-full-btn cp-danger-ghost">Mark Not Selected</Button>
             </div>
@@ -244,7 +248,7 @@ export default function CandidateProfile() {
 
         <div className="cp-right">
           <div className="detail-tabs">
-            {TABS.map((t) => (
+            {tabs.map((t) => (
               <div key={t.key} className={`dtab${activeTab === t.key ? ' active' : ''}`} onClick={() => setActiveTab(t.key)}>
                 {t.label}
               </div>
@@ -302,7 +306,7 @@ export default function CandidateProfile() {
           {activeTab === 'comms' && <CommsTab key={candidate.id} candidate={candidate} />}
           {activeTab === 'schedule' && <ScheduleTab key={candidate.id} candidate={candidate} />}
 
-          {activeTab === 'offer' && (
+          {activeTab === 'offer' && !isHiringManager && (
             <OfferTab
               offer={offer}
               editing={offerEditing}

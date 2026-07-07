@@ -14,6 +14,11 @@ export default function Topbar() {
   const navigate = useNavigate()
   const { persona, setPersona } = usePersona()
 
+  function handlePersonaChange(id) {
+    setPersona(id)
+    if (id === 'candidate') navigate('/portal')
+  }
+
   return (
     <header className="topbar">
       <div className="topbar-search">
@@ -27,7 +32,7 @@ export default function Topbar() {
             key={p.id}
             type="button"
             className={`topbar-persona-btn${persona === p.id ? ' active' : ''}`}
-            onClick={() => setPersona(p.id)}
+            onClick={() => handlePersonaChange(p.id)}
           >
             {p.label}
           </button>

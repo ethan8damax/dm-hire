@@ -31,9 +31,10 @@ export default function App() {
               <Route path="/integrations" element={<Integrations />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/internal-jobs" element={<InternalJobs />} />
-              <Route path="/portal" element={<CandidatePortal />} />
               <Route path="/why-dm-hire" element={<WhyDMHire />} />
             </Route>
+            {/* Candidate-facing portal renders full-page — no recruiter sidebar/topbar chrome */}
+            <Route path="/portal" element={<CandidatePortal />} />
             {/* Sprint 0b dev tool — remove before final deploy (Sprint 10) */}
             <Route path="/test" element={<ComponentTest />} />
           </Routes>

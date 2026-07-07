@@ -4,12 +4,16 @@ import { CheckCircle2, Wallet } from 'lucide-react'
 import KanbanCard from '../components/ui/KanbanCard'
 import FilterChip from '../components/ui/FilterChip'
 import EmptyState from '../components/ui/EmptyState'
+import { usePersona } from '../context/PersonaContext'
 import { jobs } from '../data/jobs'
 import { candidates } from '../data/candidates'
 import { offers } from '../data/offers'
+import { users } from '../data/users'
 import './Pipeline.css'
 
 const CURRENT_RECRUITER = 'T. Smith'
+const CURRENT_HM_ID = 'user-002' // R. Patel — the assumed logged-in Hiring Manager
+const HM_RESTRICTED_COLUMNS = ['new', 'offer'] // no unscreened applicants, no offer management
 
 const COLUMNS = [
   { key: 'new', label: 'New Applicants', dot: '#3B82F6' },
@@ -61,7 +65,14 @@ function sortCandidates(list, sortKey) {
 
 const DECLINE_ACTION = { label: 'Decline', tone: 'danger' }
 
-function cardPropsForColumn(columnKey, candidate) {
+const SCORECARD_ONLY_ACTION = [{ label: '📝 Scorecard' }]
+
+function cardPropsForColumn(columnKey, candidate, isHiringManager) {
+  if (isHiringManager) {
+    const base = cardPropsForColumn(columnKey, candidate)
+    const canScore = columnKey === 'screening' || columnKey === 'interviewing'
+    return { ...base, actions: canScore ? SCORECARD_ONLY_ACTION : [] }
+  }
   if (columnKey === 'new') {
     return {
       note: `Applied ${candidate.daysInStage}d ago`,
@@ -116,8 +127,14 @@ export default function Pipeline() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState('score')
+  const { persona } = usePersona()
+  const isHiringManager = persona === 'hiring_manager'
 
-  const selectableJobs = jobs.filter((j) => j.status !== 'draft')
+  const hmAssignedJobIds = users.find((u) => u.id === CURRENT_HM_ID)?.assignedJobIds ?? []
+  const selectableJobs = isHiringManager
+    ? jobs.filter((j) => hmAssignedJobIds.includes(j.id))
+    : jobs.filter((j) => j.status !== 'draft')
+  const visibleColumns = isHiringManager ? COLUMNS.filter((c) => !HM_RESTRICTED_COLUMNS.includes(c.key)) : COLUMNS
   const queryJobId = searchParams.get('job')
   const selectedJobId = selectableJobs.some((j) => j.id === queryJobId) ? queryJobId : selectableJobs[0]?.id
   const selectedJob = jobs.find((j) => j.id === selectedJobId)
@@ -131,7 +148,7 @@ export default function Pipeline() {
     [selectedJobId, filter],
   )
 
-  const flatCandidateIds = COLUMNS.flatMap((c) => sortCandidates(jobCandidates.filter((jc) => jc.stage === c.key), sort).map((jc) => jc.id))
+  const flatCandidateIds = visibleColumns.flatMap((c) => sortCandidates(jobCandidates.filter((jc) => jc.stage === c.key), sort).map((jc) => jc.id))
 
   if (!selectedJob) {
     return <EmptyState title="No requisitions yet" subtitle="Create a job requisition to start a pipeline." />
@@ -147,7 +164,10 @@ export default function Pipeline() {
               {selectableJobs.map((j) => <option key={j.id} value={j.id}>{j.title}</option>)}
             </select>
           </div>
-          <div className="page-subtitle">{selectedJob.applicantCount} candidates · {selectedJob.daysOpen} days open</div>
+          <div className="page-subtitle">
+            {selectedJob.applicantCount} candidates · {selectedJob.daysOpen} days open
+            {isHiringManager && ' · Hiring Manager view — screened candidates only, no offer management'}
+          </div>
         </div>
       </div>
 
@@ -166,7 +186,7 @@ export default function Pipeline() {
       </div>
 
       <div className="kanban-board">
-        {COLUMNS.map((col) => {
+        {visibleColumns.map((col) => {
           const columnCandidates = sortCandidates(jobCandidates.filter((c) => c.stage === col.key), sort)
           return (
             <div className="kanban-col" key={col.key}>
@@ -181,7 +201,7 @@ export default function Pipeline() {
                     key={candidate.id}
                     candidate={candidate}
                     onClick={() => navigate(`/candidates/${candidate.id}`, { state: { candidateIds: flatCandidateIds } })}
-                    {...cardPropsForColumn(col.key, candidate)}
+                    {...cardPropsForColumn(col.key, candidate, isHiringManager)}
                   />
                 ))}
                 {columnCandidates.length === 0 && <div className="kanban-col-empty">No candidates</div>}
