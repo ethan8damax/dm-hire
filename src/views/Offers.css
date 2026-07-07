@@ -1,0 +1,19 @@
+.offer-notif-strip { justify-content: space-between; }
+.offer-notif-strip > span { flex: 1; }
+
+.offer-candidate-name { font-weight: 600; color: var(--color-gray-800); }
+.offer-candidate-role { font-size: var(--text-sm); color: var(--color-gray-400); }
+
+.offer-expiry-urgent { color: var(--color-danger); font-weight: 600; }
+
+.offer-synced-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-green-dark);
+}
+
+.offer-spin { animation: offer-spin 1s linear infinite; }
+@keyframes offer-spin { to { transform: rotate(360deg); } }

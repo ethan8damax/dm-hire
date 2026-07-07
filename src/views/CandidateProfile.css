@@ -206,6 +206,8 @@
 .cp-pending-icon { color: var(--color-gray-300); }
 
 .cp-esig-row { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-gray-600); padding-top: var(--space-3); border-top: 1px solid var(--color-gray-100); margin-bottom: var(--space-4); }
+.cp-esig-section { padding-top: var(--space-3); border-top: 1px solid var(--color-gray-100); margin-bottom: var(--space-4); }
+.cp-synced-row { border-top: none; padding-top: 0; }
 
 .cp-offer-actions { display: flex; gap: var(--space-3); }
 

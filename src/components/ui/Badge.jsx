@@ -12,6 +12,10 @@ const VARIANT_LABELS = {
   pending_approval: 'Pending Approval',
   draft: 'Draft',
   closed: 'Closed',
+  awaiting: 'Awaiting Response',
+  accepted: 'Accepted',
+  expired: 'Expired',
+  declined: 'Declined',
 }
 
 export default function Badge({ variant, children, className = '' }) {

@@ -87,7 +87,7 @@ export default function CandidateProfile() {
   const candidate = candidates.find((c) => c.id === id)
   const job = jobs.find((j) => j.id === candidate?.jobId)
 
-  const [activeTab, setActiveTab] = useState('timeline')
+  const [activeTab, setActiveTab] = useState(location.state?.tab ?? 'timeline')
   const [notes, setNotes] = useState(candidate?.notes ?? [])
   const [noteDraft, setNoteDraft] = useState('')
   const [offer, setOffer] = useState(() => initialOffers.find((o) => o.candidateId === id) ?? null)
@@ -95,13 +95,13 @@ export default function CandidateProfile() {
   const [offerPhase, setOfferPhase] = useState('idle') // idle | sending
 
   useEffect(() => {
-    setActiveTab('timeline')
+    setActiveTab(location.state?.tab ?? 'timeline')
     setNotes(candidate?.notes ?? [])
     setNoteDraft('')
     setOffer(initialOffers.find((o) => o.candidateId === id) ?? null)
     setOfferEditing(false)
     setOfferPhase('idle')
-  }, [id, candidate])
+  }, [id, candidate, location])
 
   if (!candidate) {
     return (
@@ -147,6 +147,7 @@ export default function CandidateProfile() {
         { role: 'VP Finance', name: 'L. Torres', approved: false, date: null },
       ],
       esigStatus: 'pending',
+      esigViewedDate: null,
       esigSignedDate: null,
       payrollSynced: false,
     })
@@ -458,6 +459,25 @@ function ScheduleTab({ candidate }) {
 }
 
 function OfferTab({ offer, editing, phase, onGenerate, onEdit, onChange, onSendForApproval }) {
+  const [esigPhase, setEsigPhase] = useState('idle') // idle | viewing | signing
+
+  function handleSimulateView() {
+    setEsigPhase('viewing')
+    setTimeout(() => {
+      onChange((o) => ({ ...o, esigViewedDate: TODAY }))
+      setEsigPhase('idle')
+    }, 900)
+  }
+
+  function handleSimulateSign() {
+    setEsigPhase('signing')
+    setTimeout(() => {
+      onChange((o) => ({ ...o, esigStatus: 'signed', esigSignedDate: TODAY, status: 'accepted' }))
+      setEsigPhase('idle')
+      setTimeout(() => onChange((o) => ({ ...o, payrollSynced: true })), 1400)
+    }, 900)
+  }
+
   if (!offer) {
     return (
       <Card>
@@ -507,10 +527,42 @@ function OfferTab({ offer, editing, phase, onGenerate, onEdit, onChange, onSendF
           ))}
         </div>
 
-        <div className="cp-esig-row">
-          <ShieldCheck size={14} />
-          <span>E-Signature: {offer.esigStatus === 'signed' ? `Signed ${offer.esigSignedDate}` : 'Pending'}</span>
+        <div className="cp-esig-section">
+          <div className="cp-section-label">E-Signature Audit Trail</div>
+          {[
+            offer.sentDate && { label: 'Offer sent', date: offer.sentDate },
+            offer.esigViewedDate && { label: 'Signature link opened', date: offer.esigViewedDate },
+            offer.esigSignedDate && { label: 'Signed', date: offer.esigSignedDate },
+          ].filter(Boolean).map((ev, i) => (
+            <div className="cp-approval-row" key={i}>
+              <ShieldCheck size={14} className="cp-approved-icon" />
+              <span>{ev.label}</span>
+              <span className="cp-approval-date">{ev.date}</span>
+            </div>
+          ))}
+
+          {esigPhase !== 'idle' && (
+            <div className="cp-approval-row">
+              <Loader2 size={14} className="cp-spin cp-pending-icon" />
+              <span>{esigPhase === 'viewing' ? 'Candidate opening signature link…' : 'Candidate signing…'}</span>
+            </div>
+          )}
+
+          {esigPhase === 'idle' && offer.status === 'awaiting' && !offer.esigViewedDate && (
+            <Button variant="ghost" size="sm" onClick={handleSimulateView}>Simulate: Candidate Opens Link</Button>
+          )}
+          {esigPhase === 'idle' && offer.status === 'awaiting' && offer.esigViewedDate && !offer.esigSignedDate && (
+            <Button variant="primary" size="sm" onClick={handleSimulateSign}>Simulate: Candidate Signs →</Button>
+          )}
         </div>
+
+        {offer.status === 'accepted' && (
+          <div className="cp-esig-row cp-synced-row">
+            {offer.payrollSynced
+              ? <><CheckCircle2 size={14} className="cp-approved-icon" /><span>Synced to DM Payroll</span></>
+              : <><Loader2 size={14} className="cp-spin cp-pending-icon" /><span>Syncing to DM Payroll…</span></>}
+          </div>
+        )}
 
         <div className="cp-offer-actions">
           {offer.status === 'draft' && !editing && <Button variant="ghost" onClick={onEdit}>Edit Offer</Button>}

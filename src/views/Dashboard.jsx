@@ -45,7 +45,7 @@ export default function Dashboard() {
   const expiringOffers = offers
     .filter((o) => o.status === 'awaiting')
     .map((o) => ({ ...o, daysLeft: daysUntil(o.expiryDate) }))
-    .filter((o) => o.daysLeft <= 5)
+    .filter((o) => o.daysLeft >= 0 && o.daysLeft <= 5)
 
   const pendingApprovalJobs = jobs.filter((j) => j.status === 'pending_approval')
   const staleCandidates = candidates.filter((c) => c.isStale)
