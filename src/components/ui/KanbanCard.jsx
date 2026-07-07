@@ -1,16 +1,19 @@
-import { AlertTriangle, Clock, Star, History } from 'lucide-react'
+import { AlertTriangle, Clock, Star, History, Building2 } from 'lucide-react'
 import Avatar from './Avatar'
 import Badge from './Badge'
 import './KanbanCard.css'
 
 // actions: [{ label, onClick, tone }] — tone: 'default' | 'accent' | 'danger', max 2
 export default function KanbanCard({ candidate, note, noteVariant = 'default', actions = [], showScore = true, dimmed = false, onClick }) {
-  const { name, initials, avatarColor, location, source, stage, aiScore, daysInStage, isDuplicate, isStale, isTopCandidate, priorInteraction } = candidate
+  const { name, initials, avatarColor, location, source, stage, aiScore, daysInStage, isDuplicate, isStale, isTopCandidate, isInternalApplicant, priorInteraction } = candidate
 
   return (
     <div className={`kanban-card${isTopCandidate ? ' kc-top-candidate' : ''}${dimmed ? ' kc-dimmed' : ''}`} onClick={onClick}>
       {isTopCandidate && (
         <div className="kc-top-badge"><Star size={11} /> Top Candidate</div>
+      )}
+      {isInternalApplicant && (
+        <div className="kc-internal-badge"><Building2 size={11} /> Internal Applicant</div>
       )}
       {isDuplicate && (
         <div className="kc-warning kc-warning-duplicate">

@@ -16,6 +16,9 @@ const VARIANT_LABELS = {
   accepted: 'Accepted',
   expired: 'Expired',
   declined: 'Declined',
+  connected: 'Connected',
+  paused: 'Paused',
+  not_connected: 'Not Connected',
 }
 
 export default function Badge({ variant, children, className = '' }) {
