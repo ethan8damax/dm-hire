@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { CheckCircle2, Wallet } from 'lucide-react'
+import { CheckCircle2, Wallet, AlertTriangle } from 'lucide-react'
 import KanbanCard from '../components/ui/KanbanCard'
 import FilterChip from '../components/ui/FilterChip'
 import EmptyState from '../components/ui/EmptyState'
@@ -70,7 +70,7 @@ function sortCandidates(list, sortKey) {
 
 const DECLINE_ACTION = { label: 'Decline', tone: 'danger' }
 
-const SCORECARD_ONLY_ACTION = [{ label: '📝 Scorecard' }]
+const SCORECARD_ONLY_ACTION = [{ label: 'Scorecard' }]
 
 function cardPropsForColumn(columnKey, candidate, isHiringManager) {
   if (isHiringManager) {
@@ -90,13 +90,13 @@ function cardPropsForColumn(columnKey, candidate, isHiringManager) {
     }
     return {
       note: `${candidate.daysInStage}d in stage`,
-      actions: [{ label: '📝 Scorecard' }, { label: 'Advance →', tone: 'accent' }],
+      actions: [{ label: 'Scorecard' }, { label: 'Advance →', tone: 'accent' }],
     }
   }
   if (columnKey === 'interviewing') {
     return {
       ...(candidate.isStale ? {} : { note: `${candidate.daysInStage}d in stage` }),
-      actions: [{ label: '📝 Feedback' }, { label: 'Move to Offer', tone: 'accent' }],
+      actions: [{ label: 'Feedback' }, { label: 'Move to Offer', tone: 'accent' }],
     }
   }
   if (columnKey === 'offer') {
@@ -106,7 +106,8 @@ function cardPropsForColumn(columnKey, candidate, isHiringManager) {
       ? [{ label: 'Send Reminder', tone: 'warn' }, { label: 'Extend', tone: 'accent' }]
       : [{ label: 'Extend', tone: 'accent' }]
     if (isExpiringSoon) {
-      return { note: `⚠ Offer expires ${offer.expiryDate}`, noteVariant: 'warn', actions }
+      const note = <><AlertTriangle size={11} /> Offer expires {offer.expiryDate}</>
+      return { note, noteVariant: 'warn', actions }
     }
     return { note: `${candidate.daysInStage}d in stage`, actions }
   }
@@ -119,7 +120,7 @@ function cardPropsForColumn(columnKey, candidate, isHiringManager) {
         ) : (
           <span className="kc-payroll-note kc-payroll-note-pending"><Wallet size={11} /> Queued for DM Payroll sync</span>
         )}
-        <span className="kc-notif-log">IT notified ✓ · Facilities notified ✓</span>
+        <span className="kc-notif-log">IT and Facilities notified</span>
       </div>
     )
     return { note }
@@ -174,7 +175,7 @@ export default function Pipeline() {
           </div>
           <div className="page-subtitle">
             {selectedJob.applicantCount} candidates · {selectedJob.daysOpen} days open
-            {isHiringManager && ' · Hiring Manager view — screened candidates only, no offer management'}
+            {isHiringManager && ' · Hiring Manager view: screened candidates only, no offer management'}
           </div>
         </div>
       </div>

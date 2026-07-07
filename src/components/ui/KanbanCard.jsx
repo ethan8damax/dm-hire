@@ -39,7 +39,7 @@ export default function KanbanCard({ candidate, note, noteVariant = 'default', a
 
       {isStale && (
         <div className="kc-warning kc-warning-stale">
-          <Clock size={11} /> Stale — {daysInStage}d no update
+          <Clock size={11} /> Stale, {daysInStage}d no update
         </div>
       )}
 

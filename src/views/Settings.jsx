@@ -163,7 +163,7 @@ function WorkflowsTab() {
         <div className="settings-stage-row settings-stage-row-hdr">
           <span>Stage</span><span>Approver</span><span>SLA (days)</span><span />
         </div>
-        {stages.length === 0 && <div className="settings-hint">No stages in this workflow yet — add one below.</div>}
+        {stages.length === 0 && <div className="settings-hint">No stages in this workflow yet. Add one below.</div>}
         {stages.map((s, i) => (
           <div className="settings-stage-row" key={i}>
             <input value={s.name} onChange={(e) => updateStage(i, 'name', e.target.value)} />
@@ -358,7 +358,7 @@ function UsersTab() {
       key: 'assignedJobIds', label: 'Assigned Jobs',
       render: (r) => r.assignedJobIds.length
         ? r.assignedJobIds.map((id) => jobs.find((j) => j.id === id)?.title).filter(Boolean).join(', ')
-        : '—',
+        : '-',
     },
     { key: 'status', label: 'Status', render: (r) => r.status === 'invited' ? <Badge variant="awaiting">Invited</Badge> : <Badge variant="accepted">Active</Badge> },
   ]
@@ -424,7 +424,7 @@ function BrandingTab() {
       <div className="settings-panel-hdr">
         <div>
           <div className="settings-panel-title">Branding</div>
-          <div className="settings-panel-sub">For client demos — updates the sidebar color live.</div>
+          <div className="settings-panel-sub">For client demos, updates the sidebar color live.</div>
         </div>
       </div>
 

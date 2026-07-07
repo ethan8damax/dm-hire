@@ -24,6 +24,21 @@ colors:
   warning: "#F59E0B"
   danger: "#EF4444"
   info: "#3B82F6"
+  badge-blue-bg: "#EFF6FF"
+  badge-blue-text: "#1D4ED8"
+  badge-orange-bg: "#FFF7ED"
+  badge-orange-text: "#C2410C"
+  badge-purple-bg: "#F5F3FF"
+  badge-purple-text: "#6D28D9"
+  badge-purple-dot: "#7C3AED"
+  badge-green-bg-1: "#ECFDF5"
+  badge-green-text-1: "#065F46"
+  badge-green-bg-2: "#F0FDF4"
+  badge-green-text-2: "#15803D"
+  badge-red-bg: "#FEF2F2"
+  badge-red-text: "#991B1B"
+  badge-amber-bg: "#FFFBEB"
+  badge-amber-text: "#B45309"
 typography:
   display:
     fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif"
@@ -124,6 +139,21 @@ The palette is restrained and semantic — three brand colors, each with exactly
 
 ### Neutral
 - **Gray-50 → Gray-900** (`#F8FAFC` → `#0F172A`): a 9-step neutral ramp carrying body text (gray-700/800), secondary text (gray-400/500), borders and dividers (gray-100/200), and page background (gray-50). White is the card/surface color throughout.
+
+### Status & Category Badges
+A fixed identity ramp used by the shared `Badge` component (`components/ui/Badge.css`) for every stage, status, and category tag across the app: candidate stage, job status, offer status, integration status. Each color is a tint background + a saturated text/dot pair, never the raw brand hue at full strength. This has been consistent since Sprint 0b; it just hadn't been written down until now.
+
+| Meaning | Background | Text / dot | Used for |
+|---|---|---|---|
+| New / info | `#EFF6FF` | `#1D4ED8` / `#3B82F6` | new candidates, internal notes |
+| Screening / warning | `#FFF7ED` | `#C2410C` / DM Orange | phone screen stage, paused integrations |
+| Interviewing / active | `#F5F3FF` | `#6D28D9` / `#7C3AED` | interview stage |
+| Success / go | `#ECFDF5` or `#F0FDF4` | `#065F46` or `#15803D` | offer, hired, open, accepted, connected |
+| Danger / stop | `#FEF2F2` | `#991B1B` | rejected, expired, declined |
+| Pending | `#FFFBEB` | `#B45309` | pending approval, awaiting response |
+| Neutral / inactive | Gray-100 | Gray-500 | draft, closed, not connected |
+
+**Rule:** this ramp is for identity/status badges only, never for structural chrome. It doesn't compete with the Single-Job Rule below; navy/green/orange still each have exactly one job as brand colors, and this ramp is the separate, semantic vocabulary for "what state is this record in."
 
 ### Named Rules
 **The Single-Job Rule.** Every brand color has exactly one semantic job — navy is structure, green is "good," orange is "urgent." None of the three is ever repurposed decoratively (no navy-as-accent-on-a-white-card, no green used for a neutral CTA). If a new screen needs a fourth meaning, it borrows from the semantic state colors (`info` `#3B82F6`, `warning` `#F59E0B`) before inventing a new brand hue.

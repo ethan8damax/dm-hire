@@ -37,7 +37,7 @@ export default function Offers() {
   const rows = offers.map((o) => ({
     ...o,
     candidateName: candidates.find((c) => c.id === o.candidateId)?.name ?? 'Unknown',
-    jobTitle: jobs.find((j) => j.id === o.jobId)?.title ?? '—',
+    jobTitle: jobs.find((j) => j.id === o.jobId)?.title ?? '-',
     daysLeft: daysUntil(o.expiryDate),
   }))
 
@@ -65,11 +65,11 @@ export default function Offers() {
       ),
     },
     { key: 'salary', label: 'Salary', sortable: true, render: (r) => `$${r.salary.toLocaleString()}` },
-    { key: 'sentDate', label: 'Sent', sortable: true, render: (r) => r.sentDate ?? '—' },
+    { key: 'sentDate', label: 'Sent', sortable: true, render: (r) => r.sentDate ?? '-' },
     {
       key: 'expiryDate', label: 'Expires', sortable: true,
       render: (r) => {
-        if (r.status !== 'awaiting') return r.expiryDate ?? '—'
+        if (r.status !== 'awaiting') return r.expiryDate ?? '-'
         return (
           <span className={r.daysLeft <= 2 ? 'offer-expiry-urgent' : ''}>
             {r.expiryDate} ({r.daysLeft >= 0 ? `${r.daysLeft}d left` : 'overdue'})
@@ -99,13 +99,14 @@ export default function Offers() {
         <div className="notif-strip offer-notif-strip" data-tour="tour-offers-notif">
           <AlertTriangle size={16} />
           <span>
-            <strong>{expiringOffers.length} offer{expiringOffers.length === 1 ? '' : 's'} expiring soon</strong>
-            {' — '}
+            <strong>{expiringOffers.length} offer{expiringOffers.length === 1 ? '' : 's'} expiring soon.</strong>
+            {' '}
             {expiringOffers.map((o) => o.candidateName).join(', ')} {expiringOffers.length === 1 ? "hasn't" : "haven't"} responded yet.
           </span>
           <Button variant="ghost" size="sm" disabled={reminderPhase !== 'idle'} onClick={handleSendReminders}>
             {reminderPhase === 'sending' && <Loader2 size={14} className="offer-spin" />}
-            {reminderPhase === 'sending' ? 'Sending…' : reminderPhase === 'sent' ? 'Reminders sent ✓' : `Send Reminders (${expiringOffers.length})`}
+            {reminderPhase === 'sent' && <CheckCircle2 size={14} />}
+            {reminderPhase === 'sending' ? 'Sending…' : reminderPhase === 'sent' ? 'Reminders sent' : `Send Reminders (${expiringOffers.length})`}
           </Button>
         </div>
       )}
