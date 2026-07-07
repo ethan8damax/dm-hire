@@ -1,0 +1,18 @@
+{
+  "extraKnownMarketplaces": {
+    "superpowers-marketplace": {
+      "source": { "source": "github", "repo": "obra/superpowers-marketplace" }
+    },
+    "ponytail": {
+      "source": { "source": "git", "url": "https://github.com/DietrichGebert/ponytail.git" }
+    },
+    "impeccable": {
+      "source": { "source": "github", "repo": "pbakaus/impeccable" }
+    }
+  },
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": true,
+    "ponytail@ponytail": true,
+    "impeccable@impeccable": true
+  }
+}
