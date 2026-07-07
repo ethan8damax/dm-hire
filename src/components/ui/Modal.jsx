@@ -1,11 +1,27 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import './Modal.css'
 
 const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+const CLOSE_ANIM_MS = 160
 
 export default function Modal({ open, onClose, title, children, footer }) {
   const dialogRef = useRef(null)
+  const [rendered, setRendered] = useState(open)
+  const [closing, setClosing] = useState(false)
+
+  useEffect(() => {
+    if (open) {
+      setRendered(true)
+      setClosing(false)
+      return
+    }
+    if (!rendered) return
+    setClosing(true)
+    const timeout = setTimeout(() => { setRendered(false); setClosing(false) }, CLOSE_ANIM_MS)
+    return () => clearTimeout(timeout)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -41,12 +57,12 @@ export default function Modal({ open, onClose, title, children, footer }) {
     }
   }, [open, onClose])
 
-  if (!open) return null
+  if (!rendered) return null
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className={`modal-overlay${closing ? ' closing' : ''}`} onClick={onClose}>
       <div
-        className="modal"
+        className={`modal${closing ? ' closing' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-label={title}

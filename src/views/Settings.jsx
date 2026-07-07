@@ -6,6 +6,7 @@ import Button from '../components/ui/Button'
 import FilterChip from '../components/ui/FilterChip'
 import Modal from '../components/ui/Modal'
 import DataTable from '../components/ui/DataTable'
+import { useSimulatedLoad } from '../hooks/useSimulatedLoad'
 import { offices as initialOffices } from '../data/offices'
 import { roleWorkflows } from '../data/workflows'
 import { onboardingPackets as initialPackets } from '../data/onboardingPackets'
@@ -162,6 +163,7 @@ function WorkflowsTab() {
         <div className="settings-stage-row settings-stage-row-hdr">
           <span>Stage</span><span>Approver</span><span>SLA (days)</span><span />
         </div>
+        {stages.length === 0 && <div className="settings-hint">No stages in this workflow yet — add one below.</div>}
         {stages.map((s, i) => (
           <div className="settings-stage-row" key={i}>
             <input value={s.name} onChange={(e) => updateStage(i, 'name', e.target.value)} />
@@ -335,6 +337,7 @@ function UsersTab() {
   const [users, setUsers] = useState(initialUsers)
   const [modalOpen, setModalOpen] = useState(false)
   const [phase, setPhase] = useState('idle') // idle | inviting
+  const loading = useSimulatedLoad()
   const [form, setForm] = useState({ name: '', email: '', role: 'Recruiter' })
 
   function invite() {
@@ -370,7 +373,7 @@ function UsersTab() {
         <Button variant="primary" size="sm" onClick={() => setModalOpen(true)}><Plus size={14} /> Invite User</Button>
       </div>
 
-      <Card><DataTable columns={columns} rows={users} /></Card>
+      <Card><DataTable columns={columns} rows={users} loading={loading} /></Card>
 
       <Modal
         open={modalOpen}

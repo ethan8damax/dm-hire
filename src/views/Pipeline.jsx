@@ -14,6 +14,11 @@ import './Pipeline.css'
 const CURRENT_RECRUITER = 'T. Smith'
 const CURRENT_HM_ID = 'user-002' // R. Patel — the assumed logged-in Hiring Manager
 const HM_RESTRICTED_COLUMNS = ['new', 'offer'] // no unscreened applicants, no offer management
+const TODAY = '2026-07-07'
+
+function daysUntil(dateStr) {
+  return Math.ceil((new Date(dateStr) - new Date(TODAY)) / (1000 * 60 * 60 * 24))
+}
 
 const COLUMNS = [
   { key: 'new', label: 'New Applicants', dot: '#3B82F6' },
@@ -96,8 +101,11 @@ function cardPropsForColumn(columnKey, candidate, isHiringManager) {
   }
   if (columnKey === 'offer') {
     const offer = offers.find((o) => o.candidateId === candidate.id)
-    const actions = [{ label: 'Send Reminder', tone: 'warn' }, { label: 'Extend', tone: 'accent' }]
-    if (offer?.status === 'awaiting') {
+    const isExpiringSoon = offer?.status === 'awaiting' && daysUntil(offer.expiryDate) >= 0 && daysUntil(offer.expiryDate) <= 5
+    const actions = isExpiringSoon
+      ? [{ label: 'Send Reminder', tone: 'warn' }, { label: 'Extend', tone: 'accent' }]
+      : [{ label: 'Extend', tone: 'accent' }]
+    if (isExpiringSoon) {
       return { note: `⚠ Offer expires ${offer.expiryDate}`, noteVariant: 'warn', actions }
     }
     return { note: `${candidate.daysInStage}d in stage`, actions }

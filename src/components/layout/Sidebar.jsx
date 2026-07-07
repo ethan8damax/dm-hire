@@ -56,6 +56,7 @@ export default function Sidebar() {
                 key={to}
                 to={to}
                 end={end}
+                aria-label={label}
                 className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
               >
                 <Icon size={18} strokeWidth={2} />
@@ -69,6 +70,7 @@ export default function Sidebar() {
           <div className="sidebar-section-label">Demo</div>
           <NavLink
             to={DEMO_ITEM.to}
+            aria-label={DEMO_ITEM.label}
             className={({ isActive }) => `sidebar-link sidebar-link-demo${isActive ? ' active' : ''}`}
           >
             <DEMO_ITEM.icon size={18} strokeWidth={2} />

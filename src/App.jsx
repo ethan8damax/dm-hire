@@ -13,7 +13,6 @@ import Settings from './views/Settings'
 import InternalJobs from './views/InternalJobs'
 import CandidatePortal from './views/CandidatePortal'
 import WhyDMHire from './views/WhyDMHire'
-import ComponentTest from './views/ComponentTest'
 
 export default function App() {
   return (
@@ -35,8 +34,6 @@ export default function App() {
             </Route>
             {/* Candidate-facing portal renders full-page — no recruiter sidebar/topbar chrome */}
             <Route path="/portal" element={<CandidatePortal />} />
-            {/* Sprint 0b dev tool — remove before final deploy (Sprint 10) */}
-            <Route path="/test" element={<ComponentTest />} />
           </Routes>
         </BrowserRouter>
       </TourProvider>

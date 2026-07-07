@@ -7,7 +7,9 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-6);
+  animation: modal-overlay-in 160ms ease-out;
 }
+.modal-overlay.closing { animation: modal-overlay-out 160ms ease-in forwards; }
 .modal {
   background: white;
   border-radius: var(--radius-lg);
@@ -17,7 +19,14 @@
   max-height: calc(100vh - var(--space-16));
   display: flex;
   flex-direction: column;
+  animation: modal-in 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+.modal.closing { animation: modal-out 160ms ease-in forwards; }
+
+@keyframes modal-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-overlay-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes modal-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes modal-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(8px) scale(.98); } }
 .modal-header {
   padding: var(--space-5) var(--space-6);
   border-bottom: 1px solid var(--color-gray-100);

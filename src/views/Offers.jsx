@@ -7,6 +7,7 @@ import Button from '../components/ui/Button'
 import FilterChip from '../components/ui/FilterChip'
 import DataTable from '../components/ui/DataTable'
 import EmptyState from '../components/ui/EmptyState'
+import { useSimulatedLoad } from '../hooks/useSimulatedLoad'
 import { offers } from '../data/offers'
 import { candidates } from '../data/candidates'
 import { jobs } from '../data/jobs'
@@ -31,6 +32,7 @@ export default function Offers() {
   const navigate = useNavigate()
   const [filter, setFilter] = useState('all')
   const [reminderPhase, setReminderPhase] = useState('idle') // idle | sending | sent
+  const loading = useSimulatedLoad()
 
   const rows = offers.map((o) => ({
     ...o,
@@ -118,7 +120,7 @@ export default function Offers() {
         <EmptyState title="No offers" subtitle="No offers match this filter." />
       ) : (
         <Card data-tour="tour-offers-list">
-          <DataTable columns={columns} rows={filteredRows} onRowClick={openOffer} />
+          <DataTable columns={columns} rows={filteredRows} onRowClick={openOffer} loading={loading} />
         </Card>
       )}
     </div>

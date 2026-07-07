@@ -61,7 +61,7 @@ function buildTimeline(candidate) {
     const status = stageIdx === -1 ? 'pending' : i < stageIdx ? 'complete' : i === stageIdx ? 'active' : 'pending'
     let date, note
     if (status !== 'pending') {
-      const sc = candidate.scorecard[i] ?? candidate.scorecard[candidate.scorecard.length - 1]
+      const sc = candidate.scorecard[i]
       if (sc) {
         date = sc.date
         note = `Scorecard submitted by ${sc.interviewer}`
@@ -97,6 +97,7 @@ export default function CandidateProfile() {
   const [offer, setOffer] = useState(() => initialOffers.find((o) => o.candidateId === id) ?? null)
   const [offerEditing, setOfferEditing] = useState(false)
   const [offerPhase, setOfferPhase] = useState('idle') // idle | sending
+  const [notSelected, setNotSelected] = useState(false)
 
   useEffect(() => {
     setActiveTab(location.state?.tab ?? 'timeline')
@@ -105,6 +106,7 @@ export default function CandidateProfile() {
     setOffer(initialOffers.find((o) => o.candidateId === id) ?? null)
     setOfferEditing(false)
     setOfferPhase('idle')
+    setNotSelected(false)
   }, [id, candidate, location])
 
   if (!candidate) {
@@ -173,6 +175,11 @@ export default function CandidateProfile() {
     }, 1000)
   }
 
+  function handleMarkNotSelected() {
+    if (!window.confirm(`Mark ${candidate.name} as Not Selected?`)) return
+    setNotSelected(true)
+  }
+
   return (
     <div className="candidate-profile">
       <div className="page-header cp-header">
@@ -192,7 +199,11 @@ export default function CandidateProfile() {
         <div className="cp-header-actions">
           <Button variant="ghost" size="sm" onClick={() => setActiveTab('comms')}><Mail size={14} /> Email</Button>
           <Button variant="ghost" size="sm" onClick={() => setActiveTab('schedule')}><CalendarClock size={14} /> Schedule</Button>
-          {!isHiringManager && <Button variant="accent" size="sm" onClick={() => setActiveTab('offer')}><FileSignature size={14} /> Generate Offer</Button>}
+          {!isHiringManager && (
+            <Button variant="accent" size="sm" onClick={() => setActiveTab('offer')}>
+              <FileSignature size={14} /> {offer ? 'View Offer' : 'Generate Offer'}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -223,11 +234,22 @@ export default function CandidateProfile() {
                 </div>
               )}
             </div>
-            <div className="cp-actions">
-              {!isHiringManager && <Button variant="primary" onClick={() => setActiveTab('offer')} className="cp-full-btn">Generate Offer Letter</Button>}
-              <Button variant="ghost" onClick={() => setActiveTab('schedule')} className="cp-full-btn"><CalendarClock size={14} /> Schedule Interview</Button>
-              <Button variant="danger" className="cp-full-btn cp-danger-ghost">Mark Not Selected</Button>
-            </div>
+            {notSelected ? (
+              <div className="cp-not-selected-banner">
+                <span>{candidate.name} marked as Not Selected.</span>
+                <button type="button" className="cp-undo-link" onClick={() => setNotSelected(false)}>Undo</button>
+              </div>
+            ) : (
+              <div className="cp-actions">
+                {!isHiringManager && (
+                  <Button variant="primary" onClick={() => setActiveTab('offer')} className="cp-full-btn">
+                    {offer ? 'View Offer' : 'Generate Offer Letter'}
+                  </Button>
+                )}
+                <Button variant="ghost" onClick={() => setActiveTab('schedule')} className="cp-full-btn"><CalendarClock size={14} /> Schedule Interview</Button>
+                <Button variant="danger" className="cp-full-btn cp-danger-ghost" onClick={handleMarkNotSelected}>Mark Not Selected</Button>
+              </div>
+            )}
           </Card>
 
           <Card>
@@ -247,78 +269,117 @@ export default function CandidateProfile() {
         </div>
 
         <div className="cp-right">
-          <div className="detail-tabs">
+          <div className="detail-tabs" role="tablist" aria-label="Candidate detail sections">
             {tabs.map((t) => (
-              <div key={t.key} className={`dtab${activeTab === t.key ? ' active' : ''}`} onClick={() => setActiveTab(t.key)} data-tour={`tour-cp-${t.key}`}>
+              <button
+                type="button"
+                key={t.key}
+                role="tab"
+                id={`cp-tab-${t.key}`}
+                aria-selected={activeTab === t.key}
+                aria-controls={`cp-panel-${t.key}`}
+                tabIndex={activeTab === t.key ? 0 : -1}
+                className={`dtab${activeTab === t.key ? ' active' : ''}`}
+                onClick={() => setActiveTab(t.key)}
+                onKeyDown={(e) => {
+                  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+                  e.preventDefault()
+                  const i = tabs.findIndex((x) => x.key === t.key)
+                  const nextI = e.key === 'ArrowRight' ? (i + 1) % tabs.length : (i - 1 + tabs.length) % tabs.length
+                  setActiveTab(tabs[nextI].key)
+                  document.getElementById(`cp-tab-${tabs[nextI].key}`)?.focus()
+                }}
+                data-tour={`tour-cp-${t.key}`}
+              >
                 {t.label}
-              </div>
+              </button>
             ))}
           </div>
 
           {activeTab === 'timeline' && (
-            <Card><Card.Body><Timeline steps={buildTimeline(candidate)} /></Card.Body></Card>
+            <div role="tabpanel" id="cp-panel-timeline" aria-labelledby="cp-tab-timeline">
+              <Card><Card.Body><Timeline steps={buildTimeline(candidate)} /></Card.Body></Card>
+            </div>
           )}
 
           {activeTab === 'notes' && (
-            <Card>
-              <Card.Body className="cp-notes-body">
-                {notes.length === 0 && <div className="cp-empty-inline">No notes yet.</div>}
-                {notes.map((n, i) => (
-                  <div className="cp-note" key={i}>
-                    <Avatar initials={n.author.split(' ').map((p) => p[0]).join('')} size="sm" />
-                    <div className="cp-note-body">
-                      <div className="cp-note-meta">{n.author} · {n.office} · {n.date}</div>
-                      <div className="cp-note-text">{n.body}</div>
+            <div role="tabpanel" id="cp-panel-notes" aria-labelledby="cp-tab-notes">
+              <Card>
+                <Card.Body className="cp-notes-body">
+                  {notes.length === 0 && <div className="cp-empty-inline">No notes yet.</div>}
+                  {notes.map((n, i) => (
+                    <div className="cp-note" key={i}>
+                      <Avatar initials={n.author.split(' ').map((p) => p[0]).join('')} size="sm" />
+                      <div className="cp-note-body">
+                        <div className="cp-note-meta">{n.author} · {n.office} · {n.date}</div>
+                        <div className="cp-note-text">{n.body}</div>
+                      </div>
                     </div>
+                  ))}
+                  <div className="cp-note-compose">
+                    <textarea
+                      placeholder="Add a note, visible to all offices…"
+                      value={noteDraft}
+                      onChange={(e) => setNoteDraft(e.target.value)}
+                    />
+                    <Button variant="primary" size="sm" disabled={!noteDraft.trim()} onClick={handleAddNote}>Add Note</Button>
                   </div>
-                ))}
-                <div className="cp-note-compose">
-                  <textarea
-                    placeholder="Add a note, visible to all offices…"
-                    value={noteDraft}
-                    onChange={(e) => setNoteDraft(e.target.value)}
-                  />
-                  <Button variant="primary" size="sm" onClick={handleAddNote}>Add Note</Button>
-                </div>
-              </Card.Body>
-            </Card>
+                </Card.Body>
+              </Card>
+            </div>
           )}
 
           {activeTab === 'scorecard' && (
-            <Card>
-              <Card.Body>
-                {candidate.scorecard.length === 0 ? (
-                  <EmptyState title="No scorecards submitted yet" subtitle="Scorecards appear here once interviewers submit feedback." />
-                ) : (
-                  candidate.scorecard.map((sc, i) => (
-                    <div className="cp-scorecard-entry" key={i}>
-                      <div className="cp-scorecard-hdr">{sc.interviewer} · {sc.date}</div>
-                      {Object.entries(sc.dimensions).map(([key, value]) => (
-                        <ScoreBar key={key} label={DIMENSION_LABELS[key] ?? key} value={value * 10} />
-                      ))}
-                    </div>
-                  ))
-                )}
-              </Card.Body>
-            </Card>
+            <div role="tabpanel" id="cp-panel-scorecard" aria-labelledby="cp-tab-scorecard">
+              <Card>
+                <Card.Body>
+                  {candidate.scorecard.length === 0 ? (
+                    <EmptyState title="No scorecards submitted yet" subtitle="Scorecards appear here once interviewers submit feedback." />
+                  ) : (
+                    candidate.scorecard.map((sc, i) => (
+                      <div className="cp-scorecard-entry" key={i}>
+                        <div className="cp-scorecard-hdr">{sc.interviewer} · {sc.date}</div>
+                        {Object.entries(sc.dimensions).map(([key, value]) => (
+                          <ScoreBar key={key} label={DIMENSION_LABELS[key] ?? key} value={value * 10} />
+                        ))}
+                      </div>
+                    ))
+                  )}
+                </Card.Body>
+              </Card>
+            </div>
           )}
 
-          {activeTab === 'comms' && <CommsTab key={candidate.id} candidate={candidate} />}
-          {activeTab === 'schedule' && <ScheduleTab key={candidate.id} candidate={candidate} />}
+          {activeTab === 'comms' && (
+            <div role="tabpanel" id="cp-panel-comms" aria-labelledby="cp-tab-comms">
+              <CommsTab key={candidate.id} candidate={candidate} />
+            </div>
+          )}
+          {activeTab === 'schedule' && (
+            <div role="tabpanel" id="cp-panel-schedule" aria-labelledby="cp-tab-schedule">
+              <ScheduleTab key={candidate.id} candidate={candidate} />
+            </div>
+          )}
 
           {activeTab === 'offer' && !isHiringManager && (
-            <OfferTab
-              offer={offer}
-              editing={offerEditing}
-              phase={offerPhase}
-              onGenerate={handleGenerateOffer}
-              onEdit={() => setOfferEditing(true)}
-              onChange={setOffer}
-              onSendForApproval={handleSendForApproval}
-            />
+            <div role="tabpanel" id="cp-panel-offer" aria-labelledby="cp-tab-offer">
+              <OfferTab
+                offer={offer}
+                editing={offerEditing}
+                phase={offerPhase}
+                onGenerate={handleGenerateOffer}
+                onEdit={() => setOfferEditing(true)}
+                onChange={setOffer}
+                onSendForApproval={handleSendForApproval}
+              />
+            </div>
           )}
 
-          {activeTab === 'docs' && <DocsTab candidate={candidate} offer={offer} />}
+          {activeTab === 'docs' && (
+            <div role="tabpanel" id="cp-panel-docs" aria-labelledby="cp-tab-docs">
+              <DocsTab candidate={candidate} offer={offer} />
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -347,6 +408,7 @@ function CommsTab({ candidate }) {
             <textarea placeholder="Write an email…" value={emailDraft} onChange={(e) => setEmailDraft(e.target.value)} />
             <Button
               variant="primary" size="sm"
+              disabled={!emailDraft.trim()}
               onClick={() => {
                 if (!emailDraft.trim()) return
                 setEmailThread([...emailThread, { from: CURRENT_RECRUITER, date: TODAY, body: emailDraft.trim() }])
@@ -367,6 +429,7 @@ function CommsTab({ candidate }) {
             <textarea placeholder="Write a text message…" value={smsDraft} onChange={(e) => setSmsDraft(e.target.value)} />
             <Button
               variant="primary" size="sm"
+              disabled={!smsDraft.trim()}
               onClick={() => {
                 if (!smsDraft.trim()) return
                 setSmsThread([...smsThread, { from: CURRENT_RECRUITER, date: TODAY, body: smsDraft.trim() }])
@@ -574,6 +637,12 @@ function OfferTab({ offer, editing, phase, onGenerate, onEdit, onChange, onSendF
             <Button variant="primary" disabled={phase === 'sending'} onClick={onSendForApproval}>
               {phase === 'sending' ? <Loader2 size={14} className="cp-spin" /> : null}
               {phase === 'sending' ? 'Sending…' : 'Send for Approval →'}
+            </Button>
+          )}
+          {offer.status === 'expired' && (
+            <Button variant="primary" disabled={phase === 'sending'} onClick={onSendForApproval}>
+              {phase === 'sending' ? <Loader2 size={14} className="cp-spin" /> : null}
+              {phase === 'sending' ? 'Resending…' : 'Resend Offer →'}
             </Button>
           )}
         </div>

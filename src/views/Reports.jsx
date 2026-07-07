@@ -6,6 +6,7 @@ import Badge from '../components/ui/Badge'
 import DataTable from '../components/ui/DataTable'
 import TrendChart from '../components/ui/TrendChart'
 import PipelineFunnel from '../components/ui/PipelineFunnel'
+import { useSimulatedLoad } from '../hooks/useSimulatedLoad'
 import { analytics } from '../data/analytics'
 import { jobs } from '../data/jobs'
 import './Reports.css'
@@ -26,6 +27,7 @@ export default function Reports() {
   const [dateRange, setDateRange] = useState(DATE_RANGES[0])
   const [selectedJobId, setSelectedJobId] = useState(jobs[0].id)
   const selectedJob = jobs.find((j) => j.id === selectedJobId)
+  const loading = useSimulatedLoad()
 
   const sourceRows = analytics.sourceRoi.map((s) => ({
     ...s,
@@ -71,6 +73,7 @@ export default function Reports() {
             ]}
             rows={analytics.timeToFill.byDepartment}
             keyField="dept"
+            loading={loading}
           />
         </Card.Body>
       </Card>
@@ -85,6 +88,7 @@ export default function Reports() {
             ]}
             rows={analytics.costPerHire.bySource}
             keyField="source"
+            loading={loading}
           />
         </Card.Body>
       </Card>
@@ -100,6 +104,7 @@ export default function Reports() {
             ]}
             rows={analytics.offerAcceptanceRate.byRoleType}
             keyField="role"
+            loading={loading}
           />
         </Card.Body>
       </Card>
@@ -114,6 +119,7 @@ export default function Reports() {
             ]}
             rows={analytics.interviewToOfferRatio.byDepartment}
             keyField="dept"
+            loading={loading}
           />
         </Card.Body>
       </Card>
@@ -147,6 +153,7 @@ export default function Reports() {
             ]}
             rows={sourceRows}
             keyField="source"
+            loading={loading}
           />
         </Card.Body>
       </Card>

@@ -22,3 +22,18 @@
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tbody tr { transition: background var(--transition-fast); cursor: pointer; }
 .data-table tbody tr:hover { background: var(--color-gray-50); }
+.data-table-skeleton-row { cursor: default; }
+.data-table-skeleton-row:hover { background: none; }
+.data-table-shimmer {
+  display: block;
+  height: 14px;
+  width: 70%;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
+  background-size: 200% 100%;
+  animation: data-table-shimmer-sweep 1.4s ease-in-out infinite;
+}
+@keyframes data-table-shimmer-sweep {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}

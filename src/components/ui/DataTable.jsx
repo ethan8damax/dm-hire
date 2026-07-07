@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { ChevronUp, ChevronDown } from 'lucide-react'
 import './DataTable.css'
 
+const SKELETON_ROWS = 5
+
 // columns: [{ key, label, sortable, render(row) }]
-export default function DataTable({ columns, rows, keyField = 'id', onRowClick }) {
+export default function DataTable({ columns, rows, keyField = 'id', onRowClick, loading = false }) {
   const [sortKey, setSortKey] = useState(null)
   const [sortDir, setSortDir] = useState('asc')
 
@@ -48,13 +50,21 @@ export default function DataTable({ columns, rows, keyField = 'id', onRowClick }
         </tr>
       </thead>
       <tbody>
-        {sortedRows.map((row) => (
-          <tr key={row[keyField]} onClick={() => onRowClick?.(row)}>
-            {columns.map((col) => (
-              <td key={col.key}>{col.render ? col.render(row) : row[col.key]}</td>
+        {loading
+          ? Array.from({ length: SKELETON_ROWS }, (_, i) => (
+              <tr key={i} className="data-table-skeleton-row">
+                {columns.map((col) => (
+                  <td key={col.key}><span className="data-table-shimmer" /></td>
+                ))}
+              </tr>
+            ))
+          : sortedRows.map((row) => (
+              <tr key={row[keyField]} onClick={() => onRowClick?.(row)}>
+                {columns.map((col) => (
+                  <td key={col.key}>{col.render ? col.render(row) : row[col.key]}</td>
+                ))}
+              </tr>
             ))}
-          </tr>
-        ))}
       </tbody>
     </table>
   )

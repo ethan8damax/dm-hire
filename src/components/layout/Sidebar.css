@@ -77,3 +77,13 @@
   background: var(--color-green-dark);
   color: var(--color-white);
 }
+
+/* Collapse to icon-only rail on narrow laptop widths — labels hide, icons stay centered */
+@media (max-width: 1100px) {
+  .sidebar { width: 64px; min-width: 64px; }
+  .sidebar-logo { padding: 0; justify-content: center; }
+  .sidebar-logo span { display: none; }
+  .sidebar-section-label { display: none; }
+  .sidebar-link { justify-content: center; padding: var(--space-2); }
+  .sidebar-link span { display: none; }
+}
