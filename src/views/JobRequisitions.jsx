@@ -14,6 +14,7 @@ import EmptyState from '../components/ui/EmptyState'
 import { jobs as initialJobs } from '../data/jobs'
 import { offices } from '../data/offices'
 import { candidates } from '../data/candidates'
+import { roleWorkflows as ROLE_TEMPLATES } from '../data/workflows'
 import './JobRequisitions.css'
 
 const FILTERS = [
@@ -29,45 +30,6 @@ const DEPT_ICONS = {
   'Human Resources': Users,
   'Client Services': Handshake,
   'Engineering': Code2,
-}
-
-const ROLE_TEMPLATES = {
-  intern: {
-    label: 'Intern',
-    stages: ['Phone Screen', 'Team Interview', 'Offer'],
-    knockoutYears: 0,
-    approvalChain: ['hiring_manager'],
-  },
-  ic: {
-    label: 'Individual Contributor',
-    stages: ['Phone Screen', 'Interview', 'Offer'],
-    knockoutYears: 1,
-    approvalChain: ['hiring_manager'],
-  },
-  manager: {
-    label: 'Manager',
-    stages: ['Phone Screen', 'Interview', 'Panel Interview', 'Offer'],
-    knockoutYears: 3,
-    approvalChain: ['hiring_manager', 'hr_director'],
-  },
-  director: {
-    label: 'Director',
-    stages: ['Phone Screen', 'Interview', 'Panel Interview', 'Executive Interview', 'Offer'],
-    knockoutYears: 8,
-    approvalChain: ['hiring_manager', 'hr_director', 'vp_finance'],
-  },
-  csuite: {
-    label: 'C-Suite',
-    stages: ['Executive Screen', 'Board Interview', 'Offer'],
-    knockoutYears: 12,
-    approvalChain: ['hiring_manager', 'hr_director', 'vp_finance'],
-  },
-  floor: {
-    label: 'Production Floor',
-    stages: ['Phone Screen', 'In-Person Interview', 'Offer'],
-    knockoutYears: 0,
-    approvalChain: ['hiring_manager'],
-  },
 }
 
 const APPROVAL_ROLE_LABELS = {
@@ -327,7 +289,7 @@ function NewRequisitionModal({ open, onClose, onCreate }) {
                 </button>
               ))}
             </div>
-            <div className="req-role-preview">Interview stages: {template.stages.join(' → ')}</div>
+            <div className="req-role-preview">Interview stages: {template.stages.map((s) => s.name).join(' → ')}</div>
           </div>
 
           <div className="req-section req-boards">
