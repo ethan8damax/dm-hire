@@ -16,7 +16,7 @@
 .metric-value {
   font-size: var(--text-3xl);
   font-weight: 800;
-  color: var(--color-navy);
+  color: var(--color-maroon);
   letter-spacing: -0.02em;
   line-height: 1;
   margin-bottom: var(--space-2);
@@ -28,7 +28,7 @@
   align-items: center;
   gap: var(--space-1);
 }
-.metric-change.up { color: var(--color-green-dark); }
+.metric-change.up { color: var(--color-cyan-dark); }
 .metric-change.down { color: var(--color-danger); }
 .metric-icon {
   width: 40px;
@@ -39,7 +39,7 @@
   justify-content: center;
   margin-bottom: var(--space-4);
 }
-.metric-icon.navy   { background: rgba(13,45,92,.08); color: var(--color-navy); }
-.metric-icon.green  { background: rgba(109,179,63,.12); color: var(--color-green-dark); }
-.metric-icon.orange { background: rgba(229,84,28,.1); color: var(--color-dm-orange); }
+.metric-icon.navy   { background: rgba(109,23,78,.08); color: var(--color-maroon); }
+.metric-icon.green  { background: rgba(40,166,188,.12); color: var(--color-cyan-dark); }
+.metric-icon.orange { background: rgba(242,111,45,.1); color: var(--color-dm-orange); }
 .metric-icon.blue   { background: rgba(59,130,246,.1); color: var(--color-info); }

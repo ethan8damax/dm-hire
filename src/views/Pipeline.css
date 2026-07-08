@@ -6,7 +6,7 @@
   font-family: var(--font-family);
   font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--color-navy);
+  color: var(--color-maroon);
   background: white;
   outline: none;
   cursor: pointer;
@@ -84,6 +84,6 @@
 }
 
 .kc-payroll-block { display: flex; flex-direction: column; gap: 3px; }
-.kc-payroll-note { display: inline-flex; align-items: center; gap: 4px; color: var(--color-green-dark); font-weight: 600; }
+.kc-payroll-note { display: inline-flex; align-items: center; gap: 4px; color: var(--color-cyan-dark); font-weight: 600; }
 .kc-payroll-note-pending { color: var(--color-gray-500); }
 .kc-notif-log { font-size: 10px; color: var(--color-gray-400); }

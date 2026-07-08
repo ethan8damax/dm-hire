@@ -42,7 +42,7 @@
 .portal-notch { display: none; }
 
 .portal-topbar {
-  background: var(--color-navy);
+  background: var(--color-maroon);
   color: var(--color-white);
   padding: var(--space-4) var(--space-4) var(--space-3);
   font-weight: 700;
@@ -101,7 +101,7 @@
 
 .portal-full-btn { width: 100%; }
 
-.portal-status-hero { text-align: center; color: var(--color-green-dark); padding: var(--space-4) 0; }
+.portal-status-hero { text-align: center; color: var(--color-cyan-dark); padding: var(--space-4) 0; }
 .portal-status-title { font-size: var(--text-lg); font-weight: 700; color: var(--color-gray-800); margin-top: var(--space-2); }
 .portal-status-sub { font-size: var(--text-sm); color: var(--color-gray-500); margin-top: var(--space-1); }
 
@@ -117,7 +117,7 @@
   font-size: 12px;
   cursor: pointer;
 }
-.portal-slot-selected { border-color: var(--color-navy); background: var(--color-navy); color: var(--color-white); }
+.portal-slot-selected { border-color: var(--color-maroon); background: var(--color-maroon); color: var(--color-white); }
 
 .portal-offer-panel { border: 1px solid var(--color-gray-100); border-radius: var(--radius-md); padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
 .portal-offer-row { display: flex; justify-content: space-between; font-size: var(--text-sm); }
@@ -131,12 +131,12 @@
 
 .portal-step-dots { display: flex; justify-content: center; gap: var(--space-1); padding: var(--space-3) 0; }
 .portal-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-gray-200); }
-.portal-dot.active { background: var(--color-green); }
+.portal-dot.active { background: var(--color-cyan); }
 
 /* Phone-frame bezel — desktop only; mobile gets a full-bleed screen */
 @media (min-width: 768px) {
   .portal-frame {
-    background: var(--color-navy-dark);
+    background: var(--color-maroon-dark);
     border-radius: 40px;
     padding: 14px;
     box-shadow: var(--shadow-xl);
@@ -145,7 +145,7 @@
     display: block;
     width: 80px;
     height: 18px;
-    background: var(--color-navy-dark);
+    background: var(--color-maroon-dark);
     border-radius: 0 0 12px 12px;
     margin: 0 auto;
     position: relative;

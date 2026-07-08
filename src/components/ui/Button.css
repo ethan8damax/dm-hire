@@ -14,14 +14,14 @@
   white-space: nowrap;
 }
 
-.btn-primary { background: var(--color-navy); color: white; }
-.btn-primary:hover { background: var(--color-navy-light); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-primary { background: var(--color-maroon); color: white; }
+.btn-primary:hover { background: var(--color-maroon-light); transform: translateY(-1px); box-shadow: var(--shadow-md); }
 
-.btn-accent { background: var(--color-green); color: white; }
-.btn-accent:hover { background: var(--color-green-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-accent { background: var(--color-cyan); color: white; }
+.btn-accent:hover { background: var(--color-cyan-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
 
-.btn-outline { background: transparent; color: var(--color-navy); border: 1.5px solid var(--color-navy); }
-.btn-outline:hover { background: var(--color-navy); color: white; }
+.btn-outline { background: transparent; color: var(--color-maroon); border: 1.5px solid var(--color-maroon); }
+.btn-outline:hover { background: var(--color-maroon); color: white; }
 
 .btn-ghost { background: transparent; color: var(--color-gray-600); border: 1.5px solid var(--color-gray-200); }
 .btn-ghost:hover { background: var(--color-gray-50); color: var(--color-gray-800); }

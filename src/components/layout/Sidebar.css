@@ -2,25 +2,27 @@
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
   height: 100vh;
-  background: var(--color-navy-dark);
+  background: var(--color-maroon-dark);
   display: flex;
   flex-direction: column;
   position: sticky;
   top: 0;
 }
 
+/* Placeholder wordmark pending real Doeren Mayhew logo files (SVG/PNG) — see DESIGN.md Logo section */
 .sidebar-logo {
   height: var(--topbar-height);
   display: flex;
   align-items: center;
   padding: 0 var(--space-6);
+  font-family: var(--font-family-display);
   font-size: var(--text-xl);
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--color-white);
 }
 
-.sidebar-logo span { color: var(--color-green); }
+.sidebar-logo span { color: var(--color-cyan); }
 
 .sidebar-nav {
   flex: 1;
@@ -54,27 +56,27 @@
 }
 
 .sidebar-link:hover {
-  background: var(--color-navy-light);
+  background: var(--color-maroon-light);
   color: var(--color-white);
 }
 
 .sidebar-link.active {
-  background: var(--color-navy-light);
+  background: var(--color-maroon-light);
   color: var(--color-white);
 }
 
 .sidebar-section-demo {
-  border-top: 1px solid var(--color-navy-light);
+  border-top: 1px solid var(--color-maroon-light);
   padding-top: var(--space-4);
 }
 
 .sidebar-link-demo {
-  color: var(--color-green-light);
+  color: var(--color-cyan-light);
 }
 
 .sidebar-link-demo:hover,
 .sidebar-link-demo.active {
-  background: var(--color-green-dark);
+  background: var(--color-cyan-dark);
   color: var(--color-white);
 }
 

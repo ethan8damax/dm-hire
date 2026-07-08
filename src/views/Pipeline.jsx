@@ -24,7 +24,7 @@ const COLUMNS = [
   { key: 'new', label: 'New Applicants', dot: '#3B82F6' },
   { key: 'screening', label: 'Phone Screen', dot: 'var(--color-dm-orange)' },
   { key: 'interviewing', label: 'Interviewing', dot: '#7C3AED' },
-  { key: 'offer', label: 'Offer Stage', dot: 'var(--color-green)' },
+  { key: 'offer', label: 'Offer Stage', dot: 'var(--color-cyan)' },
   { key: 'hired', label: 'Hired → Payroll', dot: 'var(--color-success)' },
   { key: 'rejected', label: 'Not Selected', dot: 'var(--color-gray-400)' },
 ]

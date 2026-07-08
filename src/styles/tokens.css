@@ -1,13 +1,14 @@
 :root {
-  /* Brand */
-  --color-navy:        #0D2D5C;
-  --color-navy-light:  #1A4080;
-  --color-navy-dark:   #081D3F;
-  --color-green:       #6DB33F;
-  --color-green-light: #8DC85C;
-  --color-green-dark:  #4E8A28;
-  --color-dm-orange:       #E5541C;
-  --color-dm-orange-light: #F0724A;
+  /* Brand — Doeren Mayhew's real corporate identity (Maroon PMS 2357, Orange PMS 3564,
+     Cyan PMS 6128 + Teal PMS 7700 as the cyan family's dark variant) */
+  --color-maroon:        #6D174E;
+  --color-maroon-light:  #8F2D6B;
+  --color-maroon-dark:   #4A0F37;
+  --color-cyan:       #28A6BC;
+  --color-cyan-light: #59C2D3;
+  --color-cyan-dark:  #145571;
+  --color-dm-orange:       #F26F2D;
+  --color-dm-orange-light: #F6935F;
 
   /* Neutrals */
   --color-white:    #FFFFFF;
@@ -22,14 +23,16 @@
   --color-gray-800: #1E293B;
   --color-gray-900: #0F172A;
 
-  /* Semantic */
-  --color-success:  #22C55E;
+  /* Semantic — success reuses the brand cyan rather than an off-brand green */
+  --color-success:  #28A6BC;
   --color-warning:  #F59E0B;
   --color-danger:   #EF4444;
   --color-info:     #3B82F6;
 
-  /* Typography */
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Typography — Doeren Mayhew's real brand pairing (Mackinac serif / Tenon sans),
+     substituted with the Google Fonts DM's own guide names for on-screen use */
+  --font-family: 'Archivo', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --font-family-display: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
   --text-xs:   0.75rem;
   --text-sm:   0.875rem;
   --text-base: 1rem;

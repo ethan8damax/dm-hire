@@ -184,7 +184,7 @@ export default function Dashboard() {
                   <Button
                     size="sm"
                     className="payroll-sync-btn"
-                    style={{ background: 'white', color: 'var(--color-green-dark)' }}
+                    style={{ background: 'white', color: 'var(--color-cyan-dark)' }}
                   >
                     Sync
                   </Button>

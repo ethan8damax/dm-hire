@@ -20,7 +20,7 @@
   cursor: pointer;
 }
 .settings-nav-item:hover { background: var(--color-gray-50); color: var(--color-gray-700); }
-.settings-nav-item.active { background: var(--color-navy); color: var(--color-white); }
+.settings-nav-item.active { background: var(--color-maroon); color: var(--color-white); }
 
 .settings-panel { flex: 1; min-width: 0; }
 

@@ -58,7 +58,7 @@
 .topbar-persona-btn:hover { color: var(--color-gray-800); }
 .topbar-persona-btn.active {
   background: white;
-  color: var(--color-navy);
+  color: var(--color-maroon);
   box-shadow: var(--shadow-sm);
 }
 
