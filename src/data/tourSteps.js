@@ -53,6 +53,7 @@ export const tourSteps = [
   {
     id: 'step-07',
     route: '/candidates/cand-002',
+    tab: 'notes',
     elementSelector: '[data-tour="tour-cp-notes"]',
     heading: 'Org-wide shared notes',
     body: 'Notes on a candidate are visible across every office. No more re-asking a candidate the same question twice.',
@@ -61,6 +62,7 @@ export const tourSteps = [
   {
     id: 'step-08',
     route: '/candidates/cand-002',
+    tab: 'comms',
     elementSelector: '[data-tour="tour-cp-comms"]',
     heading: 'Built-in SMS + email communication',
     body: 'Text and email threads live right on the candidate profile. No separate phone or inbox required.',
@@ -69,6 +71,7 @@ export const tourSteps = [
   {
     id: 'step-09',
     route: '/candidates/cand-002',
+    tab: 'schedule',
     elementSelector: '[data-tour="tour-cp-schedule"]',
     heading: 'Calendly-style self-scheduling',
     body: 'Candidates pick their own interview slot from the hiring manager\'s real availability, and the invite goes out from the HM\'s own Outlook automatically.',
@@ -77,6 +80,7 @@ export const tourSteps = [
   {
     id: 'step-10',
     route: '/candidates/cand-002',
+    tab: 'scorecard',
     elementSelector: '[data-tour="tour-cp-scorecard"]',
     heading: 'Structured interview scorecards',
     body: 'Every interviewer submits a consistent, dimension-by-dimension scorecard instead of a freeform note.',
@@ -85,6 +89,7 @@ export const tourSteps = [
   {
     id: 'step-11',
     route: '/candidates/cand-002',
+    tab: 'offer',
     elementSelector: '[data-tour="tour-cp-offer"]',
     heading: 'True electronic offer letters',
     body: 'Offers route for approval, send for e-signature, and the audit trail (sent, opened, signed) updates live on this tab.',

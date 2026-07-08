@@ -91,7 +91,9 @@
 
 .payroll-card { display: flex; flex-direction: column; gap: var(--space-3); }
 .payroll-ready {
-  background: linear-gradient(135deg, var(--color-cyan-dark), var(--color-cyan));
+  /* Both stops kept dark (maroon-dark -> cyan-dark) so white text clears 4.5:1 —
+     the lighter --color-cyan end left white text at ~3:1 even at full opacity. */
+  background: linear-gradient(135deg, var(--color-maroon-dark), var(--color-cyan-dark));
   border-radius: var(--radius-lg);
   padding: var(--space-4) var(--space-5);
   display: flex;
@@ -100,7 +102,7 @@
   color: white;
 }
 .payroll-ready-title { font-size: var(--text-sm); font-weight: 700; }
-.payroll-ready-sub { font-size: var(--text-xs); color: rgba(255,255,255,.75); margin-top: 2px; }
+.payroll-ready-sub { font-size: var(--text-xs); color: white; margin-top: 2px; }
 .payroll-sync-btn { margin-left: auto; }
 .payroll-synced-note {
   font-size: var(--text-sm);

@@ -7,8 +7,8 @@
   animation: tour-pulse 1.6s ease-in-out infinite;
 }
 @keyframes tour-pulse {
-  0%, 100% { box-shadow: 0 0 0 9999px rgba(8, 29, 63, .65), 0 0 0 3px rgba(109, 179, 63, .6); }
-  50% { box-shadow: 0 0 0 9999px rgba(8, 29, 63, .65), 0 0 0 8px rgba(109, 179, 63, .15); }
+  0%, 100% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, .6), 0 0 0 3px rgba(40, 166, 188, .6); }
+  50% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, .6), 0 0 0 8px rgba(40, 166, 188, .15); }
 }
 
 .tour-card {

@@ -10,7 +10,7 @@
 }
 .why-banner-text { flex: 1; }
 .why-banner-title { font-size: var(--text-base); font-weight: 700; margin-bottom: var(--space-1); }
-.why-banner-sub { font-size: var(--text-sm); color: rgba(255,255,255,.7); }
+.why-banner-sub { font-size: var(--text-sm); color: rgba(255,255,255,.85); }
 .why-banner-count {
   background: rgba(40,166,188,.2);
   border: 1px solid rgba(40,166,188,.3);
@@ -19,8 +19,8 @@
   text-align: center;
   flex-shrink: 0;
 }
-.why-banner-num { font-size: var(--text-2xl); font-weight: 800; color: var(--color-cyan-light); }
-.why-banner-label { font-size: 11px; color: rgba(255,255,255,.6); text-transform: uppercase; letter-spacing: .06em; }
+.why-banner-num { font-size: var(--text-2xl); font-weight: 800; color: #C8ECF1; }
+.why-banner-label { font-size: 11px; color: rgba(255,255,255,.85); text-transform: uppercase; letter-spacing: .06em; }
 
 .why-story {
   display: flex;
