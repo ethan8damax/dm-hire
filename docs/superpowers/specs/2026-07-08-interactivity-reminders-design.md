@@ -58,6 +58,7 @@ The `reminders` table itself needs no schema change — migration 009 already cr
 
 **`Pipeline.jsx`** (offer-stage column, `cardPropsForColumn`):
 - Takes two new callback params (`onSendReminder`, `onExtend`) from the `Pipeline` component, which owns `useReminders()`/`useOffers()`.
+- **Bug fix required first**: today the `actions` array for the offer column is built unconditionally — `Extend` renders even when `offer` is `undefined` (candidate moved to the offer stage but no offer record created yet) or when the offer is `draft`/`accepted`/`declined`. Clicking either new handler in those states would either throw (`offer.id` on `undefined`) or extend/remind an offer nobody is waiting on. Both actions are gated on `offer?.status === 'awaiting'`; when that's false, the offer column renders no actions (matching "you can't act on an offer that isn't out for signature").
 - "Send Reminder" → `sendReminder({ candidateId, offerId: offer.id, type: 'expiry_reminder', sentBy: CURRENT_RECRUITER, message: \`Reminder sent — offer expires ${offer.expiryDate}\` })`.
 - "Extend" → `updateOffer(offer.id, { expiryDate: addDays(offer.expiryDate, 7) })`.
 
@@ -72,8 +73,8 @@ The `reminders` table itself needs no schema change — migration 009 already cr
 **`CandidateProfile.jsx` (`DocsTab`)**:
 - Drops the shared `docStatus(candidate)` derivation. Reads `candidate.backgroundCheckStatus` / `candidate.drugScreenStatus` directly for each row's label/dimming.
 - Resume "View" → local `useState` flip to "Viewed ✓", no persistence, no revert timer.
-- Certification "Verify" → `updateCandidate(candidate.id, { certVerified: true })`; label swaps from "Verification pending" to "Verified" once `candidate.certVerified` is true.
-- Background Check / Drug Screen "Initiate" → `updateCandidate(candidate.id, { backgroundCheckStatus: 'cleared' })` (or `drugScreenStatus`) when the row is currently `in_progress`. Still disabled when `not_started` (unchanged behavior).
+- Certification "Verify" → `updateCandidate(candidate.id, { certVerified: true })`; label swaps from "Verification pending" to "Verified" once `candidate.certVerified` is true. If a candidate ever has more than one certification listed, all share this single flag — verifying one marks all verified, per the granularity decision in Section 2.
+- Background Check / Drug Screen: the button's label already switches between "Initiate" (`in_progress`) and "View" (`cleared`) — only "Initiate" gets a real transition: `updateCandidate(candidate.id, { backgroundCheckStatus: 'cleared' })` (or `drugScreenStatus`). "View" (shown once `cleared`) has nothing real to view — same local, non-persisted "Viewed ✓" reaction as resume View. Still disabled when `not_started` (unchanged behavior).
 
 ## 6. Error Handling & Loading States
 
