@@ -2057,6 +2057,47 @@ Replace line 162 (the existing `if (!selectedJob)` guard) to add the loading che
   }
 ```
 
+**Also a props-threading gap, same class as Task 24's `JobRow`/`candidates` issue:** `isExpiringOffer(candidate)`, `matchesFilter(candidate, filterKey)`, and `cardPropsForColumn(columnKey, candidate, isHiringManager)` are module-level helper functions (defined above the component, around lines 46-133) that reference the old bare `offers` import directly. They need `offers` threaded through as a parameter:
+
+```jsx
+function isExpiringOffer(candidate, offers) {
+  const offer = offers.find((o) => o.candidateId === candidate.id)
+  return offer?.status === 'awaiting'
+}
+
+function matchesFilter(candidate, filterKey, offers) {
+  switch (filterKey) {
+    case 'mine':
+      return candidate.notes.some((n) => n.author === CURRENT_RECRUITER)
+    case 'needs_action':
+      return candidate.isStale || candidate.isDuplicate || isExpiringOffer(candidate, offers)
+    case 'stale':
+      return candidate.isStale
+    default:
+      return true
+  }
+}
+```
+
+```jsx
+function cardPropsForColumn(columnKey, candidate, isHiringManager, offers) {
+  if (isHiringManager) {
+    const base = cardPropsForColumn(columnKey, candidate, false, offers)
+```
+
+(the two `offers.find(...)` calls already inside `cardPropsForColumn`, at the `'offer'` and `'hired'` column branches, need no further change — they resolve against the new `offers` parameter automatically)
+
+And their two call sites need the same argument added: the `useMemo` factory (`matchesFilter(c, filter, offers)`) and the card render (`cardPropsForColumn(col.key, candidate, isHiringManager, offers)`).
+
+**Critical: the `jobCandidates` `useMemo`'s dependency array must include `candidates` (and `offers`).** The original array was `[selectedJobId, filter]` — safe when `candidates` was a static module import that never changed after load, but now `candidates` is async-loaded and changes from `[]` to populated *after* `selectedJobId` has already settled to its real value on an earlier render. Without `candidates` in the deps, React reuses the memoized (empty) result from the render where `candidates` was still `[]`, and every kanban column silently renders "No candidates" forever despite the data being present and the stage-count badges (computed independently in `useJobs`) showing correctly. This was only caught by an actual browser check — lint and build both passed clean with the bug present. Fix:
+
+```jsx
+  const jobCandidates = useMemo(
+    () => candidates.filter((c) => c.jobId === selectedJobId && matchesFilter(c, filter, offers)),
+    [selectedJobId, filter, candidates, offers],
+  )
+```
+
 No mutation wiring needed here — confirmed by inspection that Pipeline.jsx has no existing stage-transition or data-mutation logic today (card action buttons are decorative, per the product design principle of not adding stage-transition logic until a sprint/task specifically calls for it — that's sub-projects B and C, not this one).
 
 - [ ] **Step 3: Verify**
