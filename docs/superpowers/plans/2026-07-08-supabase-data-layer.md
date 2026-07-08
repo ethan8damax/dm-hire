@@ -1867,6 +1867,14 @@ Replace line 208 (just above the `return (`):
   const template = roleWorkflows[form.roleTemplate]
 ```
 
+There is a third `ROLE_TEMPLATES` reference inside `handleSubmit` (originally line 198) — easy to miss since it's textually far from the other two. Replace it too:
+
+```jsx
+  function handleSubmit(e) {
+    e.preventDefault()
+    const template = roleWorkflows[form.roleTemplate]
+```
+
 Replace line 251 (office `<select>` options — unchanged reference, `offices` is now a prop instead of a module import, so this line's text is identical, listed here only so the diff is unambiguous):
 
 ```jsx

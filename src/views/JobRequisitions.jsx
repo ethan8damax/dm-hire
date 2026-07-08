@@ -11,10 +11,11 @@ import Button from '../components/ui/Button'
 import FilterChip from '../components/ui/FilterChip'
 import Modal from '../components/ui/Modal'
 import EmptyState from '../components/ui/EmptyState'
-import { jobs as initialJobs } from '../data/jobs'
-import { offices } from '../data/offices'
-import { candidates } from '../data/candidates'
-import { roleWorkflows as ROLE_TEMPLATES } from '../data/workflows'
+import { useJobs } from '../hooks/useJobs'
+import { useOffices } from '../hooks/useOffices'
+import { useCandidates } from '../hooks/useCandidates'
+import { useRoleWorkflowTemplates } from '../hooks/useRoleWorkflowTemplates'
+import Loading from '../components/ui/Loading'
 import './JobRequisitions.css'
 
 const FILTERS = [
@@ -44,7 +45,7 @@ function slugify(title) {
   return title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
-function JobRow({ job, onShare, sharedId, onOpen }) {
+function JobRow({ job, candidates, onShare, sharedId, onOpen }) {
   const Icon = DEPT_ICONS[job.department] ?? Briefcase
   const topCandidates = candidates.filter((c) => c.jobId === job.id)
   const overflow = job.applicantCount - topCandidates.length
@@ -110,7 +111,7 @@ const EMPTY_FORM = {
   knockoutRules: [{ id: 1, text: 'Minimum years payroll experience: 1', declineNote: 'Auto-decline if < 1' }],
 }
 
-function NewRequisitionModal({ open, onClose, onCreate }) {
+function NewRequisitionModal({ open, onClose, onCreate, offices, roleWorkflows }) {
   const [form, setForm] = useState(EMPTY_FORM)
   const [phase, setPhase] = useState('form') // form | posting | success
 
@@ -119,7 +120,7 @@ function NewRequisitionModal({ open, onClose, onCreate }) {
   }
 
   function handleRoleTemplateChange(key) {
-    const template = ROLE_TEMPLATES[key]
+    const template = roleWorkflows[key]
     setForm((f) => ({
       ...f,
       roleTemplate: key,
@@ -166,7 +167,7 @@ function NewRequisitionModal({ open, onClose, onCreate }) {
 
   function buildJob(status) {
     const office = offices.find((o) => o.id === form.officeId)
-    const template = ROLE_TEMPLATES[form.roleTemplate]
+    const template = roleWorkflows[form.roleTemplate]
     return {
       id: `job-${Date.now()}`,
       title: form.title || 'Untitled Requisition',
@@ -184,7 +185,6 @@ function NewRequisitionModal({ open, onClose, onCreate }) {
       hiringManagerId: null,
       daysOpen: 0,
       applicantCount: 0,
-      stageCounts: { new: 0, screening: 0, interviewing: 0, offer: 0, hired: 0, rejected: 0 },
     }
   }
 
@@ -195,7 +195,7 @@ function NewRequisitionModal({ open, onClose, onCreate }) {
 
   function handleSubmit(e) {
     e.preventDefault()
-    const template = ROLE_TEMPLATES[form.roleTemplate]
+    const template = roleWorkflows[form.roleTemplate]
     const status = template.approvalChain.length > 1 ? 'pending_approval' : 'open'
     setPhase('posting')
     setTimeout(() => setPhase('success'), 1100)
@@ -205,7 +205,7 @@ function NewRequisitionModal({ open, onClose, onCreate }) {
     }, 2300)
   }
 
-  const template = ROLE_TEMPLATES[form.roleTemplate]
+  const template = roleWorkflows[form.roleTemplate]
 
   return (
     <Modal open={open} onClose={handleClose} title={phase === 'form' ? 'New Job Requisition' : 'Submitting…'}>
@@ -278,7 +278,7 @@ function NewRequisitionModal({ open, onClose, onCreate }) {
           <div className="req-section">
             <div className="req-section-label">Role Template</div>
             <div className="req-role-grid">
-              {Object.entries(ROLE_TEMPLATES).map(([key, t]) => (
+              {Object.entries(roleWorkflows).map(([key, t]) => (
                 <button
                   type="button"
                   key={key}
@@ -370,10 +370,15 @@ function NewRequisitionModal({ open, onClose, onCreate }) {
 
 export default function JobRequisitions() {
   const navigate = useNavigate()
-  const [jobsList, setJobsList] = useState(initialJobs)
+  const { jobs: jobsList, loading: jobsLoading, createJob } = useJobs()
+  const { offices, loading: officesLoading } = useOffices()
+  const { candidates, loading: candidatesLoading } = useCandidates()
+  const { roleWorkflows, loading: workflowsLoading } = useRoleWorkflowTemplates()
   const [filter, setFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [sharedId, setSharedId] = useState(null)
+
+  if (jobsLoading || officesLoading || candidatesLoading || workflowsLoading) return <Loading />
 
   const counts = FILTERS.reduce((acc, f) => {
     acc[f.key] = f.key === 'all' ? jobsList.length : jobsList.filter((j) => j.status === f.key).length
@@ -390,7 +395,7 @@ export default function JobRequisitions() {
   }
 
   function handleCreate(job) {
-    setJobsList((prev) => [job, ...prev])
+    createJob(job)
   }
 
   return (
@@ -421,6 +426,7 @@ export default function JobRequisitions() {
             <JobRow
               key={job.id}
               job={job}
+              candidates={candidates}
               onShare={handleShare}
               sharedId={sharedId}
               onOpen={(j) => navigate(`/pipeline?job=${j.id}`)}
@@ -429,7 +435,13 @@ export default function JobRequisitions() {
         </div>
       )}
 
-      <NewRequisitionModal open={modalOpen} onClose={() => setModalOpen(false)} onCreate={handleCreate} />
+      <NewRequisitionModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onCreate={handleCreate}
+        offices={offices}
+        roleWorkflows={roleWorkflows}
+      />
     </div>
   )
 }
