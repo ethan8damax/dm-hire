@@ -11,10 +11,11 @@ import ScoreBar from '../components/ui/ScoreBar'
 import Button from '../components/ui/Button'
 import DataTable from '../components/ui/DataTable'
 import PipelineFunnel from '../components/ui/PipelineFunnel'
-import { candidates } from '../data/candidates'
-import { jobs } from '../data/jobs'
-import { offers } from '../data/offers'
-import { analytics } from '../data/analytics'
+import { useCandidates } from '../hooks/useCandidates'
+import { useJobs } from '../hooks/useJobs'
+import { useOffers } from '../hooks/useOffers'
+import { useAnalytics } from '../hooks/useAnalytics'
+import Loading from '../components/ui/Loading'
 import './Dashboard.css'
 
 function daysUntil(dateStr) {
@@ -30,6 +31,12 @@ function greetingForHour(hour) {
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const { candidates, loading: candidatesLoading } = useCandidates()
+  const { jobs, loading: jobsLoading } = useJobs()
+  const { offers, loading: offersLoading } = useOffers()
+  const { analytics, loading: analyticsLoading } = useAnalytics()
+
+  if (candidatesLoading || jobsLoading || offersLoading || analyticsLoading) return <Loading />
 
   const openRequisitions = jobs.filter((j) => j.status === 'open').length
   const activeCandidates = candidates.filter((c) => !['hired', 'rejected'].includes(c.stage)).length
