@@ -13,9 +13,10 @@ import EmptyState from '../components/ui/EmptyState'
 import Timeline from '../components/ui/Timeline'
 import ScoreBar from '../components/ui/ScoreBar'
 import { usePersona } from '../context/PersonaContext'
-import { candidates } from '../data/candidates'
-import { jobs } from '../data/jobs'
-import { offers as initialOffers } from '../data/offers'
+import { useCandidates } from '../hooks/useCandidates'
+import { useJobs } from '../hooks/useJobs'
+import { useOffers } from '../hooks/useOffers'
+import Loading from '../components/ui/Loading'
 import './CandidateProfile.css'
 
 const CURRENT_RECRUITER = 'T. Smith'
@@ -85,29 +86,32 @@ export default function CandidateProfile() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const candidate = candidates.find((c) => c.id === id)
-  const job = jobs.find((j) => j.id === candidate?.jobId)
+  const { candidates, loading: candidatesLoading, addNote } = useCandidates()
+  const { jobs, loading: jobsLoading } = useJobs()
+  const { offers, loading: offersLoading, createOffer, updateOffer } = useOffers()
   const { persona } = usePersona()
   const isHiringManager = persona === 'hiring_manager'
   const tabs = isHiringManager ? TABS.filter((t) => t.key !== 'offer') : TABS
 
   const [activeTab, setActiveTab] = useState(location.state?.tab ?? 'timeline')
-  const [notes, setNotes] = useState(candidate?.notes ?? [])
   const [noteDraft, setNoteDraft] = useState('')
-  const [offer, setOffer] = useState(() => initialOffers.find((o) => o.candidateId === id) ?? null)
+  const [offerDraft, setOfferDraft] = useState(null)
   const [offerEditing, setOfferEditing] = useState(false)
   const [offerPhase, setOfferPhase] = useState('idle') // idle | sending
   const [notSelected, setNotSelected] = useState(false)
 
   useEffect(() => {
     setActiveTab(location.state?.tab ?? 'timeline')
-    setNotes(candidate?.notes ?? [])
     setNoteDraft('')
-    setOffer(initialOffers.find((o) => o.candidateId === id) ?? null)
+    setOfferDraft(null)
     setOfferEditing(false)
     setOfferPhase('idle')
     setNotSelected(false)
-  }, [id, candidate, location])
+  }, [id, location])
+
+  if (candidatesLoading || jobsLoading || offersLoading) return <Loading />
+
+  const candidate = candidates.find((c) => c.id === id)
 
   if (!candidate) {
     return (
@@ -119,6 +123,10 @@ export default function CandidateProfile() {
       />
     )
   }
+
+  const job = jobs.find((j) => j.id === candidate.jobId)
+  const persistedOffer = offers.find((o) => o.candidateId === id) ?? null
+  const offer = offerDraft ?? persistedOffer
 
   const candidateIds = location.state?.candidateIds ?? candidates.filter((c) => c.jobId === candidate.jobId).map((c) => c.id)
   const posInList = candidateIds.indexOf(candidate.id)
@@ -132,13 +140,13 @@ export default function CandidateProfile() {
 
   function handleAddNote() {
     if (!noteDraft.trim()) return
-    setNotes([...notes, { author: CURRENT_RECRUITER, office: CURRENT_OFFICE, date: TODAY, body: noteDraft.trim() }])
+    addNote(candidate.id, { author: CURRENT_RECRUITER, office: CURRENT_OFFICE, date: TODAY, body: noteDraft.trim() })
     setNoteDraft('')
   }
 
   function handleGenerateOffer() {
-    setOffer({
-      id: `offer-draft-${candidate.id}`,
+    createOffer({
+      id: `offer-${Date.now()}`,
       candidateId: candidate.id,
       jobId: candidate.jobId,
       salary: 0,
@@ -163,13 +171,18 @@ export default function CandidateProfile() {
   function handleSendForApproval() {
     setOfferPhase('sending')
     setTimeout(() => {
-      setOffer((o) => ({
-        ...o,
+      const patch = {
         status: 'awaiting',
         sentDate: TODAY,
         expiryDate: '2026-07-14',
-        approvalChain: o.approvalChain.map((a) => ({ ...a, approved: true, date: a.date ?? TODAY })),
-      }))
+        salary: offer.salary,
+        bonus: offer.bonus,
+        pto: offer.pto,
+        startDate: offer.startDate,
+        approvalChain: offer.approvalChain.map((a) => ({ ...a, approved: true, date: a.date ?? TODAY })),
+      }
+      updateOffer(offer.id, patch)
+      setOfferDraft(null)
       setOfferEditing(false)
       setOfferPhase('idle')
     }, 1000)
@@ -306,8 +319,8 @@ export default function CandidateProfile() {
             <div role="tabpanel" id="cp-panel-notes" aria-labelledby="cp-tab-notes">
               <Card>
                 <Card.Body className="cp-notes-body">
-                  {notes.length === 0 && <div className="cp-empty-inline">No notes yet.</div>}
-                  {notes.map((n, i) => (
+                  {candidate.notes.length === 0 && <div className="cp-empty-inline">No notes yet.</div>}
+                  {candidate.notes.map((n, i) => (
                     <div className="cp-note" key={i}>
                       <Avatar initials={n.author.split(' ').map((p) => p[0]).join('')} size="sm" />
                       <div className="cp-note-body">
@@ -369,7 +382,8 @@ export default function CandidateProfile() {
                 phase={offerPhase}
                 onGenerate={handleGenerateOffer}
                 onEdit={() => setOfferEditing(true)}
-                onChange={setOffer}
+                onDraftChange={setOfferDraft}
+                onPersistedChange={(patch) => updateOffer(offer.id, patch)}
                 onSendForApproval={handleSendForApproval}
               />
             </div>
@@ -525,13 +539,13 @@ function ScheduleTab({ candidate }) {
   )
 }
 
-function OfferTab({ offer, editing, phase, onGenerate, onEdit, onChange, onSendForApproval }) {
+function OfferTab({ offer, editing, phase, onGenerate, onEdit, onDraftChange, onPersistedChange, onSendForApproval }) {
   const [esigPhase, setEsigPhase] = useState('idle') // idle | viewing | signing
 
   function handleSimulateView() {
     setEsigPhase('viewing')
     setTimeout(() => {
-      onChange((o) => ({ ...o, esigViewedDate: TODAY }))
+      onPersistedChange({ esigViewedDate: TODAY })
       setEsigPhase('idle')
     }, 900)
   }
@@ -539,9 +553,9 @@ function OfferTab({ offer, editing, phase, onGenerate, onEdit, onChange, onSendF
   function handleSimulateSign() {
     setEsigPhase('signing')
     setTimeout(() => {
-      onChange((o) => ({ ...o, esigStatus: 'signed', esigSignedDate: TODAY, status: 'accepted' }))
+      onPersistedChange({ esigStatus: 'signed', esigSignedDate: TODAY, status: 'accepted' })
       setEsigPhase('idle')
-      setTimeout(() => onChange((o) => ({ ...o, payrollSynced: true })), 1400)
+      setTimeout(() => onPersistedChange({ payrollSynced: true }), 1400)
     }, 900)
   }
 
@@ -567,10 +581,10 @@ function OfferTab({ offer, editing, phase, onGenerate, onEdit, onChange, onSendF
         <div className="cp-offer-panel">
           {editing ? (
             <>
-              <div className="cp-offer-edit-row"><label>Base Salary</label><input type="number" value={offer.salary} onChange={(e) => onChange({ ...offer, salary: Number(e.target.value) })} /></div>
-              <div className="cp-offer-edit-row"><label>Bonus</label><input value={offer.bonus} onChange={(e) => onChange({ ...offer, bonus: e.target.value })} /></div>
-              <div className="cp-offer-edit-row"><label>PTO</label><input value={offer.pto} onChange={(e) => onChange({ ...offer, pto: e.target.value })} /></div>
-              <div className="cp-offer-edit-row"><label>Start Date</label><input type="date" value={offer.startDate} onChange={(e) => onChange({ ...offer, startDate: e.target.value })} /></div>
+              <div className="cp-offer-edit-row"><label>Base Salary</label><input type="number" value={offer.salary} onChange={(e) => onDraftChange({ ...offer, salary: Number(e.target.value) })} /></div>
+              <div className="cp-offer-edit-row"><label>Bonus</label><input value={offer.bonus} onChange={(e) => onDraftChange({ ...offer, bonus: e.target.value })} /></div>
+              <div className="cp-offer-edit-row"><label>PTO</label><input value={offer.pto} onChange={(e) => onDraftChange({ ...offer, pto: e.target.value })} /></div>
+              <div className="cp-offer-edit-row"><label>Start Date</label><input type="date" value={offer.startDate ?? ''} onChange={(e) => onDraftChange({ ...offer, startDate: e.target.value })} /></div>
             </>
           ) : (
             <>

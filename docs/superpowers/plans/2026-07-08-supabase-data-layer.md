@@ -2475,11 +2475,13 @@ Replace the block originally at lines 133-181:
 
 Note: `handleMarkNotSelected` is deliberately left exactly as it was — a local-only, undoable banner (the existing "Undo" button just calls `setNotSelected(false)`). Wiring it to a real, persisted `stage: 'rejected'` update would break that Undo affordance (the DB write would stick even after "undoing" the banner, since Undo has no way to revert a stage change back to its prior value). Real, correctly-reversible stage transitions are sub-project C's job (pipeline stage progression), not this data-layer task — this task only persists mutations that were already meant to be permanent (notes, offers, e-sign).
 
-Note: `createOffer` in the hook (Task 21) already generates the row via the id you pass — swapped the old `offer-draft-${candidate.id}` placeholder id for a real `offer-${Date.now()}` id since this row is now actually inserted into Postgres, not just held in local state. Field edits during `offerEditing` (salary/bonus/pto/startDate inputs) continue to only update `offerDraft` locally — see Step 4 — and are only persisted in bulk on `handleSendForApproval`, consistent with the "confirm-first, not optimistic" mutation design from the spec (nothing is written to Supabase per-keystroke).
+Note: `createOffer` in the hook (Task 21) already generates the row via the id you pass — swapped the old `offer-draft-${candidate.id}` placeholder id for a real `offer-${Date.now()}` id since this row is now actually inserted into Postgres, not just held in local state.
+
+Note: found via browser testing — `createOffer` converts the draft's `startDate: ''` to `null` before insert (Postgres `date` columns reject `''`), so the offer that comes back from the DB round-trip has `startDate: null`. The controlled `<input type="date">` in the editing view (Step 4/OfferTab below) must read `offer.startDate ?? ''`, not the bare value, or React logs a "`value` prop... should not be null" console warning. Field edits during `offerEditing` (salary/bonus/pto/startDate inputs) continue to only update `offerDraft` locally — see Step 4 — and are only persisted in bulk on `handleSendForApproval`, consistent with the "confirm-first, not optimistic" mutation design from the spec (nothing is written to Supabase per-keystroke).
 
 - [ ] **Step 4: Update the `OfferTab` `onChange` wiring for draft editing vs. persisted e-sign actions**
 
-Where `<OfferTab offer={offer} editing={offerEditing} phase={offerPhase} onGenerate={handleGenerateOffer} onEdit={() => setOfferEditing(true)} onChange={setOffer} onSendForApproval={handleSendForApproval} />` is rendered (originally around line 246), replace with two distinct callbacks:
+Where `<OfferTab offer={offer} editing={offerEditing} phase={offerPhase} onGenerate={handleGenerateOffer} onEdit={() => setOfferEditing(true)} onChange={setOffer} onSendForApproval={handleSendForApproval} />` is rendered (originally around line 246), replace with two distinct callbacks. Note these are deliberately plain pass-throughs — no `typeof patch === 'function'` handling — see Step 5 for why:
 
 ```jsx
           <OfferTab
@@ -2488,18 +2490,15 @@ Where `<OfferTab offer={offer} editing={offerEditing} phase={offerPhase} onGener
             phase={offerPhase}
             onGenerate={handleGenerateOffer}
             onEdit={() => setOfferEditing(true)}
-            onDraftChange={(next) => setOfferDraft(typeof next === 'function' ? next(offer) : next)}
-            onPersistedChange={(patch) => {
-              const resolved = typeof patch === 'function' ? patch(offer) : patch
-              updateOffer(offer.id, resolved)
-            }}
+            onDraftChange={setOfferDraft}
+            onPersistedChange={(patch) => updateOffer(offer.id, patch)}
             onSendForApproval={handleSendForApproval}
           />
 ```
 
-- [ ] **Step 5: Update `OfferTab` itself to use the two callbacks**
+- [ ] **Step 5: Update `OfferTab` itself to use the two callbacks, with minimal patches instead of functional updaters**
 
-Replace the `OfferTab` function signature and esig handlers (originally lines 528-546):
+Replace the `OfferTab` function signature and esig handlers (originally lines 528-546). The original code used React's functional-updater form (`onChange((o) => ({...o, ...}))`) to avoid stale-closure bugs across the two chained `setTimeout`s in `handleSimulateSign` (esig status first, then `payrollSynced` 1400ms later). With `updateOffer(id, patch)` doing a targeted column update rather than a full-object merge, there's no need to reconstruct the whole offer object at all — sending just the changed field(s) sidesteps the staleness problem entirely (a full-object spread here would instead risk writing back a stale `offer` snapshot on the second, delayed call):
 
 ```jsx
 function OfferTab({ offer, editing, phase, onGenerate, onEdit, onDraftChange, onPersistedChange, onSendForApproval }) {
@@ -2529,7 +2528,7 @@ Then further down in the same function, every field edit during `editing` mode (
               <div className="cp-offer-edit-row"><label>Base Salary</label><input type="number" value={offer.salary} onChange={(e) => onDraftChange({ ...offer, salary: Number(e.target.value) })} /></div>
               <div className="cp-offer-edit-row"><label>Bonus</label><input value={offer.bonus} onChange={(e) => onDraftChange({ ...offer, bonus: e.target.value })} /></div>
               <div className="cp-offer-edit-row"><label>PTO</label><input value={offer.pto} onChange={(e) => onDraftChange({ ...offer, pto: e.target.value })} /></div>
-              <div className="cp-offer-edit-row"><label>Start Date</label><input type="date" value={offer.startDate} onChange={(e) => onDraftChange({ ...offer, startDate: e.target.value })} /></div>
+              <div className="cp-offer-edit-row"><label>Start Date</label><input type="date" value={offer.startDate ?? ''} onChange={(e) => onDraftChange({ ...offer, startDate: e.target.value })} /></div>
 ```
 
 - [ ] **Step 6: Update the Notes tab render to read `candidate.notes`**
