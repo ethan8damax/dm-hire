@@ -17,3 +17,12 @@
 
 .offer-spin { animation: offer-spin 1s linear infinite; }
 @keyframes offer-spin { to { transform: rotate(360deg); } }
+
+.offers-log-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin: var(--space-6) 0 var(--space-2);
+}

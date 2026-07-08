@@ -11,10 +11,12 @@ import { useSimulatedLoad } from '../hooks/useSimulatedLoad'
 import { useOffers } from '../hooks/useOffers'
 import { useCandidates } from '../hooks/useCandidates'
 import { useJobs } from '../hooks/useJobs'
+import { useReminders } from '../hooks/useReminders'
 import Loading from '../components/ui/Loading'
 import './Offers.css'
 
 const TODAY = '2026-07-07'
+const CURRENT_RECRUITER = 'T. Smith'
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -37,8 +39,9 @@ export default function Offers() {
   const { offers, loading: offersLoading } = useOffers()
   const { candidates, loading: candidatesLoading } = useCandidates()
   const { jobs, loading: jobsLoading } = useJobs()
+  const { reminders, loading: remindersLoading, sendReminder } = useReminders()
 
-  if (offersLoading || candidatesLoading || jobsLoading) return <Loading />
+  if (offersLoading || candidatesLoading || jobsLoading || remindersLoading) return <Loading />
 
   const rows = offers.map((o) => ({
     ...o,
@@ -50,10 +53,17 @@ export default function Offers() {
   const expiringOffers = rows.filter((o) => o.status === 'awaiting' && o.daysLeft >= 0 && o.daysLeft <= 5)
   const filteredRows = filter === 'all' ? rows : rows.filter((o) => o.status === filter)
 
-  function handleSendReminders() {
+  async function handleSendReminders() {
     setReminderPhase('sending')
-    setTimeout(() => setReminderPhase('sent'), 900)
-    setTimeout(() => setReminderPhase('idle'), 2600)
+    await Promise.all(expiringOffers.map((o) => sendReminder({
+      candidateId: o.candidateId,
+      offerId: o.id,
+      type: 'expiry_reminder',
+      sentBy: CURRENT_RECRUITER,
+      message: `Reminder sent — offer expires ${o.expiryDate}`,
+    })))
+    setReminderPhase('sent')
+    setTimeout(() => setReminderPhase('idle'), 1700)
   }
 
   function openOffer(row) {
@@ -92,6 +102,18 @@ export default function Offers() {
     },
   ]
 
+  const reminderRows = [...reminders]
+    .sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt))
+    .map((r) => ({ ...r, candidateName: candidates.find((c) => c.id === r.candidateId)?.name ?? 'Unknown' }))
+
+  const reminderColumns = [
+    { key: 'candidateName', label: 'Candidate' },
+    { key: 'type', label: 'Type' },
+    { key: 'sentAt', label: 'Sent', render: (r) => new Date(r.sentAt).toLocaleString() },
+    { key: 'sentBy', label: 'Sent By' },
+    { key: 'message', label: 'Message' },
+  ]
+
   return (
     <div className="offers-view">
       <div className="page-header">
@@ -128,6 +150,18 @@ export default function Offers() {
       ) : (
         <Card data-tour="tour-offers-list">
           <DataTable columns={columns} rows={filteredRows} onRowClick={openOffer} loading={loading} />
+        </Card>
+      )}
+
+      <div className="page-header">
+        <h2 className="offers-log-title">Reminders Log</h2>
+      </div>
+
+      {reminderRows.length === 0 ? (
+        <EmptyState title="No reminders sent yet" subtitle="Send a reminder from an expiring offer above and it'll show up here." />
+      ) : (
+        <Card>
+          <DataTable columns={reminderColumns} rows={reminderRows} />
         </Card>
       )}
     </div>
