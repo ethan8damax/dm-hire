@@ -76,17 +76,11 @@ function buildTimeline(candidate) {
   return steps
 }
 
-function docStatus(candidate) {
-  if (candidate.stage === 'hired') return 'cleared'
-  if (candidate.stage === 'offer') return 'in_progress'
-  return 'not_started'
-}
-
 export default function CandidateProfile() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const { candidates, loading: candidatesLoading, addNote } = useCandidates()
+  const { candidates, loading: candidatesLoading, addNote, updateCandidate } = useCandidates()
   const { jobs, loading: jobsLoading } = useJobs()
   const { offers, loading: offersLoading, createOffer, updateOffer } = useOffers()
   const { persona } = usePersona()
@@ -391,7 +385,7 @@ export default function CandidateProfile() {
 
           {activeTab === 'docs' && (
             <div role="tabpanel" id="cp-panel-docs" aria-labelledby="cp-tab-docs">
-              <DocsTab candidate={candidate} offer={offer} />
+              <DocsTab candidate={candidate} offer={offer} onUpdateCandidate={updateCandidate} />
             </div>
           )}
         </div>
@@ -665,9 +659,33 @@ function OfferTab({ offer, editing, phase, onGenerate, onEdit, onDraftChange, on
   )
 }
 
-function DocsTab({ candidate, offer }) {
-  const status = docStatus(candidate)
+function DocsTab({ candidate, offer, onUpdateCandidate }) {
+  const [resumeViewed, setResumeViewed] = useState(false)
+  const [checksViewed, setChecksViewed] = useState({ background: false, drug: false })
   const certifications = candidate.skills.filter((s) => s.toLowerCase().includes('certified'))
+
+  function renderCheckRow(label, status, field, viewedKey) {
+    return (
+      <div className={`cp-doc-row${status === 'not_started' ? ' cp-doc-row-dim' : ''}`} key={field}>
+        <ShieldCheck size={20} />
+        <div className="cp-doc-info">
+          <div className="cp-doc-title">{label}</div>
+          <div className="cp-doc-sub">
+            {status === 'cleared' ? 'Cleared' : status === 'in_progress' ? 'In progress' : 'Not yet initiated, awaiting offer acceptance'}
+          </div>
+        </div>
+        {status === 'cleared' ? (
+          <Button variant="ghost" size="sm" onClick={() => setChecksViewed((v) => ({ ...v, [viewedKey]: true }))}>
+            {checksViewed[viewedKey] ? 'Viewed ✓' : 'View'}
+          </Button>
+        ) : (
+          <Button variant="ghost" size="sm" disabled={status === 'not_started'} onClick={() => onUpdateCandidate(candidate.id, { [field]: 'cleared' })}>
+            Initiate
+          </Button>
+        )}
+      </div>
+    )
+  }
 
   return (
     <Card>
@@ -678,7 +696,7 @@ function DocsTab({ candidate, offer }) {
             <div className="cp-doc-title">Resume: {candidate.name.replace(' ', '_')}_Resume.pdf</div>
             <div className="cp-doc-sub">Uploaded {candidate.timeline[0]?.date} · Auto-parsed</div>
           </div>
-          <Button variant="ghost" size="sm">View</Button>
+          <Button variant="ghost" size="sm" onClick={() => setResumeViewed(true)}>{resumeViewed ? 'Viewed ✓' : 'View'}</Button>
         </div>
 
         {certifications.map((cert) => (
@@ -686,33 +704,16 @@ function DocsTab({ candidate, offer }) {
             <BadgeCheck size={20} />
             <div className="cp-doc-info">
               <div className="cp-doc-title">{cert}</div>
-              <div className="cp-doc-sub">Self-reported · Verification pending</div>
+              <div className="cp-doc-sub">{candidate.certVerified ? 'Verified' : 'Self-reported · Verification pending'}</div>
             </div>
-            <Button variant="ghost" size="sm">Verify</Button>
+            <Button variant="ghost" size="sm" disabled={candidate.certVerified} onClick={() => onUpdateCandidate(candidate.id, { certVerified: true })}>
+              {candidate.certVerified ? 'Verified' : 'Verify'}
+            </Button>
           </div>
         ))}
 
-        <div className={`cp-doc-row${status === 'not_started' ? ' cp-doc-row-dim' : ''}`}>
-          <ShieldCheck size={20} />
-          <div className="cp-doc-info">
-            <div className="cp-doc-title">Background Check</div>
-            <div className="cp-doc-sub">
-              {status === 'cleared' ? 'Cleared' : status === 'in_progress' ? 'In progress' : 'Not yet initiated, awaiting offer acceptance'}
-            </div>
-          </div>
-          <Button variant="ghost" size="sm" disabled={status === 'not_started'}>{status === 'cleared' ? 'View' : 'Initiate'}</Button>
-        </div>
-
-        <div className={`cp-doc-row${status === 'not_started' ? ' cp-doc-row-dim' : ''}`}>
-          <ShieldCheck size={20} />
-          <div className="cp-doc-info">
-            <div className="cp-doc-title">Drug Screen</div>
-            <div className="cp-doc-sub">
-              {status === 'cleared' ? 'Cleared' : status === 'in_progress' ? 'In progress' : 'Not yet initiated, awaiting offer acceptance'}
-            </div>
-          </div>
-          <Button variant="ghost" size="sm" disabled={status === 'not_started'}>{status === 'cleared' ? 'View' : 'Initiate'}</Button>
-        </div>
+        {renderCheckRow('Background Check', candidate.backgroundCheckStatus, 'backgroundCheckStatus', 'background')}
+        {renderCheckRow('Drug Screen', candidate.drugScreenStatus, 'drugScreenStatus', 'drug')}
 
         <div className={`cp-doc-row${!offer ? ' cp-doc-row-dim' : ''}`}>
           <FileSignature size={20} />
