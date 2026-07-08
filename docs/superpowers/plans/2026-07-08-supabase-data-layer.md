@@ -446,7 +446,7 @@ create table candidates (
   location text not null,
   email text not null,
   phone text not null,
-  current_role text not null,
+  "current_role" text not null,
   expected_salary text not null,
   availability text not null,
   days_in_stage int not null default 0,
@@ -504,6 +504,8 @@ create policy "candidate_scorecards_anon_update" on candidate_scorecards for upd
 
 Note: `is_internal_applicant` covers the one-off `isInternalApplicant: true` flag on `cand-005` in the source data — easy to miss, confirmed present by re-reading `src/data/candidates.js` directly.
 
+Note: `current_role` must stay double-quoted in raw SQL (both here and in the Task 7 seed `insert`) — `CURRENT_ROLE` is a reserved SQL keyword/function in Postgres, and unquoted it fails with `syntax error at or near "current_role"`. This only affects hand-written SQL; supabase-js calls from the hooks (Task 20) reference it as a normal object key with no quoting needed, since those go through PostgREST rather than the SQL parser directly.
+
 - [ ] **Step 2: Apply via Supabase MCP**
 
 Call `apply_migration` with `name: "candidates"` and the SQL above.
@@ -531,7 +533,7 @@ git commit -m "Add Supabase schema for candidates, notes, timeline events, and s
 ```sql
 -- supabase/migrations/006_seed_candidates.sql
 
-insert into candidates (id, name, initials, avatar_color, job_id, stage, source, location, email, phone, current_role, expected_salary, availability, days_in_stage, ai_score, ai_dimensions, skills, prior_interaction, is_duplicate, is_stale, is_top_candidate, is_internal_applicant) values
+insert into candidates (id, name, initials, avatar_color, job_id, stage, source, location, email, phone, "current_role", expected_salary, availability, days_in_stage, ai_score, ai_dimensions, skills, prior_interaction, is_duplicate, is_stale, is_top_candidate, is_internal_applicant) values
 ('cand-001', 'Jordan Alvarez', 'JA', 'navy', 'job-001', 'hired', 'LinkedIn', 'Chicago, IL', 'j.alvarez@email.com', '(312) 555-0142', 'Payroll Sr. Assoc. · ADP', '$95K–$105K', '2 weeks notice', 4, 87, '{"payrollExpertise":96,"softwareSystems":88,"compliance":82,"leadership":74,"cultureFit":91}', ARRAY['ADP Workforce Now','CPP Certified','Multi-state Tax'], null, false, false, true, false),
 ('cand-002', 'Priya Natarajan', 'PN', 'green', 'job-001', 'offer', 'Referral', 'Detroit, MI', 'p.natarajan@email.com', '(313) 555-0198', 'Payroll Manager · Paychex', '$100K–$110K', 'Immediate', 3, 93, '{"payrollExpertise":94,"softwareSystems":90,"compliance":95,"leadership":89,"cultureFit":88}', ARRAY['UKG Pro','CPP Certified','Team Leadership'], '{"year":2024,"role":"Tax Analyst","recruiter":"T. Smith"}', false, false, true, false),
 ('cand-003', 'Chris Lawson', 'CL', 'orange', 'job-002', 'screening', 'Indeed', 'Troy, MI', 'c.lawson@email.com', '(248) 555-0177', 'Staff Accountant · RSM', '$60K–$66K', '4 weeks notice', 4, 71, '{"payrollExpertise":58,"softwareSystems":74,"compliance":70,"leadership":45,"cultureFit":79}', ARRAY['QuickBooks','Excel','GAAP'], null, true, false, false, false),
