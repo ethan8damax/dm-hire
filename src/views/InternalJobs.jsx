@@ -3,12 +3,16 @@ import { MapPin, DollarSign, CheckCircle2, Loader2 } from 'lucide-react'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import EmptyState from '../components/ui/EmptyState'
-import { jobs } from '../data/jobs'
+import { useJobs } from '../hooks/useJobs'
+import Loading from '../components/ui/Loading'
 import './InternalJobs.css'
 
 export default function InternalJobs() {
   const [appliedIds, setAppliedIds] = useState([])
   const [applyingId, setApplyingId] = useState(null)
+  const { jobs, loading } = useJobs()
+
+  if (loading) return <Loading />
 
   const internalJobs = jobs.filter((j) => j.isInternal && j.status === 'open')
 

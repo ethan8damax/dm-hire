@@ -3,7 +3,8 @@ import { Wallet, CalendarClock, Link2, Globe2, ShieldCheck, ClipboardList, Build
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
-import { integrations as initialIntegrations } from '../data/integrations'
+import Loading from '../components/ui/Loading'
+import { useIntegrations } from '../hooks/useIntegrations'
 import './Integrations.css'
 
 const TODAY = '2026-07-07 10:00 AM'
@@ -18,24 +19,23 @@ const ICONS = {
 }
 
 export default function Integrations() {
-  const [integrations, setIntegrations] = useState(initialIntegrations)
+  const { integrations, loading, updateIntegration } = useIntegrations()
   const [connectingId, setConnectingId] = useState(null)
 
   function togglePause(id) {
-    setIntegrations((list) => list.map((i) => (
-      i.id === id ? { ...i, status: i.status === 'connected' ? 'paused' : 'connected' } : i
-    )))
+    const current = integrations.find((i) => i.id === id)
+    updateIntegration(id, { status: current.status === 'connected' ? 'paused' : 'connected' })
   }
 
   function connect(id) {
     setConnectingId(id)
     setTimeout(() => {
-      setIntegrations((list) => list.map((i) => (
-        i.id === id ? { ...i, status: 'connected', lastSync: TODAY } : i
-      )))
+      updateIntegration(id, { status: 'connected', lastSync: TODAY })
       setConnectingId(null)
     }, 900)
   }
+
+  if (loading) return <Loading />
 
   return (
     <div className="integrations-view">

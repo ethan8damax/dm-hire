@@ -6,12 +6,13 @@ import Button from '../components/ui/Button'
 import FilterChip from '../components/ui/FilterChip'
 import Modal from '../components/ui/Modal'
 import DataTable from '../components/ui/DataTable'
+import Loading from '../components/ui/Loading'
 import { useSimulatedLoad } from '../hooks/useSimulatedLoad'
-import { offices as initialOffices } from '../data/offices'
-import { roleWorkflows } from '../data/workflows'
-import { onboardingPackets as initialPackets } from '../data/onboardingPackets'
-import { users as initialUsers } from '../data/users'
-import { jobs } from '../data/jobs'
+import { useOffices } from '../hooks/useOffices'
+import { useRoleWorkflowTemplates } from '../hooks/useRoleWorkflowTemplates'
+import { useOnboardingPackets } from '../hooks/useOnboardingPackets'
+import { useUsers } from '../hooks/useUsers'
+import { useJobs } from '../hooks/useJobs'
 import './Settings.css'
 
 const TABS = [
@@ -65,15 +66,17 @@ export default function Settings() {
 const REGIONS = ['Midwest', 'Northeast', 'South', 'West']
 
 function OfficesTab() {
-  const [offices, setOffices] = useState(initialOffices)
+  const { offices, loading, addOffice } = useOffices()
   const [modalOpen, setModalOpen] = useState(false)
   const [form, setForm] = useState({ name: '', address: '', region: 'Midwest' })
 
   function submit() {
-    setOffices((o) => [...o, { id: `office-${Date.now()}`, name: form.name, address: form.address, region: form.region }])
+    addOffice({ id: `office-${Date.now()}`, name: form.name, address: form.address, region: form.region, city: form.name, state: 'MI' })
     setModalOpen(false)
     setForm({ name: '', address: '', region: 'Midwest' })
   }
+
+  if (loading) return <Loading />
 
   return (
     <div>
@@ -127,21 +130,31 @@ function OfficesTab() {
 }
 
 function WorkflowsTab() {
+  const { roleWorkflows, loading, updateStages } = useRoleWorkflowTemplates()
   const [roleKey, setRoleKey] = useState('manager')
-  const [stages, setStages] = useState(roleWorkflows.manager.stages)
+  const [stages, setStages] = useState(null)
+
+  if (loading) return <Loading />
+  const activeStages = stages ?? roleWorkflows[roleKey].stages
 
   function selectRole(key) {
     setRoleKey(key)
-    setStages(roleWorkflows[key].stages)
+    setStages(null)
   }
   function updateStage(i, field, value) {
-    setStages((s) => s.map((st, idx) => (idx === i ? { ...st, [field]: value } : st)))
+    const next = activeStages.map((st, idx) => (idx === i ? { ...st, [field]: value } : st))
+    setStages(next)
+    updateStages(roleKey, next)
   }
   function addStage() {
-    setStages((s) => [...s, { name: '', approver: 'Hiring Manager', slaDays: 3 }])
+    const next = [...activeStages, { name: '', approver: 'Hiring Manager', slaDays: 3 }]
+    setStages(next)
+    updateStages(roleKey, next)
   }
   function removeStage(i) {
-    setStages((s) => s.filter((_, idx) => idx !== i))
+    const next = activeStages.filter((_, idx) => idx !== i)
+    setStages(next)
+    updateStages(roleKey, next)
   }
 
   return (
@@ -163,8 +176,8 @@ function WorkflowsTab() {
         <div className="settings-stage-row settings-stage-row-hdr">
           <span>Stage</span><span>Approver</span><span>SLA (days)</span><span />
         </div>
-        {stages.length === 0 && <div className="settings-hint">No stages in this workflow yet. Add one below.</div>}
-        {stages.map((s, i) => (
+        {activeStages.length === 0 && <div className="settings-hint">No stages in this workflow yet. Add one below.</div>}
+        {activeStages.map((s, i) => (
           <div className="settings-stage-row" key={i}>
             <input value={s.name} onChange={(e) => updateStage(i, 'name', e.target.value)} />
             <input value={s.approver} onChange={(e) => updateStage(i, 'approver', e.target.value)} />
@@ -179,27 +192,27 @@ function WorkflowsTab() {
 }
 
 function OnboardingTab() {
-  const [packets, setPackets] = useState(initialPackets)
-  const [stateKey, setStateKey] = useState(Object.keys(initialPackets)[0])
+  const { onboardingPackets, loading, addDocument, removeDocument, addPacket } = useOnboardingPackets()
+  const [stateKey, setStateKey] = useState(null)
   const [editing, setEditing] = useState(false)
   const [docDraft, setDocDraft] = useState('')
   const [addModalOpen, setAddModalOpen] = useState(false)
   const [newPacket, setNewPacket] = useState({ abbr: '', state: '' })
 
-  const states = Object.keys(packets)
-  const packet = packets[stateKey]
+  if (loading) return <Loading />
+
+  const states = Object.keys(onboardingPackets)
+  const activeKey = stateKey ?? states[0]
+  const packet = onboardingPackets[activeKey]
 
   function addDoc() {
     if (!docDraft.trim()) return
-    setPackets((p) => ({ ...p, [stateKey]: { ...p[stateKey], documents: [...p[stateKey].documents, docDraft.trim()] } }))
+    addDocument(activeKey, docDraft.trim())
     setDocDraft('')
-  }
-  function removeDoc(doc) {
-    setPackets((p) => ({ ...p, [stateKey]: { ...p[stateKey], documents: p[stateKey].documents.filter((d) => d !== doc) } }))
   }
   function submitNewPacket() {
     const abbr = newPacket.abbr.trim().toUpperCase()
-    setPackets((p) => ({ ...p, [abbr]: { state: newPacket.state.trim(), documents: [] } }))
+    addPacket(abbr, newPacket.state.trim())
     setStateKey(abbr)
     setAddModalOpen(false)
     setNewPacket({ abbr: '', state: '' })
@@ -218,7 +231,7 @@ function OnboardingTab() {
 
       <div className="settings-role-tabs">
         {states.map((s) => (
-          <FilterChip key={s} active={stateKey === s} onClick={() => { setStateKey(s); setEditing(false) }}>{packets[s].state}</FilterChip>
+          <FilterChip key={s} active={activeKey === s} onClick={() => { setStateKey(s); setEditing(false) }}>{onboardingPackets[s].state}</FilterChip>
         ))}
       </div>
 
@@ -228,7 +241,7 @@ function OnboardingTab() {
           {packet.documents.map((doc) => (
             <div className="settings-doc-row" key={doc}>
               <FileText size={14} /> <span>{doc}</span>
-              {editing && <button type="button" className="settings-row-remove" onClick={() => removeDoc(doc)} aria-label="Remove document"><X size={14} /></button>}
+              {editing && <button type="button" className="settings-row-remove" onClick={() => removeDocument(activeKey, doc)} aria-label="Remove document"><X size={14} /></button>}
             </div>
           ))}
           {editing && (
@@ -334,16 +347,17 @@ function NotificationsTab() {
 const ROLE_OPTIONS = ['Admin', 'Recruiter', 'Hiring Manager']
 
 function UsersTab() {
-  const [users, setUsers] = useState(initialUsers)
+  const { users, loading: usersLoading, inviteUser } = useUsers()
+  const { jobs } = useJobs()
   const [modalOpen, setModalOpen] = useState(false)
   const [phase, setPhase] = useState('idle') // idle | inviting
-  const loading = useSimulatedLoad()
+  const simulatedLoading = useSimulatedLoad()
   const [form, setForm] = useState({ name: '', email: '', role: 'Recruiter' })
 
   function invite() {
     setPhase('inviting')
     setTimeout(() => {
-      setUsers((u) => [...u, { id: `user-${Date.now()}`, ...form, assignedJobIds: [], status: 'invited' }])
+      inviteUser({ id: `user-${Date.now()}`, ...form, assignedJobIds: [], status: 'invited' })
       setPhase('idle')
       setModalOpen(false)
       setForm({ name: '', email: '', role: 'Recruiter' })
@@ -363,6 +377,8 @@ function UsersTab() {
     { key: 'status', label: 'Status', render: (r) => r.status === 'invited' ? <Badge variant="awaiting">Invited</Badge> : <Badge variant="accepted">Active</Badge> },
   ]
 
+  if (usersLoading) return <Loading />
+
   return (
     <div>
       <div className="settings-panel-hdr">
@@ -373,7 +389,7 @@ function UsersTab() {
         <Button variant="primary" size="sm" onClick={() => setModalOpen(true)}><Plus size={14} /> Invite User</Button>
       </div>
 
-      <Card><DataTable columns={columns} rows={users} loading={loading} /></Card>
+      <Card><DataTable columns={columns} rows={users} loading={simulatedLoading} /></Card>
 
       <Modal
         open={modalOpen}

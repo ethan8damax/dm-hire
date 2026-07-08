@@ -7,8 +7,9 @@ import DataTable from '../components/ui/DataTable'
 import TrendChart from '../components/ui/TrendChart'
 import PipelineFunnel from '../components/ui/PipelineFunnel'
 import { useSimulatedLoad } from '../hooks/useSimulatedLoad'
-import { analytics } from '../data/analytics'
-import { jobs } from '../data/jobs'
+import { useAnalytics } from '../hooks/useAnalytics'
+import { useJobs } from '../hooks/useJobs'
+import Loading from '../components/ui/Loading'
 import './Reports.css'
 
 const DATE_RANGES = ['Last 30 Days', 'Last Quarter', 'Year to Date', 'Last 12 Months']
@@ -24,10 +25,16 @@ function performanceBadge(row) {
 }
 
 export default function Reports() {
+  const { analytics, loading: analyticsLoading } = useAnalytics()
+  const { jobs, loading: jobsLoading } = useJobs()
   const [dateRange, setDateRange] = useState(DATE_RANGES[0])
-  const [selectedJobId, setSelectedJobId] = useState(jobs[0].id)
-  const selectedJob = jobs.find((j) => j.id === selectedJobId)
+  const [selectedJobId, setSelectedJobId] = useState(null)
   const loading = useSimulatedLoad()
+
+  if (analyticsLoading || jobsLoading) return <Loading />
+
+  const activeJobId = selectedJobId ?? jobs[0].id
+  const selectedJob = jobs.find((j) => j.id === activeJobId)
 
   const sourceRows = analytics.sourceRoi.map((s) => ({
     ...s,
@@ -127,7 +134,7 @@ export default function Reports() {
       <Card>
         <Card.Header>
           <Card.Title>Per-Opening Stats</Card.Title>
-          <select className="reports-job-select" value={selectedJobId} onChange={(e) => setSelectedJobId(e.target.value)}>
+          <select className="reports-job-select" value={activeJobId} onChange={(e) => setSelectedJobId(e.target.value)}>
             {jobs.map((j) => <option key={j.id} value={j.id}>{j.title}</option>)}
           </select>
         </Card.Header>

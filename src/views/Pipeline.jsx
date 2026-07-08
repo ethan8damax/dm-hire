@@ -5,10 +5,11 @@ import KanbanCard from '../components/ui/KanbanCard'
 import FilterChip from '../components/ui/FilterChip'
 import EmptyState from '../components/ui/EmptyState'
 import { usePersona } from '../context/PersonaContext'
-import { jobs } from '../data/jobs'
-import { candidates } from '../data/candidates'
-import { offers } from '../data/offers'
-import { users } from '../data/users'
+import { useJobs } from '../hooks/useJobs'
+import { useCandidates } from '../hooks/useCandidates'
+import { useOffers } from '../hooks/useOffers'
+import { useUsers } from '../hooks/useUsers'
+import Loading from '../components/ui/Loading'
 import './Pipeline.css'
 
 const CURRENT_RECRUITER = 'T. Smith'
@@ -42,17 +43,17 @@ const SORTS = [
   { key: 'source', label: 'Source' },
 ]
 
-function isExpiringOffer(candidate) {
+function isExpiringOffer(candidate, offers) {
   const offer = offers.find((o) => o.candidateId === candidate.id)
   return offer?.status === 'awaiting'
 }
 
-function matchesFilter(candidate, filterKey) {
+function matchesFilter(candidate, filterKey, offers) {
   switch (filterKey) {
     case 'mine':
       return candidate.notes.some((n) => n.author === CURRENT_RECRUITER)
     case 'needs_action':
-      return candidate.isStale || candidate.isDuplicate || isExpiringOffer(candidate)
+      return candidate.isStale || candidate.isDuplicate || isExpiringOffer(candidate, offers)
     case 'stale':
       return candidate.isStale
     default:
@@ -72,9 +73,9 @@ const DECLINE_ACTION = { label: 'Decline', tone: 'danger' }
 
 const SCORECARD_ONLY_ACTION = [{ label: 'Scorecard' }]
 
-function cardPropsForColumn(columnKey, candidate, isHiringManager) {
+function cardPropsForColumn(columnKey, candidate, isHiringManager, offers) {
   if (isHiringManager) {
-    const base = cardPropsForColumn(columnKey, candidate)
+    const base = cardPropsForColumn(columnKey, candidate, false, offers)
     const canScore = columnKey === 'screening' || columnKey === 'interviewing'
     return { ...base, actions: canScore ? SCORECARD_ONLY_ACTION : [] }
   }
@@ -137,6 +138,10 @@ export default function Pipeline() {
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState('score')
   const { persona } = usePersona()
+  const { jobs, loading: jobsLoading } = useJobs()
+  const { candidates, loading: candidatesLoading } = useCandidates()
+  const { offers, loading: offersLoading } = useOffers()
+  const { users, loading: usersLoading } = useUsers()
   const isHiringManager = persona === 'hiring_manager'
 
   const hmAssignedJobIds = users.find((u) => u.id === CURRENT_HM_ID)?.assignedJobIds ?? []
@@ -153,12 +158,13 @@ export default function Pipeline() {
   }
 
   const jobCandidates = useMemo(
-    () => candidates.filter((c) => c.jobId === selectedJobId && matchesFilter(c, filter)),
-    [selectedJobId, filter],
+    () => candidates.filter((c) => c.jobId === selectedJobId && matchesFilter(c, filter, offers)),
+    [selectedJobId, filter, candidates, offers],
   )
 
   const flatCandidateIds = visibleColumns.flatMap((c) => sortCandidates(jobCandidates.filter((jc) => jc.stage === c.key), sort).map((jc) => jc.id))
 
+  if (jobsLoading || candidatesLoading || offersLoading || usersLoading) return <Loading />
   if (!selectedJob) {
     return <EmptyState title="No requisitions yet" subtitle="Create a job requisition to start a pipeline." />
   }
@@ -210,7 +216,7 @@ export default function Pipeline() {
                     key={candidate.id}
                     candidate={candidate}
                     onClick={() => navigate(`/candidates/${candidate.id}`, { state: { candidateIds: flatCandidateIds } })}
-                    {...cardPropsForColumn(col.key, candidate, isHiringManager)}
+                    {...cardPropsForColumn(col.key, candidate, isHiringManager, offers)}
                   />
                 ))}
                 {columnCandidates.length === 0 && <div className="kanban-col-empty">No candidates</div>}

@@ -8,9 +8,10 @@ import FilterChip from '../components/ui/FilterChip'
 import DataTable from '../components/ui/DataTable'
 import EmptyState from '../components/ui/EmptyState'
 import { useSimulatedLoad } from '../hooks/useSimulatedLoad'
-import { offers } from '../data/offers'
-import { candidates } from '../data/candidates'
-import { jobs } from '../data/jobs'
+import { useOffers } from '../hooks/useOffers'
+import { useCandidates } from '../hooks/useCandidates'
+import { useJobs } from '../hooks/useJobs'
+import Loading from '../components/ui/Loading'
 import './Offers.css'
 
 const TODAY = '2026-07-07'
@@ -33,6 +34,11 @@ export default function Offers() {
   const [filter, setFilter] = useState('all')
   const [reminderPhase, setReminderPhase] = useState('idle') // idle | sending | sent
   const loading = useSimulatedLoad()
+  const { offers, loading: offersLoading } = useOffers()
+  const { candidates, loading: candidatesLoading } = useCandidates()
+  const { jobs, loading: jobsLoading } = useJobs()
+
+  if (offersLoading || candidatesLoading || jobsLoading) return <Loading />
 
   const rows = offers.map((o) => ({
     ...o,
