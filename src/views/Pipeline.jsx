@@ -62,7 +62,7 @@ function matchesFilter(candidate, filterKey) {
 
 function sortCandidates(list, sortKey) {
   const sorted = [...list]
-  if (sortKey === 'score') sorted.sort((a, b) => b.aiScore - a.aiScore)
+  if (sortKey === 'score') sorted.sort((a, b) => (b.aiScore ?? -1) - (a.aiScore ?? -1))
   if (sortKey === 'days') sorted.sort((a, b) => b.daysInStage - a.daysInStage)
   if (sortKey === 'source') sorted.sort((a, b) => a.source.localeCompare(b.source))
   return sorted

@@ -1,0 +1,73 @@
+.application-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.application-detail .page-header { margin: var(--space-2) 0 0; }
+
+.app-offer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-gray-100);
+  font-size: var(--text-sm);
+}
+.app-offer-row:last-of-type { border-bottom: none; }
+.app-offer-row span:first-child {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-gray-500);
+}
+.app-offer-row span:last-child { font-weight: 600; color: var(--color-gray-800); }
+
+.app-offer-status { text-transform: capitalize; }
+.app-offer-status-awaiting { color: var(--color-warning); }
+.app-offer-status-accepted { color: var(--color-success); }
+.app-offer-status-declined, .app-offer-status-expired { color: var(--color-danger); }
+
+.app-offer-agree {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-gray-700);
+  margin-top: var(--space-4);
+}
+
+.app-offer-actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.app-offer-spin { animation: app-offer-spin 900ms linear infinite; }
+@keyframes app-offer-spin { to { transform: rotate(360deg); } }
+
+.app-offer-signed {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-success);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  margin-top: var(--space-4);
+}
+
+.app-info-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.app-info-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-gray-600);
+}
+.app-info-label { color: var(--color-gray-400); min-width: 90px; }
+
+.app-withdraw-btn { align-self: flex-start; }

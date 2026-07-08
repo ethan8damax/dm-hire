@@ -1,3 +1,17 @@
+import { moveStageCounts } from './jobs'
+
+const AVATAR_COLORS = ['navy', 'green', 'orange', 'purple', 'blue', 'pink']
+
+function initialsFor(name) {
+  const parts = name.trim().split(/\s+/)
+  return ((parts[0]?.[0] ?? '') + (parts[parts.length - 1]?.[0] ?? '')).toUpperCase()
+}
+
+function colorFor(name) {
+  const sum = [...name].reduce((acc, ch) => acc + ch.charCodeAt(0), 0)
+  return AVATAR_COLORS[sum % AVATAR_COLORS.length]
+}
+
 export const candidates = [
   {
     id: 'cand-001',
@@ -289,3 +303,63 @@ export const candidates = [
     scorecard: [],
   },
 ]
+
+// Mutates the shared candidates array in place so any view holding a reference
+// to it (e.g. Pipeline, JobRequisitions, CandidateProfile) reflects the new
+// application on its next render. This is the seam to replace with a real API
+// call once a backend exists.
+export function addCandidateApplication({
+  jobId, name, email, phone, location, currentRole, expectedSalary, availability, linkedin, resumeFileName, skills,
+}) {
+  const candidate = {
+    id: `cand-${Date.now()}`,
+    name,
+    initials: initialsFor(name),
+    avatarColor: colorFor(name),
+    jobId,
+    stage: 'new',
+    source: 'Career Site',
+    location: location || '',
+    email,
+    phone: phone || '',
+    currentRole: currentRole || '',
+    expectedSalary: expectedSalary || '',
+    availability: availability || '',
+    linkedin: linkedin || '',
+    resumeFileName: resumeFileName || '',
+    daysInStage: 0,
+    aiScore: null, // pending — scored once resume parsing completes
+    aiDimensions: null,
+    skills: skills ? skills.split(',').map((s) => s.trim()).filter(Boolean) : [],
+    priorInteraction: null,
+    isDuplicate: false,
+    isStale: false,
+    isTopCandidate: false,
+    notes: [],
+    timeline: [{ stage: 'Application', date: new Date().toISOString().slice(0, 10), note: 'Applied via Career Site' }],
+    scorecard: [],
+  }
+  candidates.push(candidate)
+  return candidate
+}
+
+export function withdrawCandidateApplication(candidateId) {
+  const candidate = candidates.find((c) => c.id === candidateId)
+  if (!candidate) return
+  candidate.stage = 'withdrawn'
+  candidate.timeline.push({ stage: 'Withdrawn', date: new Date().toISOString().slice(0, 10), note: 'Withdrawn by candidate' })
+}
+
+export function updateCandidateContactInfo(email, patch) {
+  candidates
+    .filter((c) => c.email.toLowerCase() === email.toLowerCase())
+    .forEach((c) => Object.assign(c, patch))
+}
+
+export function updateCandidateStage(candidateId, stage) {
+  const candidate = candidates.find((c) => c.id === candidateId)
+  if (!candidate || candidate.stage === stage) return
+  moveStageCounts(candidate.jobId, candidate.stage, stage)
+  candidate.stage = stage
+  candidate.daysInStage = 0
+}

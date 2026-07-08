@@ -17,6 +17,19 @@ export const jobs = [
     daysOpen: 18,
     applicantCount: 42,
     stageCounts: { new: 8, screening: 12, interviewing: 7, offer: 3, hired: 5, rejected: 12 },
+    description: 'Own end-to-end multi-state payroll processing for a 1,200+ employee client portfolio, partnering with our Payroll Tax and Client Services teams to keep every pay run accurate and on time.',
+    responsibilities: [
+      'Process multi-state payroll runs and reconcile discrepancies before submission',
+      'Maintain compliance with federal, state, and local payroll tax regulations',
+      'Partner with Client Services to resolve escalated payroll issues',
+      'Mentor junior payroll associates on system workflows',
+    ],
+    requirements: [
+      '3+ years of multi-state payroll processing experience',
+      'CPP certification preferred',
+      'Hands-on experience with ADP Workforce Now or similar systems',
+      'Strong Excel and reconciliation skills',
+    ],
   },
   {
     id: 'job-002',
@@ -36,6 +49,19 @@ export const jobs = [
     daysOpen: 10,
     applicantCount: 27,
     stageCounts: { new: 10, screening: 8, interviewing: 4, offer: 1, hired: 0, rejected: 4 },
+    description: 'Support month-end close, reconciliations, and client reporting as part of our growing Troy Finance & Accounting team.',
+    responsibilities: [
+      'Prepare journal entries and assist with month-end close',
+      'Reconcile balance sheet accounts',
+      'Support client-facing financial reporting',
+      'Assist with year-end audit requests',
+    ],
+    requirements: [
+      '1+ years of accounting experience',
+      'Working knowledge of GAAP',
+      'Proficiency with Excel and QuickBooks or NetSuite',
+      'Bachelor’s degree in Accounting or related field',
+    ],
   },
   {
     id: 'job-003',
@@ -55,6 +81,19 @@ export const jobs = [
     daysOpen: 35,
     applicantCount: 14,
     stageCounts: { new: 3, screening: 5, interviewing: 4, offer: 1, hired: 0, rejected: 1 },
+    description: 'Lead our Chicago Client Services organization, owning retention strategy and executive relationships across our largest accounts.',
+    responsibilities: [
+      'Set client retention and satisfaction strategy for the region',
+      'Manage and develop a team of client services managers',
+      'Serve as executive escalation point for key accounts',
+      'Partner with sales on renewal and expansion strategy',
+    ],
+    requirements: [
+      '8+ years in client services or account management leadership',
+      'Proven track record managing enterprise client relationships',
+      'Experience building and coaching high-performing teams',
+      'HRIS or payroll services industry experience preferred',
+    ],
   },
   {
     id: 'job-004',
@@ -74,6 +113,19 @@ export const jobs = [
     daysOpen: 0,
     applicantCount: 0,
     stageCounts: { new: 0, screening: 0, interviewing: 0, offer: 0, hired: 0, rejected: 0 },
+    description: 'A summer-long, paid internship supporting our Grand Rapids HR team with onboarding, recordkeeping, and employee events.',
+    responsibilities: [
+      'Assist with new hire onboarding paperwork and orientation',
+      'Maintain accurate employee records',
+      'Help coordinate employee engagement events',
+      'Support ad-hoc HR projects',
+    ],
+    requirements: [
+      'Currently pursuing a degree in HR, Business, or related field',
+      'Strong organizational skills and attention to detail',
+      'Comfortable with Microsoft Office',
+      'Available full-time for the summer term',
+    ],
   },
   {
     id: 'job-005',
@@ -93,5 +145,35 @@ export const jobs = [
     daysOpen: 41,
     applicantCount: 36,
     stageCounts: { new: 0, screening: 0, interviewing: 0, offer: 0, hired: 1, rejected: 35 },
+    description: 'Manage multi-jurisdiction payroll tax filings and compliance for our Detroit-based client portfolio.',
+    responsibilities: [
+      'Prepare and file multi-state and local payroll tax returns',
+      'Research and resolve tax notices',
+      'Maintain jurisdiction registrations for new client locations',
+      'Audit payroll tax setup for accuracy',
+    ],
+    requirements: [
+      'CPP certification required',
+      '2+ years of payroll tax experience',
+      'Familiarity with multi-state tax jurisdictions',
+      'Strong analytical and research skills',
+    ],
   },
 ]
+
+// Mutates the shared jobs array in place so any view holding a reference to it
+// (e.g. Pipeline, JobRequisitions) reflects the new applicant on its next render.
+// This is the seam to replace with a real API call once a backend exists.
+export function recordNewApplicant(jobId) {
+  const job = jobs.find((j) => j.id === jobId)
+  if (!job) return
+  job.applicantCount += 1
+  job.stageCounts.new += 1
+}
+
+export function moveStageCounts(jobId, fromStage, toStage) {
+  const job = jobs.find((j) => j.id === jobId)
+  if (!job) return
+  if (job.stageCounts[fromStage] > 0) job.stageCounts[fromStage] -= 1
+  job.stageCounts[toStage] = (job.stageCounts[toStage] ?? 0) + 1
+}

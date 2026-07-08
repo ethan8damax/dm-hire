@@ -1,0 +1,42 @@
+.my-app-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.my-app-card {
+  cursor: pointer;
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+.my-app-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.my-app-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.my-app-title {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.my-app-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-gray-500);
+  margin-top: 2px;
+}
+
+.my-app-applied {
+  font-size: var(--text-xs);
+  color: var(--color-gray-400);
+  margin-top: var(--space-1);
+}

@@ -15,7 +15,7 @@ import ScoreBar from '../components/ui/ScoreBar'
 import { usePersona } from '../context/PersonaContext'
 import { candidates } from '../data/candidates'
 import { jobs } from '../data/jobs'
-import { offers as initialOffers } from '../data/offers'
+import { offers as initialOffers, addOrUpdateOffer } from '../data/offers'
 import './CandidateProfile.css'
 
 const CURRENT_RECRUITER = 'T. Smith'
@@ -130,6 +130,17 @@ export default function CandidateProfile() {
     navigate(`/candidates/${candId}`, { state: { candidateIds } })
   }
 
+  // Accepts either a plain offer object or a (prevOffer) => nextOffer updater,
+  // mirroring setState's API while also persisting to the shared offers store
+  // so the candidate-facing view picks up the change on its next render.
+  function persistOffer(updater) {
+    setOffer((prev) => {
+      const next = typeof updater === 'function' ? updater(prev) : updater
+      if (next) addOrUpdateOffer(next)
+      return next
+    })
+  }
+
   function handleAddNote() {
     if (!noteDraft.trim()) return
     setNotes([...notes, { author: CURRENT_RECRUITER, office: CURRENT_OFFICE, date: TODAY, body: noteDraft.trim() }])
@@ -137,7 +148,7 @@ export default function CandidateProfile() {
   }
 
   function handleGenerateOffer() {
-    setOffer({
+    persistOffer({
       id: `offer-draft-${candidate.id}`,
       candidateId: candidate.id,
       jobId: candidate.jobId,
@@ -163,7 +174,7 @@ export default function CandidateProfile() {
   function handleSendForApproval() {
     setOfferPhase('sending')
     setTimeout(() => {
-      setOffer((o) => ({
+      persistOffer((o) => ({
         ...o,
         status: 'awaiting',
         sentDate: TODAY,
@@ -255,15 +266,21 @@ export default function CandidateProfile() {
           <Card>
             <Card.Header>
               <Card.Title>AI Match Score</Card.Title>
-              <span className="cp-score-total">{candidate.aiScore}%</span>
+              {candidate.aiScore != null && <span className="cp-score-total">{candidate.aiScore}%</span>}
             </Card.Header>
             <Card.Body>
-              {Object.entries(candidate.aiDimensions).map(([key, value]) => (
-                <ScoreBar key={key} label={DIMENSION_LABELS[key] ?? key} value={value} />
-              ))}
-              <div className="cp-skill-tags">
-                {candidate.skills.map((skill) => <span key={skill} className="cp-tag">{skill}</span>)}
-              </div>
+              {candidate.aiDimensions == null ? (
+                <EmptyState title="AI review pending" subtitle="Scoring completes shortly after resume parsing finishes." />
+              ) : (
+                Object.entries(candidate.aiDimensions).map(([key, value]) => (
+                  <ScoreBar key={key} label={DIMENSION_LABELS[key] ?? key} value={value} />
+                ))
+              )}
+              {candidate.skills.length > 0 && (
+                <div className="cp-skill-tags">
+                  {candidate.skills.map((skill) => <span key={skill} className="cp-tag">{skill}</span>)}
+                </div>
+              )}
             </Card.Body>
           </Card>
         </div>
@@ -369,7 +386,7 @@ export default function CandidateProfile() {
                 phase={offerPhase}
                 onGenerate={handleGenerateOffer}
                 onEdit={() => setOfferEditing(true)}
-                onChange={setOffer}
+                onChange={persistOffer}
                 onSendForApproval={handleSendForApproval}
               />
             </div>

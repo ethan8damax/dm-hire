@@ -45,7 +45,11 @@ export default function KanbanCard({ candidate, note, noteVariant = 'default', a
 
       <div className="kc-footer">
         <Badge variant={stage} />
-        {showScore && <span className="kc-score" data-tour="tour-ai-score">{aiScore}%</span>}
+        {showScore && (
+          aiScore != null
+            ? <span className="kc-score" data-tour="tour-ai-score">{aiScore}%</span>
+            : <span className="kc-score kc-score-pending" data-tour="tour-ai-score">AI review pending</span>
+        )}
       </div>
 
       {actions.length > 0 && (

@@ -8,6 +8,7 @@ const VARIANT_LABELS = {
   offer: 'Offer',
   hired: 'Hired',
   rejected: 'Not Selected',
+  withdrawn: 'Withdrawn',
   open: 'Open',
   pending_approval: 'Pending Approval',
   draft: 'Draft',

@@ -1,3 +1,5 @@
+import { updateCandidateStage } from './candidates'
+
 export const offers = [
   {
     id: 'offer-001',
@@ -78,3 +80,20 @@ export const offers = [
     payrollSynced: false,
   },
 ]
+
+// Mutates the shared offers array in place so any view holding a reference to
+// it (recruiter's CandidateProfile, candidate's ApplicationDetail) sees the
+// latest offer state on its next render. This is the seam to replace with a
+// real API call once a backend exists.
+export function addOrUpdateOffer(offer) {
+  const idx = offers.findIndex((o) => o.id === offer.id)
+  if (idx === -1) offers.push(offer)
+  else offers[idx] = offer
+
+  // Keep the candidate's pipeline stage consistent with their offer status,
+  // regardless of whether the change came from the recruiter or candidate side.
+  if (offer.status === 'awaiting') updateCandidateStage(offer.candidateId, 'offer')
+  if (offer.status === 'accepted') updateCandidateStage(offer.candidateId, 'hired')
+
+  return offer
+}
