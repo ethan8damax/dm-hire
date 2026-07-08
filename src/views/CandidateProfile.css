@@ -140,6 +140,12 @@
 .cp-scorecard-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 .cp-scorecard-hdr { font-size: var(--text-sm); font-weight: 700; color: var(--color-gray-700); margin-bottom: var(--space-3); }
 
+.cp-app-entry { margin-bottom: var(--space-5); padding-bottom: var(--space-5); border-bottom: 1px solid var(--color-gray-100); }
+.cp-app-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.cp-app-entry-title { font-size: var(--text-sm); font-weight: 700; color: var(--color-gray-800); margin-bottom: var(--space-2); }
+.cp-app-entry-note { font-size: var(--text-sm); color: var(--color-gray-600); margin-top: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-gray-50); border-radius: var(--radius-md); }
+.cp-app-note { font-size: var(--text-xs); color: var(--color-gray-400); margin-bottom: var(--space-3); }
+
 /* Comms */
 .cp-comms-body { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); }
 .cp-comms-col { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }

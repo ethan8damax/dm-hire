@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ChevronLeft, MapPin, DollarSign, FileSignature, Loader2, CheckCircle2 } from 'lucide-react'
+import { ChevronLeft, ChevronDown, ChevronUp, MapPin, DollarSign, FileSignature, Loader2, CheckCircle2 } from 'lucide-react'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
@@ -130,6 +130,8 @@ export default function ApplicationDetail() {
         </Card.Body>
       </Card>
 
+      <ApplicationSummaryCard candidate={candidate} />
+
       {showOffer && (
         <Card className="application-offer-card">
           <Card.Header><Card.Title><FileSignature size={15} /> Your Offer</Card.Title></Card.Header>
@@ -176,5 +178,55 @@ export default function ApplicationDetail() {
         </Button>
       )}
     </div>
+  )
+}
+
+// WOTC answers are intentionally excluded here — that data is for employer-side
+// tax credit screening only, not something candidates need to see reflected back.
+function ApplicationSummaryCard({ candidate }) {
+  const [expanded, setExpanded] = useState(false)
+  const isNewFlow = (candidate.applicationMeta?.wizardVersion ?? 0) >= 1
+
+  if (!isNewFlow) return null
+
+  const { employmentHistory = [], education = [], training = [] } = candidate
+
+  return (
+    <Card>
+      <Card.Header>
+        <Card.Title>Your Application</Card.Title>
+        <Button variant="ghost" size="sm" onClick={() => setExpanded((e) => !e)}>
+          {expanded ? <>Hide details <ChevronUp size={14} /></> : <>View details <ChevronDown size={14} /></>}
+        </Button>
+      </Card.Header>
+      <Card.Body className="app-info-body">
+        <div className="app-info-row"><span className="app-info-label">Employment</span><span>{employmentHistory.length} entr{employmentHistory.length === 1 ? 'y' : 'ies'}</span></div>
+        <div className="app-info-row"><span className="app-info-label">Education</span><span>{education.length} entr{education.length === 1 ? 'y' : 'ies'}</span></div>
+        <div className="app-info-row"><span className="app-info-label">Training</span><span>{training.length > 0 ? `${training.length} listed` : 'None listed'}</span></div>
+
+        {expanded && (
+          <div className="app-summary-detail">
+            {employmentHistory.map((job) => (
+              <div key={job.id} className="app-summary-entry">
+                <div className="app-summary-entry-title">{job.jobTitle} · {job.employer}</div>
+                <div className="app-summary-entry-sub">{job.startDate} – {job.currentlyWorking ? 'Present' : job.endDate}</div>
+              </div>
+            ))}
+            {education.map((edu) => (
+              <div key={edu.id} className="app-summary-entry">
+                <div className="app-summary-entry-title">{edu.degreeLevel} in {edu.fieldOfStudy} · {edu.schoolName}</div>
+                <div className="app-summary-entry-sub">{edu.currentlyEnrolled ? 'Currently enrolled' : edu.graduationDate}</div>
+              </div>
+            ))}
+            {training.map((t) => (
+              <div key={t.id} className="app-summary-entry">
+                <div className="app-summary-entry-title">{t.name}</div>
+                <div className="app-summary-entry-sub">{t.provider} · {t.completionDate}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card.Body>
+    </Card>
   )
 }

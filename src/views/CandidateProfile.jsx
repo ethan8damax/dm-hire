@@ -15,6 +15,7 @@ import ScoreBar from '../components/ui/ScoreBar'
 import { usePersona } from '../context/PersonaContext'
 import { candidates } from '../data/candidates'
 import { jobs } from '../data/jobs'
+import { WOTC_QUESTIONS } from '../data/applicationValidation'
 import { offers as initialOffers, addOrUpdateOffer } from '../data/offers'
 import './CandidateProfile.css'
 
@@ -39,6 +40,7 @@ const FORWARD_STAGES = [
 
 const TABS = [
   { key: 'timeline', label: 'Timeline' },
+  { key: 'application', label: 'Application' },
   { key: 'notes', label: 'Notes' },
   { key: 'scorecard', label: 'Scorecard' },
   { key: 'comms', label: 'Comms' },
@@ -319,6 +321,12 @@ export default function CandidateProfile() {
             </div>
           )}
 
+          {activeTab === 'application' && (
+            <div role="tabpanel" id="cp-panel-application" aria-labelledby="cp-tab-application">
+              <ApplicationTab candidate={candidate} />
+            </div>
+          )}
+
           {activeTab === 'notes' && (
             <div role="tabpanel" id="cp-panel-notes" aria-labelledby="cp-tab-notes">
               <Card>
@@ -400,6 +408,92 @@ export default function CandidateProfile() {
         </div>
       </div>
     </div>
+  )
+}
+
+function ApplicationTab({ candidate }) {
+  const isNewFlow = (candidate.applicationMeta?.wizardVersion ?? 0) >= 1
+
+  if (!isNewFlow) {
+    return (
+      <Card>
+        <Card.Body>
+          <EmptyState
+            title="No detailed application on file"
+            subtitle="This candidate applied before employment history, education, training, and WOTC screening were collected during application."
+          />
+        </Card.Body>
+      </Card>
+    )
+  }
+
+  const { employmentHistory = [], education = [], training = [], wotc } = candidate
+
+  return (
+    <>
+      <Card>
+        <Card.Header><Card.Title>Employment History</Card.Title></Card.Header>
+        <Card.Body>
+          {employmentHistory.length === 0 && <div className="cp-empty-inline">No employment history provided.</div>}
+          {employmentHistory.map((job) => (
+            <div key={job.id} className="cp-app-entry">
+              <div className="cp-app-entry-title">{job.jobTitle} · {job.employer}</div>
+              <div className="cp-info-row"><span className="cp-info-label">Dates</span><span className="cp-info-val">{job.startDate} – {job.currentlyWorking ? 'Present' : job.endDate}</span></div>
+              {!job.currentlyWorking && <div className="cp-info-row"><span className="cp-info-label">Reason for Leaving</span><span className="cp-info-val">{job.reasonForLeaving}</span></div>}
+              {job.responsibilities && <div className="cp-app-entry-note">{job.responsibilities}</div>}
+            </div>
+          ))}
+        </Card.Body>
+      </Card>
+
+      <Card>
+        <Card.Header><Card.Title>Education</Card.Title></Card.Header>
+        <Card.Body>
+          {education.length === 0 && <div className="cp-empty-inline">No education provided.</div>}
+          {education.map((edu) => (
+            <div key={edu.id} className="cp-app-entry">
+              <div className="cp-app-entry-title">{edu.degreeLevel} in {edu.fieldOfStudy} · {edu.schoolName}</div>
+              <div className="cp-info-row"><span className="cp-info-label">Location</span><span className="cp-info-val">{edu.city}, {edu.state}</span></div>
+              <div className="cp-info-row"><span className="cp-info-label">Graduation</span><span className="cp-info-val">{edu.currentlyEnrolled ? 'Currently enrolled' : edu.graduationDate || '—'}</span></div>
+            </div>
+          ))}
+        </Card.Body>
+      </Card>
+
+      <Card>
+        <Card.Header><Card.Title>Training &amp; Certifications</Card.Title></Card.Header>
+        <Card.Body>
+          {training.length === 0 && <div className="cp-empty-inline">No training or certifications listed.</div>}
+          {training.map((t) => (
+            <div key={t.id} className="cp-app-entry">
+              <div className="cp-app-entry-title">{t.name}</div>
+              <div className="cp-info-row"><span className="cp-info-label">Provider</span><span className="cp-info-val">{t.provider}</span></div>
+              <div className="cp-info-row"><span className="cp-info-label">Completed</span><span className="cp-info-val">{t.completionDate}{t.expirationDate ? ` · Expires ${t.expirationDate}` : ''}</span></div>
+            </div>
+          ))}
+        </Card.Body>
+      </Card>
+
+      <Card>
+        <Card.Header><Card.Title>WOTC Screening</Card.Title></Card.Header>
+        <Card.Body>
+          {wotc == null ? (
+            <div className="cp-empty-inline">Not collected on this application.</div>
+          ) : (
+            <>
+              <div className="cp-app-note">For tax credit eligibility screening only — not used in hiring decisions.</div>
+              {WOTC_QUESTIONS.map((q) => (
+                <div className="cp-info-row" key={q.key}>
+                  <span className="cp-info-label">{q.label}</span>
+                  <span className="cp-info-val">{wotc[q.key] === true ? 'Yes' : wotc[q.key] === false ? 'No' : '—'}</span>
+                </div>
+              ))}
+              <div className="cp-info-row"><span className="cp-info-label">Signed</span><span className="cp-info-val">{wotc.consentSignatureName} · {wotc.consentSignatureDate}</span></div>
+            </>
+          )}
+        </Card.Body>
+      </Card>
+    </>
   )
 }
 
@@ -670,7 +764,12 @@ function OfferTab({ offer, editing, phase, onGenerate, onEdit, onChange, onSendF
 
 function DocsTab({ candidate, offer }) {
   const status = docStatus(candidate)
-  const certifications = candidate.skills.filter((s) => s.toLowerCase().includes('certified'))
+  const certifications = [
+    ...new Set([
+      ...(candidate.training ?? []).map((t) => t.name),
+      ...candidate.skills.filter((s) => s.toLowerCase().includes('certified')),
+    ]),
+  ]
 
   return (
     <Card>

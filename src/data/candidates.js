@@ -310,6 +310,7 @@ export const candidates = [
 // call once a backend exists.
 export function addCandidateApplication({
   jobId, name, email, phone, location, currentRole, expectedSalary, availability, linkedin, resumeFileName, skills,
+  address, workAuthorization, employmentHistory, education, training, wotc,
 }) {
   const candidate = {
     id: `cand-${Date.now()}`,
@@ -338,6 +339,15 @@ export function addCandidateApplication({
     notes: [],
     timeline: [{ stage: 'Application', date: new Date().toISOString().slice(0, 10), note: 'Applied via Career Site' }],
     scorecard: [],
+    // Collected by the multi-step application wizard — absent on candidates
+    // who applied before it existed (see applicationMeta.wizardVersion).
+    address: address ?? { street: '', city: '', state: '', zip: '' },
+    workAuthorization: workAuthorization ?? { authorized: null, requiresSponsorship: null },
+    employmentHistory: employmentHistory ?? [],
+    education: education ?? [],
+    training: training ?? [],
+    wotc: wotc ?? null,
+    applicationMeta: { wizardVersion: 1, completedAt: new Date().toISOString() },
   }
   candidates.push(candidate)
   return candidate

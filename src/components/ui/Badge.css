@@ -52,3 +52,5 @@
 .badge-paused .badge-dot       { background: var(--color-warning); }
 .badge-not_connected    { background: var(--color-gray-100); color: var(--color-gray-500); }
 .badge-not_connected .badge-dot { background: var(--color-gray-400); }
+.badge-missing          { background: #FEF2F2; color: #991B1B; }
+.badge-missing .badge-dot      { background: var(--color-danger); }

@@ -17,7 +17,7 @@ import CandidatePortal from './views/CandidatePortal'
 import WhyDMHire from './views/WhyDMHire'
 import CareerHome from './views/CareerHome'
 import JobDetail from './views/JobDetail'
-import ApplyPage from './views/ApplyPage'
+import ApplyWizard from './views/apply/ApplyWizard'
 import MyApplications from './views/MyApplications'
 import ApplicationDetail from './views/ApplicationDetail'
 import CandidateAccount from './views/CandidateAccount'
@@ -45,7 +45,7 @@ export default function App() {
               <Route element={<CareerShell />}>
                 <Route path="/careers" element={<CareerHome />} />
                 <Route path="/careers/jobs/:jobId" element={<JobDetail />} />
-                <Route path="/careers/jobs/:jobId/apply" element={<ApplyPage />} />
+                <Route path="/careers/jobs/:jobId/apply" element={<ApplyWizard />} />
                 <Route path="/careers/applications" element={<MyApplications />} />
                 <Route path="/careers/applications/:candidateId" element={<ApplicationDetail />} />
                 <Route path="/careers/profile" element={<CandidateAccount />} />
