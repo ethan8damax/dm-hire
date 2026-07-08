@@ -7,7 +7,8 @@ import {
 import Button from '../components/ui/Button'
 import Timeline from '../components/ui/Timeline'
 import { usePersona } from '../context/PersonaContext'
-import { jobs } from '../data/jobs'
+import { useJobs } from '../hooks/useJobs'
+import Loading from '../components/ui/Loading'
 import './CandidatePortal.css'
 
 const SCHEDULE_SLOTS = ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM']
@@ -35,6 +36,9 @@ export default function CandidatePortal() {
   const [scheduleSelected, setScheduleSelected] = useState(null)
   const [agreed, setAgreed] = useState(false)
   const [signPhase, setSignPhase] = useState('idle') // idle | signing | signed
+  const { jobs, loading } = useJobs()
+
+  if (loading) return <Loading />
 
   const openJobs = jobs.filter((j) => j.status === 'open' && !j.isInternal)
   const filteredJobs = openJobs.filter((j) =>
