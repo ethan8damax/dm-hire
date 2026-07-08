@@ -19,7 +19,7 @@ Supabase project: **`ATS`** (id `uvwsxzynbpmrbckmqhzy`, region us-east-1), creat
 ## 3. Architecture
 
 - New dependency: `@supabase/supabase-js` (only new package — no query library added; the codebase's existing pattern is Context + useState, so per-entity hooks follow that, not React Query).
-- `src/lib/supabaseClient.js` — creates the client from `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`, read from `.env.local` (gitignored, not committed).
+- `src/lib/supabaseClient.js` — creates the client from `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`, read from `.env.local` (already covered by the repo's existing `*.local` gitignore pattern — no gitignore change needed).
   - URL: `https://uvwsxzynbpmrbckmqhzy.supabase.co`
   - Use the modern `sb_publishable_...` key, not the legacy anon JWT.
 - **IDs**: existing string IDs (`'cand-001'`, `'job-001'`, etc.) are kept as `text` primary keys. No switch to UUIDs — they're already unique and readable, and every cross-reference in the current data uses them.
@@ -34,11 +34,12 @@ All tables in the `public` schema.
 ### Core entities (mutated by user interaction)
 
 **`jobs`**
-`id` text PK, `title`, `department`, `location`, `office_id` FK→offices, `comp_range`, `posted_date`, `status`, `is_internal` bool, `role_template`, `boards` text[], `knockout_rules` jsonb, `approval_chain` text[], `hiring_manager_id` FK→users, `days_open` int, `applicant_count` int.
-*`stage_counts` is dropped* — computed live via `SELECT stage, COUNT(*) FROM candidates WHERE job_id = ? GROUP BY stage` instead of stored, so it can't drift from actual candidate state.
+`id` text PK, `title`, `department`, `location`, `office_id` FK→offices, `comp_range` text (free-form range like `"$85K–$105K"`, not numeric), `posted_date`, `status`, `is_internal` bool, `role_template`, `boards` text[], `knockout_rules` jsonb, `approval_chain` text[], `hiring_manager_id` FK→users, `days_open` int, `applicant_count` int.
+*`stage_counts` is dropped* — computed client-side in `useJobs`, by reducing the already-fetched `candidates` list grouped by `job_id`/`stage`. Not a stored column, and not a DB view either — it's a single UI aggregate, not worth a view for.
+*`days_open` stays a stored int, not derived from `now() - posted_date`.* This is the opposite call from `stage_counts`: `stage_counts` is an aggregate of current true state, so deriving it live keeps it correct forever. `days_open` is a narrative value anchored to the demo's fixed "present" (dates cluster around 2026-06/07); deriving it from real wall-clock `now()` would make every requisition look open for hundreds of days the further real time moves past the demo's setting. Same reasoning applies to `candidates.days_in_stage` below.
 
 **`candidates`**
-`id` text PK, `name`, `initials`, `avatar_color`, `job_id` FK→jobs, `stage`, `source`, `location`, `email`, `phone`, `current_role`, `expected_salary`, `availability`, `days_in_stage` int, `ai_score` int, `ai_dimensions` jsonb, `skills` text[], `prior_interaction`, `is_duplicate` bool, `is_stale` bool, `is_top_candidate` bool.
+`id` text PK, `name`, `initials`, `avatar_color`, `job_id` FK→jobs, `stage`, `source`, `location`, `email`, `phone`, `current_role`, `expected_salary` text (free-form range, not numeric), `availability`, `days_in_stage` int (stored, not derived — see `days_open` above), `ai_score` int, `ai_dimensions` jsonb, `skills` text[], `prior_interaction` jsonb nullable (source data is either `null` or a structured object like `{ year, role, recruiter }`, never a plain string), `is_duplicate` bool, `is_stale` bool, `is_top_candidate` bool.
 
 **`candidate_notes`** — `id` identity PK, `candidate_id` FK→candidates, `author`, `office` (plain text, no FK), `date`, `body`.
 
@@ -75,6 +76,7 @@ All tables in the `public` schema.
 - **Hooks translate snake_case DB columns back to the exact camelCase shape components already use** (`avatar_color` → `avatarColor`, `job_id` → `jobId`, etc.). This is what keeps the diff small: view components need zero internal changes, only the top-of-file swap from `import { candidates } from '../data/candidates'` to `const { candidates, updateStage } = useCandidates()`.
 - Cross-entity joins use Supabase's nested `select` (e.g. `candidates.select('*, jobs(title)')`) rather than separate fetches manually joined in JS.
 - **Mutations are confirm-first, not optimistic**: call Supabase, update local state only from the successful response. On failure, show an inline error message and leave prior state untouched. No optimistic update/rollback logic — unnecessary complexity for a demo on a stable connection.
+- Some mutations are compound (e.g. moving a candidate's stage should both update `candidates.stage` and insert a `candidate_timeline_events` row) — the schema supports this (that's exactly what the timeline table is for), but the actual wiring and its failure-mode handling belongs to sub-project B, not here.
 
 ## 6. Migration & Seeding
 
