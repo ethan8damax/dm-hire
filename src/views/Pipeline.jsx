@@ -9,6 +9,7 @@ import { useJobs } from '../hooks/useJobs'
 import { useCandidates } from '../hooks/useCandidates'
 import { useOffers } from '../hooks/useOffers'
 import { useUsers } from '../hooks/useUsers'
+import { useReminders } from '../hooks/useReminders'
 import Loading from '../components/ui/Loading'
 import './Pipeline.css'
 
@@ -19,6 +20,12 @@ const TODAY = '2026-07-07'
 
 function daysUntil(dateStr) {
   return Math.ceil((new Date(dateStr) - new Date(TODAY)) / (1000 * 60 * 60 * 24))
+}
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr)
+  d.setDate(d.getDate() + days)
+  return d.toISOString().slice(0, 10)
 }
 
 const COLUMNS = [
@@ -73,9 +80,9 @@ const DECLINE_ACTION = { label: 'Decline', tone: 'danger' }
 
 const SCORECARD_ONLY_ACTION = [{ label: 'Scorecard' }]
 
-function cardPropsForColumn(columnKey, candidate, isHiringManager, offers) {
+function cardPropsForColumn(columnKey, candidate, isHiringManager, offers, onSendReminder, onExtend) {
   if (isHiringManager) {
-    const base = cardPropsForColumn(columnKey, candidate, false, offers)
+    const base = cardPropsForColumn(columnKey, candidate, false, offers, onSendReminder, onExtend)
     const canScore = columnKey === 'screening' || columnKey === 'interviewing'
     return { ...base, actions: canScore ? SCORECARD_ONLY_ACTION : [] }
   }
@@ -102,10 +109,14 @@ function cardPropsForColumn(columnKey, candidate, isHiringManager, offers) {
   }
   if (columnKey === 'offer') {
     const offer = offers.find((o) => o.candidateId === candidate.id)
-    const isExpiringSoon = offer?.status === 'awaiting' && daysUntil(offer.expiryDate) >= 0 && daysUntil(offer.expiryDate) <= 5
-    const actions = isExpiringSoon
-      ? [{ label: 'Send Reminder', tone: 'warn' }, { label: 'Extend', tone: 'accent' }]
-      : [{ label: 'Extend', tone: 'accent' }]
+    const isAwaiting = offer?.status === 'awaiting'
+    const isExpiringSoon = isAwaiting && daysUntil(offer.expiryDate) >= 0 && daysUntil(offer.expiryDate) <= 5
+    const extendAction = { label: 'Extend', tone: 'accent', onClick: () => onExtend(offer) }
+    const actions = !isAwaiting
+      ? []
+      : isExpiringSoon
+        ? [{ label: 'Send Reminder', tone: 'warn', onClick: () => onSendReminder(candidate, offer) }, extendAction]
+        : [extendAction]
     if (isExpiringSoon) {
       const note = <><AlertTriangle size={11} /> Offer expires {offer.expiryDate}</>
       return { note, noteVariant: 'warn', actions }
@@ -140,8 +151,9 @@ export default function Pipeline() {
   const { persona } = usePersona()
   const { jobs, loading: jobsLoading } = useJobs()
   const { candidates, loading: candidatesLoading } = useCandidates()
-  const { offers, loading: offersLoading } = useOffers()
+  const { offers, loading: offersLoading, updateOffer } = useOffers()
   const { users, loading: usersLoading } = useUsers()
+  const { sendReminder } = useReminders()
   const isHiringManager = persona === 'hiring_manager'
 
   const hmAssignedJobIds = users.find((u) => u.id === CURRENT_HM_ID)?.assignedJobIds ?? []
@@ -155,6 +167,20 @@ export default function Pipeline() {
 
   function handleJobChange(jobId) {
     setSearchParams({ job: jobId })
+  }
+
+  function handleSendReminder(candidate, offer) {
+    sendReminder({
+      candidateId: candidate.id,
+      offerId: offer.id,
+      type: 'expiry_reminder',
+      sentBy: CURRENT_RECRUITER,
+      message: `Reminder sent — offer expires ${offer.expiryDate}`,
+    })
+  }
+
+  function handleExtend(offer) {
+    updateOffer(offer.id, { expiryDate: addDays(offer.expiryDate, 7) })
   }
 
   const jobCandidates = useMemo(
@@ -216,7 +242,7 @@ export default function Pipeline() {
                     key={candidate.id}
                     candidate={candidate}
                     onClick={() => navigate(`/candidates/${candidate.id}`, { state: { candidateIds: flatCandidateIds } })}
-                    {...cardPropsForColumn(col.key, candidate, isHiringManager, offers)}
+                    {...cardPropsForColumn(col.key, candidate, isHiringManager, offers, handleSendReminder, handleExtend)}
                   />
                 ))}
                 {columnCandidates.length === 0 && <div className="kanban-col-empty">No candidates</div>}
