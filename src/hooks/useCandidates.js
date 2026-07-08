@@ -47,5 +47,11 @@ export function useCandidates() {
     setCandidates((list) => list.map((c) => (c.id === id ? { ...c, notes: [...c.notes, rowToCamel(data)] } : c)))
   }, [])
 
-  return { candidates, loading, error, updateStage, addNote }
+  const updateCandidate = useCallback(async (id, patch) => {
+    const { error } = await supabase.from('candidates').update(toSnakeRow(patch)).eq('id', id)
+    if (error) { setError(error); return }
+    setCandidates((list) => list.map((c) => (c.id === id ? { ...c, ...patch } : c)))
+  }, [])
+
+  return { candidates, loading, error, updateStage, addNote, updateCandidate }
 }
