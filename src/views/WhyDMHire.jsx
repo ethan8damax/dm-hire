@@ -8,7 +8,8 @@ import {
 } from 'lucide-react'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
-import { whyDmHireFeatures } from '../data/whyDmHireFeatures'
+import { useWhyDmHireFeatures } from '../hooks/useWhyDmHireFeatures'
+import Loading from '../components/ui/Loading'
 import './WhyDMHire.css'
 
 const ICON_MAP = {
@@ -50,6 +51,9 @@ const STORY_STAGES = [
 
 export default function WhyDMHire() {
   const navigate = useNavigate()
+  const { whyDmHireFeatures, loading } = useWhyDmHireFeatures()
+
+  if (loading) return <Loading />
 
   return (
     <div className="why-view">
