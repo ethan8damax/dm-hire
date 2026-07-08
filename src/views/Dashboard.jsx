@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Briefcase, Users, Clock, CheckCircle2, AlertTriangle,
@@ -15,8 +16,11 @@ import { useCandidates } from '../hooks/useCandidates'
 import { useJobs } from '../hooks/useJobs'
 import { useOffers } from '../hooks/useOffers'
 import { useAnalytics } from '../hooks/useAnalytics'
+import { useReminders } from '../hooks/useReminders'
 import Loading from '../components/ui/Loading'
 import './Dashboard.css'
+
+const CURRENT_RECRUITER = 'T. Smith'
 
 function daysUntil(dateStr) {
   const ms = new Date(dateStr) - new Date()
@@ -35,6 +39,8 @@ export default function Dashboard() {
   const { jobs, loading: jobsLoading } = useJobs()
   const { offers, loading: offersLoading } = useOffers()
   const { analytics, loading: analyticsLoading } = useAnalytics()
+  const { sendReminder } = useReminders()
+  const [nudgedOfferIds, setNudgedOfferIds] = useState(new Set())
 
   if (candidatesLoading || jobsLoading || offersLoading || analyticsLoading) return <Loading />
 
@@ -65,6 +71,17 @@ export default function Dashboard() {
 
   const now = new Date()
   const dateLabel = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+
+  function handleNudge(offer) {
+    sendReminder({
+      candidateId: offer.candidateId,
+      offerId: offer.id,
+      type: 'expiry_reminder',
+      sentBy: CURRENT_RECRUITER,
+      message: `Reminder sent — offer expires ${offer.expiryDate}`,
+    })
+    setNudgedOfferIds((ids) => new Set(ids).add(offer.id))
+  }
 
   return (
     <div className="dashboard">
@@ -147,7 +164,9 @@ export default function Dashboard() {
                       <div className="action-item-title">{cand?.name}: Offer Expiring</div>
                       <div className="action-item-sub warn">Expires in {o.daysLeft} day{o.daysLeft === 1 ? '' : 's'} · No response</div>
                     </div>
-                    <Button size="sm" variant="ghost" onClick={() => navigate('/offers')}>Nudge</Button>
+                    <Button size="sm" variant="ghost" disabled={nudgedOfferIds.has(o.id)} onClick={() => handleNudge(o)}>
+                      {nudgedOfferIds.has(o.id) ? 'Sent' : 'Nudge'}
+                    </Button>
                   </div>
                 )
               })}
