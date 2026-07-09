@@ -13,6 +13,7 @@ import { useRoleWorkflowTemplates } from '../hooks/useRoleWorkflowTemplates'
 import { useOnboardingPackets } from '../hooks/useOnboardingPackets'
 import { useUsers } from '../hooks/useUsers'
 import { useJobs } from '../hooks/useJobs'
+import { useNotifications } from '../hooks/useNotifications'
 import './Settings.css'
 
 const TABS = [
@@ -300,9 +301,26 @@ const DEFAULT_NOTIF_MATRIX = {
 
 function NotificationsTab() {
   const [matrix, setMatrix] = useState(DEFAULT_NOTIF_MATRIX)
+  const { notifications, addNotification, dismissNotification } = useNotifications()
+  const [addModalOpen, setAddModalOpen] = useState(false)
+  const [newNotif, setNewNotif] = useState({ title: '', message: '', departments: [], receives: '' })
 
   function toggle(deptKey, triggerKey) {
     setMatrix((m) => ({ ...m, [deptKey]: { ...m[deptKey], [triggerKey]: !m[deptKey][triggerKey] } }))
+  }
+
+  function toggleNewNotifDept(deptKey) {
+    setNewNotif((f) => ({
+      ...f,
+      departments: f.departments.includes(deptKey) ? f.departments.filter((d) => d !== deptKey) : [...f.departments, deptKey],
+    }))
+  }
+
+  function submitNewNotif() {
+    if (!newNotif.title.trim()) return
+    addNotification(newNotif.title.trim(), newNotif.message.trim(), newNotif.departments, newNotif.receives.trim())
+    setAddModalOpen(false)
+    setNewNotif({ title: '', message: '', departments: [], receives: '' })
   }
 
   return (
@@ -340,6 +358,70 @@ function NotificationsTab() {
           </table>
         </Card.Body>
       </Card>
+
+      <div className="settings-panel-hdr settings-panel-hdr-spaced">
+        <div>
+          <div className="settings-panel-title">Custom Notifications</div>
+          <div className="settings-panel-sub">One-off notifications recruiters post to the notification bell for everyone using DM Hire.</div>
+        </div>
+        <Button variant="primary" size="sm" onClick={() => setAddModalOpen(true)}><Plus size={14} /> Add Notification</Button>
+      </div>
+
+      <Card>
+        <Card.Body>
+          {notifications.length === 0 && <div className="settings-hint">No custom notifications yet.</div>}
+          {notifications.map((n) => (
+            <div className="settings-doc-row" key={n.id}>
+              <FileText size={14} />
+              <div>
+                <span>{n.title}{n.message ? ` — ${n.message}` : ''}</span>
+                {(n.notifyDepartments?.length > 0 || n.receives) && (
+                  <div className="settings-notif-item-meta">
+                    {n.notifyDepartments?.length > 0 && <>Notifies: {n.notifyDepartments.map((k) => DEPARTMENTS.find((d) => d.key === k)?.label ?? k).join(', ')}</>}
+                    {n.notifyDepartments?.length > 0 && n.receives && ' · '}
+                    {n.receives && <>Receives: {n.receives}</>}
+                  </div>
+                )}
+              </div>
+              <button type="button" className="settings-row-remove" onClick={() => dismissNotification(n.id)} aria-label="Remove notification"><X size={14} /></button>
+            </div>
+          ))}
+        </Card.Body>
+      </Card>
+
+      <Modal
+        open={addModalOpen}
+        onClose={() => setAddModalOpen(false)}
+        title="Add Notification"
+        footer={<>
+          <Button variant="ghost" onClick={() => setAddModalOpen(false)}>Cancel</Button>
+          <Button variant="primary" disabled={!newNotif.title.trim()} onClick={submitNewNotif}>Add Notification</Button>
+        </>}
+      >
+        <div className="settings-form-row">
+          <label>Title</label>
+          <input value={newNotif.title} onChange={(e) => setNewNotif((f) => ({ ...f, title: e.target.value }))} placeholder="e.g. New payroll integration live" />
+        </div>
+        <div className="settings-form-row">
+          <label>Message (optional)</label>
+          <input value={newNotif.message} onChange={(e) => setNewNotif((f) => ({ ...f, message: e.target.value }))} placeholder="Details recruiters should know" />
+        </div>
+        <div className="settings-form-row">
+          <label>Who should this notify?</label>
+          <div className="settings-checkbox-row">
+            {DEPARTMENTS.map((d) => (
+              <label className="settings-checkbox" key={d.key}>
+                <input type="checkbox" checked={newNotif.departments.includes(d.key)} onChange={() => toggleNewNotifDept(d.key)} />
+                {d.label}
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="settings-form-row">
+          <label>What do they receive?</label>
+          <input value={newNotif.receives} onChange={(e) => setNewNotif((f) => ({ ...f, receives: e.target.value }))} placeholder="e.g. Name, start date, equipment needs" />
+        </div>
+      </Modal>
     </div>
   )
 }
