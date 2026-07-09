@@ -1,0 +1,20 @@
+.rd-header-left { display: flex; align-items: center; gap: var(--space-3); }
+.rd-header-actions { display: flex; align-items: center; gap: var(--space-2); }
+
+.rd-layout { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); align-items: start; }
+
+.rd-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.rd-info-row { display: flex; flex-direction: column; gap: 2px; font-size: var(--text-sm); color: var(--color-gray-800); }
+.rd-info-label { font-size: var(--text-xs); font-weight: 600; color: var(--color-gray-500); }
+
+.rd-funnel { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+.rd-funnel-stage { text-align: center; min-width: 80px; }
+.rd-funnel-count { font-size: var(--text-xl); font-weight: 700; color: var(--color-maroon); }
+.rd-funnel-label { font-size: var(--text-xs); color: var(--color-gray-500); margin-top: 2px; }
+
+.rd-approval-actions { display: flex; flex-direction: column; gap: var(--space-3); }
+.rd-approval-buttons { display: flex; gap: var(--space-2); }
+
+@media (max-width: 860px) {
+  .rd-layout { grid-template-columns: 1fr; }
+}

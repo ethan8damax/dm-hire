@@ -47,13 +47,13 @@ function slugify(title) {
   return title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
-function JobRow({ job, candidates, onShare, sharedId, onEdit, onViewPipeline }) {
+function JobRow({ job, candidates, onShare, sharedId, onOpenDetail, onViewPipeline }) {
   const Icon = DEPT_ICONS[job.department] ?? Briefcase
   const topCandidates = candidates.filter((c) => c.jobId === job.id)
   const overflow = job.applicantCount - topCandidates.length
 
   return (
-    <div className="job-row" onClick={() => onEdit(job)}>
+    <div className="job-row" onClick={() => onOpenDetail(job)}>
       <div className="job-dept-icon"><Icon size={19} /></div>
 
       <div className="job-info">
@@ -135,7 +135,7 @@ function formFromJob(job) {
   }
 }
 
-function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offices, roleWorkflows, hiringManagers, canEdit }) {
+export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offices, roleWorkflows, hiringManagers, canEdit }) {
   const [form, setForm] = useState(() => formFromJob(job))
   const [phase, setPhase] = useState('form') // form | posting | success
   const readOnly = !!job && !canEdit
@@ -522,7 +522,6 @@ export default function JobRequisitions() {
   const { roleWorkflows, loading: workflowsLoading } = useRoleWorkflowTemplates()
   const [filter, setFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
-  const [editingJob, setEditingJob] = useState(null)
   const [sharedId, setSharedId] = useState(null)
 
   if (jobsLoading || officesLoading || candidatesLoading || workflowsLoading || usersLoading) return <Loading />
@@ -555,7 +554,6 @@ export default function JobRequisitions() {
 
   function closeModal() {
     setModalOpen(false)
-    setEditingJob(null)
   }
 
   return (
@@ -589,7 +587,7 @@ export default function JobRequisitions() {
               candidates={candidates}
               onShare={handleShare}
               sharedId={sharedId}
-              onEdit={(j) => setEditingJob(j)}
+              onOpenDetail={(j) => navigate(`/jobs/${j.id}`)}
               onViewPipeline={(j) => navigate(`/pipeline?job=${j.id}`)}
             />
           ))}
@@ -597,8 +595,8 @@ export default function JobRequisitions() {
       )}
 
       <RequisitionModal
-        open={modalOpen || !!editingJob}
-        job={editingJob}
+        open={modalOpen}
+        job={null}
         onClose={closeModal}
         onCreate={handleCreate}
         onSave={handleSave}
