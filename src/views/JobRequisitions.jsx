@@ -266,7 +266,7 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
       return
     }
     const template = roleWorkflows[form.roleTemplate]
-    const status = template.approvalChain.length > 1 ? 'pending_approval' : 'open'
+    const status = template.approvalChain.length > 0 ? 'pending_approval' : 'open'
     setPhase('posting')
     setTimeout(() => setPhase('success'), 1100)
     setTimeout(() => {
@@ -292,10 +292,10 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
             <>
               <CheckCircle2 size={32} className="req-success-icon" />
               <div className="req-submit-title">
-                {template.approvalChain.length > 1 ? 'Submitted for approval' : `Posted to ${form.boards.length} board${form.boards.length === 1 ? '' : 's'}`}
+                {template.approvalChain.length > 0 ? 'Submitted for approval' : `Posted to ${form.boards.length} board${form.boards.length === 1 ? '' : 's'}`}
               </div>
               <div className="req-submit-sub">
-                {template.approvalChain.length > 1
+                {template.approvalChain.length > 0
                   ? `Routing through ${template.approvalChain.map((r) => APPROVAL_ROLE_LABELS[r]).join(' → ')}`
                   : 'Knockout rules active · E-sig enabled on offer letter'}
               </div>
@@ -314,7 +314,7 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
               <label className="req-field">
                 <span>Status</span>
                 <select value={form.status} onChange={(e) => updateField('status', e.target.value)}>
-                  {FILTERS.filter((f) => f.key !== 'all').map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
+                  {FILTERS.filter((f) => f.key !== 'all' && !(job.status === 'pending_approval' && f.key === 'open')).map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
                 </select>
               </label>
             )}
