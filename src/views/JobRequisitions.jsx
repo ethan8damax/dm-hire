@@ -13,6 +13,7 @@ import Modal from '../components/ui/Modal'
 import EmptyState from '../components/ui/EmptyState'
 import { useJobs } from '../hooks/useJobs'
 import { useOffices } from '../hooks/useOffices'
+import { useUsers } from '../hooks/useUsers'
 import { useCandidates } from '../hooks/useCandidates'
 import { useRoleWorkflowTemplates } from '../hooks/useRoleWorkflowTemplates'
 import { usePersona } from '../context/PersonaContext'
@@ -104,7 +105,7 @@ const EMPTY_FORM = {
   title: '',
   department: 'Finance & Accounting',
   officeId: 'office-detroit',
-  hiringManager: '',
+  hiringManagerId: '',
   compRange: '',
   startDate: '',
   headcountJustification: '',
@@ -121,7 +122,7 @@ function formFromJob(job) {
     title: job.title,
     department: job.department,
     officeId: job.officeId,
-    hiringManager: '',
+    hiringManagerId: job.hiringManagerId || '',
     compRange: job.compRange,
     startDate: '',
     headcountJustification: '',
@@ -134,7 +135,7 @@ function formFromJob(job) {
   }
 }
 
-function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offices, roleWorkflows, canEdit }) {
+function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offices, roleWorkflows, hiringManagers, canEdit }) {
   const [form, setForm] = useState(() => formFromJob(job))
   const [phase, setPhase] = useState('form') // form | posting | success
   const readOnly = !!job && !canEdit
@@ -211,7 +212,7 @@ function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offi
       boards: form.internalOnly ? [] : form.boards,
       knockoutRules: form.knockoutRules,
       approvalChain: template.approvalChain,
-      hiringManagerId: null,
+      hiringManagerId: form.hiringManagerId || null,
       daysOpen: 0,
       applicantCount: 0,
     }
@@ -243,6 +244,7 @@ function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offi
         department: form.department,
         location: office ? `${office.city}, ${office.state}` : job.location,
         officeId: form.officeId,
+        hiringManagerId: form.hiringManagerId || null,
         compRange: form.compRange,
         status: form.status,
         isInternal: form.internalOnly,
@@ -321,7 +323,10 @@ function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offi
             </label>
             <label className="req-field">
               <span>Hiring Manager</span>
-              <input value={form.hiringManager} onChange={(e) => updateField('hiringManager', e.target.value)} placeholder="e.g. A. Chen" />
+              <select value={form.hiringManagerId} onChange={(e) => updateField('hiringManagerId', e.target.value)}>
+                <option value="">— Select —</option>
+                {hiringManagers.map((hm) => <option key={hm.id} value={hm.id}>{hm.name}</option>)}
+              </select>
             </label>
             <label className="req-field">
               <span>Comp Range</span>
@@ -459,6 +464,7 @@ export default function JobRequisitions() {
   const isRecruiter = persona === 'recruiter'
   const { jobs: jobsList, loading: jobsLoading, createJob, updateJob, deleteJob } = useJobs()
   const { offices, loading: officesLoading } = useOffices()
+  const { users, loading: usersLoading } = useUsers()
   const { candidates, loading: candidatesLoading } = useCandidates()
   const { roleWorkflows, loading: workflowsLoading } = useRoleWorkflowTemplates()
   const [filter, setFilter] = useState('all')
@@ -466,7 +472,7 @@ export default function JobRequisitions() {
   const [editingJob, setEditingJob] = useState(null)
   const [sharedId, setSharedId] = useState(null)
 
-  if (jobsLoading || officesLoading || candidatesLoading || workflowsLoading) return <Loading />
+  if (jobsLoading || officesLoading || candidatesLoading || workflowsLoading || usersLoading) return <Loading />
 
   const counts = FILTERS.reduce((acc, f) => {
     acc[f.key] = f.key === 'all' ? jobsList.length : jobsList.filter((j) => j.status === f.key).length
@@ -547,6 +553,7 @@ export default function JobRequisitions() {
         canEdit={isRecruiter}
         offices={offices}
         roleWorkflows={roleWorkflows}
+        hiringManagers={users.filter((u) => u.role === 'Hiring Manager')}
       />
     </div>
   )
