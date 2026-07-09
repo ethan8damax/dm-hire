@@ -3,11 +3,11 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-gray-100);
   box-shadow: var(--shadow-sm);
-  overflow: hidden;
 }
 .card-header {
   padding: var(--space-5) var(--space-6);
   border-bottom: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -24,4 +24,5 @@
   padding: var(--space-4) var(--space-6);
   background: var(--color-gray-50);
   border-top: 1px solid var(--color-gray-100);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }

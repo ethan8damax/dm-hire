@@ -1,4 +1,4 @@
-.data-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.data-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); border-radius: var(--radius-lg); overflow: hidden; }
 .data-table th {
   text-align: left;
   padding: var(--space-3) var(--space-4);
