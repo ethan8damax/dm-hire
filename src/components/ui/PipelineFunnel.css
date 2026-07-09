@@ -9,10 +9,10 @@
 }
 .funnel-arrow {
   position: absolute;
-  right: -8px;
+  right: -12px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255, 255, 255, .55);
+  color: white;
   z-index: 2;
   pointer-events: none;
 }

@@ -40,7 +40,7 @@ export default function PipelineFunnel({ stages }) {
               <div className="funnel-label">{stage.label}</div>
             </div>
             {i < stages.length - 1 && (
-              <ChevronRight className="funnel-arrow" size={16} strokeWidth={2.5} />
+              <ChevronRight className="funnel-arrow" size={24} strokeWidth={2.5} />
             )}
           </div>
         )
