@@ -28,8 +28,8 @@
   font-weight: 700;
   flex-shrink: 0;
 }
-.wr-complete .wizard-rail-dot { background: var(--color-green); color: white; }
-.wr-active .wizard-rail-dot   { background: var(--color-navy); color: white; box-shadow: 0 0 0 4px rgba(13,45,92,.15); }
+.wr-complete .wizard-rail-dot { background: var(--color-cyan); color: white; }
+.wr-active .wizard-rail-dot   { background: var(--color-maroon); color: white; box-shadow: 0 0 0 4px rgba(109,23,78,.15); }
 .wr-pending .wizard-rail-dot  { background: var(--color-gray-200); color: var(--color-gray-400); }
 .wr-invalid .wizard-rail-dot  { background: #FEF2F2; color: var(--color-danger); }
 
@@ -38,7 +38,7 @@
   font-weight: 600;
   color: var(--color-gray-500);
 }
-.wr-active .wizard-rail-label { color: var(--color-navy); }
+.wr-active .wizard-rail-label { color: var(--color-maroon); }
 .wr-invalid .wizard-rail-label { color: var(--color-danger); }
 
 @media (max-width: 720px) {

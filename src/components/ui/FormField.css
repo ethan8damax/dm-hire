@@ -23,7 +23,7 @@
 .form-field textarea { resize: vertical; min-height: 72px; font-family: inherit; }
 .form-field input:focus,
 .form-field select:focus,
-.form-field textarea:focus { border-color: var(--color-navy-light); }
+.form-field textarea:focus { border-color: var(--color-maroon-light); }
 
 .form-field-req { color: var(--color-danger); margin-left: 2px; }
 

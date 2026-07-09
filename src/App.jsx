@@ -13,7 +13,6 @@ import Reports from './views/Reports'
 import Integrations from './views/Integrations'
 import Settings from './views/Settings'
 import InternalJobs from './views/InternalJobs'
-import CandidatePortal from './views/CandidatePortal'
 import WhyDMHire from './views/WhyDMHire'
 import CareerHome from './views/CareerHome'
 import JobDetail from './views/JobDetail'
@@ -50,8 +49,6 @@ export default function App() {
                 <Route path="/careers/applications/:candidateId" element={<ApplicationDetail />} />
                 <Route path="/careers/profile" element={<CandidateAccount />} />
               </Route>
-              {/* Legacy phone-mockup demo of the candidate flow, superseded by /careers */}
-              <Route path="/portal" element={<CandidatePortal />} />
             </Routes>
           </BrowserRouter>
         </TourProvider>

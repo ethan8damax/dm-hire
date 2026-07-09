@@ -5,7 +5,7 @@
 
 .career-header {
   height: var(--topbar-height);
-  background: var(--color-navy-dark);
+  background: var(--color-maroon-dark);
   display: flex;
   align-items: center;
   gap: var(--space-6);
@@ -23,7 +23,7 @@
   cursor: pointer;
   white-space: nowrap;
 }
-.career-logo span { color: var(--color-green); }
+.career-logo span { color: var(--color-cyan); }
 .career-logo-sub {
   color: var(--color-gray-400) !important;
   font-weight: 600;
@@ -47,8 +47,8 @@
   color: var(--color-gray-300);
   transition: background var(--transition-fast), color var(--transition-fast);
 }
-.career-nav-link:hover { background: var(--color-navy-light); color: var(--color-white); }
-.career-nav-link.active { background: var(--color-navy-light); color: var(--color-white); }
+.career-nav-link:hover { background: var(--color-maroon-light); color: var(--color-white); }
+.career-nav-link.active { background: var(--color-maroon-light); color: var(--color-white); }
 
 .career-header-right {
   display: flex;
@@ -72,7 +72,7 @@
   align-items: center;
   gap: var(--space-2);
   background: transparent;
-  border: 1.5px solid var(--color-navy-light);
+  border: 1.5px solid var(--color-maroon-light);
   color: var(--color-gray-300);
   font-size: var(--text-xs);
   font-weight: 600;
@@ -81,7 +81,7 @@
   white-space: nowrap;
   transition: all var(--transition-fast);
 }
-.career-exit:hover { background: var(--color-navy-light); color: var(--color-white); }
+.career-exit:hover { background: var(--color-maroon-light); color: var(--color-white); }
 
 .career-content {
   padding: var(--space-7);
@@ -93,4 +93,14 @@
   .career-header { flex-wrap: wrap; height: auto; padding: var(--space-3) var(--space-4); gap: var(--space-3); }
   .career-nav { order: 3; width: 100%; }
   .career-session-name { display: none; }
+}
+
+@media (max-width: 640px) {
+  .career-header { gap: var(--space-2); padding: var(--space-3); flex-wrap: nowrap; }
+  .career-logo-sub { display: none; }
+  .career-nav { order: 0; width: auto; gap: var(--space-1); justify-content: center; }
+  .career-nav-link { padding: var(--space-3); }
+  .career-nav-label { display: none; }
+  .career-exit-label { display: none; }
+  .career-exit { padding: var(--space-3); }
 }

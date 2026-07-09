@@ -1,5 +1,6 @@
 .yn-toggle {
   display: inline-flex;
+  flex-shrink: 0;
   border: 1.5px solid var(--color-gray-200);
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -16,4 +17,4 @@
   border-right: 1.5px solid var(--color-gray-200);
 }
 .yn-toggle-btn:last-child { border-right: none; }
-.yn-toggle-btn.yn-active { background: var(--color-navy); color: white; }
+.yn-toggle-btn.yn-active { background: var(--color-maroon); color: white; }

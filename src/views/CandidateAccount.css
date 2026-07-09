@@ -31,7 +31,7 @@
   color: var(--color-gray-800);
   outline: none;
 }
-.account-field input:focus { border-color: var(--color-navy-light); }
+.account-field input:focus { border-color: var(--color-maroon-light); }
 
 .account-hint {
   font-size: var(--text-xs);

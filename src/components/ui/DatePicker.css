@@ -19,7 +19,7 @@
   cursor: pointer;
 }
 .date-picker-trigger:hover,
-.date-picker-trigger:focus-visible { border-color: var(--color-navy-light); }
+.date-picker-trigger:focus-visible { border-color: var(--color-maroon-light); }
 .date-picker-placeholder { color: var(--color-gray-400); }
 
 .date-picker-popup {
@@ -55,7 +55,7 @@
   color: var(--color-gray-500);
   cursor: pointer;
 }
-.date-picker-nav:hover { background: var(--color-gray-100); color: var(--color-navy); }
+.date-picker-nav:hover { background: var(--color-gray-100); color: var(--color-maroon); }
 
 .date-picker-month-grid {
   display: grid;
@@ -92,4 +92,4 @@
   font-size: var(--text-xs);
 }
 .date-picker-cell-selected,
-.date-picker-cell-selected:hover { background: var(--color-navy); color: white; }
+.date-picker-cell-selected:hover { background: var(--color-maroon); color: white; }

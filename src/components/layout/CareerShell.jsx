@@ -33,10 +33,11 @@ export default function CareerShell() {
               key={to}
               to={to}
               end={end}
+              aria-label={label}
               className={({ isActive }) => `career-nav-link${isActive ? ' active' : ''}`}
             >
-              <Icon size={16} strokeWidth={2} />
-              <span>{label}</span>
+              <Icon size={16} strokeWidth={2} aria-hidden="true" />
+              <span className="career-nav-label">{label}</span>
             </NavLink>
           ))}
         </nav>
@@ -47,8 +48,8 @@ export default function CareerShell() {
               <span className="career-session-name">{session.name}</span>
             </div>
           )}
-          <button type="button" className="career-exit" onClick={exitToRecruiterView}>
-            <LogOut size={14} /> Switch to Recruiter View
+          <button type="button" className="career-exit" aria-label="Switch to Recruiter View" onClick={exitToRecruiterView}>
+            <LogOut size={14} aria-hidden="true" /> <span className="career-exit-label">Switch to Recruiter View</span>
           </button>
         </div>
       </header>
