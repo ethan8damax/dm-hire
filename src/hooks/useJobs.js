@@ -35,5 +35,21 @@ export function useJobs() {
     setJobs((list) => [{ ...rowToCamel(data), stageCounts: computeStageCounts(data.id, []) }, ...list])
   }, [])
 
-  return { jobs, loading, error, createJob }
+  // Called when a career-site applicant submits, so the job's applicant count
+  // stays accurate for recruiters without needing a full jobs refetch.
+  const recordApplicant = useCallback(async (jobId) => {
+    setJobs((list) => {
+      const job = list.find((j) => j.id === jobId)
+      if (!job) return list
+      const nextCount = job.applicantCount + 1
+      supabase.from('jobs').update({ applicant_count: nextCount }).eq('id', jobId).then(({ error }) => {
+        if (error) setError(error)
+      })
+      return list.map((j) => (j.id === jobId
+        ? { ...j, applicantCount: nextCount, stageCounts: { ...j.stageCounts, new: j.stageCounts.new + 1 } }
+        : j))
+    })
+  }, [])
+
+  return { jobs, loading, error, createJob, recordApplicant }
 }

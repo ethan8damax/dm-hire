@@ -1,0 +1,95 @@
+.date-picker {
+  position: relative;
+  width: 100%;
+}
+.date-picker-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  padding: var(--space-3);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--color-gray-800);
+  text-align: left;
+  cursor: pointer;
+}
+.date-picker-trigger:hover,
+.date-picker-trigger:focus-visible { border-color: var(--color-navy-light); }
+.date-picker-placeholder { color: var(--color-gray-400); }
+
+.date-picker-popup {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  z-index: 20;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-4);
+  width: max-content;
+  min-width: 260px;
+}
+
+.date-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+.date-picker-header-label { font-size: var(--text-sm); font-weight: 700; color: var(--color-gray-900); }
+.date-picker-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--color-gray-500);
+  cursor: pointer;
+}
+.date-picker-nav:hover { background: var(--color-gray-100); color: var(--color-navy); }
+
+.date-picker-month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+.date-picker-day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.date-picker-weekday {
+  text-align: center;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-gray-400);
+  padding: var(--space-1) 0;
+}
+
+.date-picker-cell {
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  color: var(--color-gray-700);
+  padding: var(--space-2);
+  cursor: pointer;
+}
+.date-picker-cell:hover { background: var(--color-gray-100); }
+.date-picker-cell-day {
+  aspect-ratio: 1;
+  padding: 0;
+  font-size: var(--text-xs);
+}
+.date-picker-cell-selected,
+.date-picker-cell-selected:hover { background: var(--color-navy); color: white; }

@@ -28,6 +28,8 @@
 .badge-hired .badge-dot        { background: var(--color-success); }
 .badge-rejected      { background: #FEF2F2; color: #991B1B; }
 .badge-rejected .badge-dot     { background: var(--color-danger); }
+.badge-withdrawn     { background: var(--color-gray-100); color: var(--color-gray-500); }
+.badge-withdrawn .badge-dot    { background: var(--color-gray-400); }
 .badge-open           { background: #ECFDF5; color: #065F46; }
 .badge-open .badge-dot         { background: var(--color-success); }
 .badge-pending_approval        { background: #FFFBEB; color: #B45309; }
@@ -50,3 +52,5 @@
 .badge-paused .badge-dot       { background: var(--color-warning); }
 .badge-not_connected    { background: var(--color-gray-100); color: var(--color-gray-500); }
 .badge-not_connected .badge-dot { background: var(--color-gray-400); }
+.badge-missing          { background: #FEF2F2; color: #991B1B; }
+.badge-missing .badge-dot      { background: var(--color-danger); }

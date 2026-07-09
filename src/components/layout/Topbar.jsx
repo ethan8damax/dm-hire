@@ -18,7 +18,7 @@ export default function Topbar() {
 
   function handlePersonaChange(id) {
     setPersona(id)
-    if (id === 'candidate') navigate('/portal')
+    if (id === 'candidate') navigate('/careers')
   }
 
   return (

@@ -1,0 +1,19 @@
+.yn-toggle {
+  display: inline-flex;
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  width: fit-content;
+}
+.yn-toggle-btn {
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: var(--space-2) var(--space-5);
+  background: var(--color-white);
+  color: var(--color-gray-500);
+  border: none;
+  border-right: 1.5px solid var(--color-gray-200);
+}
+.yn-toggle-btn:last-child { border-right: none; }
+.yn-toggle-btn.yn-active { background: var(--color-navy); color: white; }

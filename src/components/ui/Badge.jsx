@@ -8,6 +8,7 @@ const VARIANT_LABELS = {
   offer: 'Offer',
   hired: 'Hired',
   rejected: 'Not Selected',
+  withdrawn: 'Withdrawn',
   open: 'Open',
   pending_approval: 'Pending Approval',
   draft: 'Draft',
@@ -19,6 +20,7 @@ const VARIANT_LABELS = {
   connected: 'Connected',
   paused: 'Paused',
   not_connected: 'Not Connected',
+  missing: 'Missing',
 }
 
 export default function Badge({ variant, children, className = '' }) {
