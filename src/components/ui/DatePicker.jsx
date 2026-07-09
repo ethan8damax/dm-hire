@@ -6,6 +6,11 @@ const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'Ju
 const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const WEEKDAY_ABBR = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 
+// ponytail: fixed height estimate for the flip threshold rather than measuring
+// the actual popup (which isn't in the DOM until it opens) — good enough since
+// this only needs to catch the "clearly not enough room" case, not pixel-perfect fit.
+const POPUP_ESTIMATED_HEIGHT = 360
+
 function pad(n) {
   return String(n).padStart(2, '0')
 }
@@ -38,6 +43,7 @@ function firstWeekday(year, month) {
 // granularity="day" shows a full day-grid calendar.
 export default function DatePicker({ id, value, onChange, granularity = 'month', placeholder = 'Select…' }) {
   const [open, setOpen] = useState(false)
+  const [openUpward, setOpenUpward] = useState(false)
   const today = new Date()
   const initial = parseValue(value)
   const [viewYear, setViewYear] = useState(initial?.year ?? today.getFullYear())
@@ -93,14 +99,22 @@ export default function DatePicker({ id, value, onChange, granularity = 'month',
 
   const parsed = parseValue(value)
 
+  function handleTriggerClick() {
+    if (!open && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      setOpenUpward(window.innerHeight - rect.bottom < POPUP_ESTIMATED_HEIGHT)
+    }
+    setOpen((o) => !o)
+  }
+
   return (
     <div className="date-picker" ref={containerRef}>
-      <button type="button" id={id} className="date-picker-trigger" onClick={() => setOpen((o) => !o)}>
+      <button type="button" id={id} className="date-picker-trigger" onClick={handleTriggerClick}>
         <Calendar size={14} />
         <span className={value ? '' : 'date-picker-placeholder'}>{value ? formatDisplay(value, granularity) : placeholder}</span>
       </button>
       {open && (
-        <div className="date-picker-popup">
+        <div className={`date-picker-popup${openUpward ? ' date-picker-popup-up' : ''}`}>
           <div className="date-picker-header">
             <button type="button" className="date-picker-nav" onClick={goToPrevious} aria-label="Previous"><ChevronLeft size={16} /></button>
             <span className="date-picker-header-label">{granularity === 'month' ? viewYear : `${MONTH_NAMES[viewMonth]} ${viewYear}`}</span>

@@ -36,6 +36,11 @@
   min-width: 260px;
 }
 
+.date-picker-popup-up {
+  top: auto;
+  bottom: calc(100% + var(--space-2));
+}
+
 .date-picker-header {
   display: flex;
   align-items: center;
