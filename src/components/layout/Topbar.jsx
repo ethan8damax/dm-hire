@@ -157,10 +157,6 @@ export default function Topbar() {
         <Play size={14} /> Start Demo Tour
       </Button>
 
-      <Button variant="primary" onClick={() => navigate('/jobs')}>
-        <Plus size={16} /> New Requisition
-      </Button>
-
       <div className="topbar-notif-wrap" ref={notifRef}>
         <button type="button" className="topbar-notif" aria-label="Notifications" onClick={toggleNotifPanel}>
           <Bell size={17} />
