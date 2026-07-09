@@ -150,7 +150,9 @@ export default function Pipeline() {
   const [sort, setSort] = useState('score')
   const { persona } = usePersona()
   const { jobs, loading: jobsLoading } = useJobs()
-  const { candidates, loading: candidatesLoading } = useCandidates()
+  const { candidates, loading: candidatesLoading, updateStage } = useCandidates()
+  const [draggedId, setDraggedId] = useState(null)
+  const [dragOverCol, setDragOverCol] = useState(null)
   const { offers, loading: offersLoading, updateOffer } = useOffers()
   const { users, loading: usersLoading } = useUsers()
   const { sendReminder } = useReminders()
@@ -181,6 +183,13 @@ export default function Pipeline() {
 
   function handleExtend(offer) {
     updateOffer(offer.id, { expiryDate: addDays(offer.expiryDate, 7) })
+  }
+
+  function handleDrop(columnKey) {
+    setDragOverCol(null)
+    const candidate = jobCandidates.find((c) => c.id === draggedId)
+    setDraggedId(null)
+    if (candidate && candidate.stage !== columnKey) updateStage(candidate.id, columnKey)
   }
 
   const jobCandidates = useMemo(
@@ -230,7 +239,13 @@ export default function Pipeline() {
         {visibleColumns.map((col) => {
           const columnCandidates = sortCandidates(jobCandidates.filter((c) => c.stage === col.key), sort)
           return (
-            <div className="kanban-col" key={col.key}>
+            <div
+              className={`kanban-col${dragOverCol === col.key ? ' kanban-col-dragover' : ''}`}
+              key={col.key}
+              onDragOver={(e) => { if (draggedId) { e.preventDefault(); setDragOverCol(col.key) } }}
+              onDragLeave={() => setDragOverCol((k) => (k === col.key ? null : k))}
+              onDrop={(e) => { e.preventDefault(); handleDrop(col.key) }}
+            >
               <div className="kanban-col-hdr">
                 <div className="col-dot" style={{ background: col.dot }} />
                 <span className="col-name">{col.label}</span>
@@ -242,6 +257,10 @@ export default function Pipeline() {
                     key={candidate.id}
                     candidate={candidate}
                     onClick={() => navigate(`/candidates/${candidate.id}`, { state: { candidateIds: flatCandidateIds } })}
+                    draggable={!isHiringManager}
+                    dragging={draggedId === candidate.id}
+                    onDragStart={(e) => { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', candidate.id); setDraggedId(candidate.id) }}
+                    onDragEnd={() => { setDraggedId(null); setDragOverCol(null) }}
                     {...cardPropsForColumn(col.key, candidate, isHiringManager, offers, handleSendReminder, handleExtend)}
                   />
                 ))}

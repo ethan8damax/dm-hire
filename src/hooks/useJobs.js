@@ -35,6 +35,25 @@ export function useJobs() {
     setJobs((list) => [{ ...rowToCamel(data), stageCounts: computeStageCounts(data.id, []) }, ...list])
   }, [])
 
+  const updateJob = useCallback(async (jobId, updates) => {
+    const { data, error } = await supabase.from('jobs').update(toSnakeRow(updates)).eq('id', jobId).select().single()
+    if (error) { setError(error); return }
+    setJobs((list) => list.map((j) => (j.id === jobId ? { ...j, ...rowToCamel(data) } : j)))
+  }, [])
+
+  const deleteJob = useCallback(async (jobId) => {
+    // .select() forces Postgrest to return the deleted rows, so an RLS-blocked
+    // delete (which "succeeds" with 0 rows affected, not an error) is detectable.
+    const { data, error } = await supabase.from('jobs').delete().eq('id', jobId).select()
+    if (error) { setError(error); return false }
+    if (!data || data.length === 0) {
+      setError(new Error('Delete was blocked — no rows removed (check the jobs table\'s delete RLS policy).'))
+      return false
+    }
+    setJobs((list) => list.filter((j) => j.id !== jobId))
+    return true
+  }, [])
+
   // Called when a career-site applicant submits, so the job's applicant count
   // stays accurate for recruiters without needing a full jobs refetch.
   const recordApplicant = useCallback(async (jobId) => {
@@ -51,5 +70,5 @@ export function useJobs() {
     })
   }, [])
 
-  return { jobs, loading, error, createJob, recordApplicant }
+  return { jobs, loading, error, createJob, updateJob, deleteJob, recordApplicant }
 }

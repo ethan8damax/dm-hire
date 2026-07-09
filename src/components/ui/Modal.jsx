@@ -55,7 +55,10 @@ export default function Modal({ open, onClose, title, children, footer }) {
       document.removeEventListener('keydown', handleKeyDown)
       previouslyFocused?.focus?.()
     }
-  }, [open, onClose])
+    // Only re-run on open/close — an onClose identity change (callers pass inline
+    // arrows recreated every render) must not steal focus back on every keystroke.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   if (!rendered) return null
 

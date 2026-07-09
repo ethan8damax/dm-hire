@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Plus, Link2, Check, X, Loader2, CheckCircle2,
+  Plus, Link2, Check, X, Loader2, CheckCircle2, Trash2,
   Landmark, Users, Handshake, Code2, Briefcase,
 } from 'lucide-react'
 import Card from '../components/ui/Card'
@@ -15,6 +15,7 @@ import { useJobs } from '../hooks/useJobs'
 import { useOffices } from '../hooks/useOffices'
 import { useCandidates } from '../hooks/useCandidates'
 import { useRoleWorkflowTemplates } from '../hooks/useRoleWorkflowTemplates'
+import { usePersona } from '../context/PersonaContext'
 import Loading from '../components/ui/Loading'
 import './JobRequisitions.css'
 
@@ -45,13 +46,13 @@ function slugify(title) {
   return title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
-function JobRow({ job, candidates, onShare, sharedId, onOpen }) {
+function JobRow({ job, candidates, onShare, sharedId, onEdit, onViewPipeline }) {
   const Icon = DEPT_ICONS[job.department] ?? Briefcase
   const topCandidates = candidates.filter((c) => c.jobId === job.id)
   const overflow = job.applicantCount - topCandidates.length
 
   return (
-    <div className="job-row" onClick={() => onOpen(job)}>
+    <div className="job-row" onClick={() => onEdit(job)}>
       <div className="job-dept-icon"><Icon size={19} /></div>
 
       <div className="job-info">
@@ -91,6 +92,9 @@ function JobRow({ job, candidates, onShare, sharedId, onOpen }) {
         >
           {sharedId === job.id ? <><Check size={13} /> Copied!</> : <><Link2 size={13} /> Share Link</>}
         </Button>
+        <Button variant="ghost" size="sm" onClick={() => onViewPipeline(job)}>
+          <Users size={13} /> View Pipeline
+        </Button>
       </div>
     </div>
   )
@@ -111,9 +115,34 @@ const EMPTY_FORM = {
   knockoutRules: [{ id: 1, text: 'Minimum years payroll experience: 1', declineNote: 'Auto-decline if < 1' }],
 }
 
-function NewRequisitionModal({ open, onClose, onCreate, offices, roleWorkflows }) {
-  const [form, setForm] = useState(EMPTY_FORM)
+function formFromJob(job) {
+  if (!job) return EMPTY_FORM
+  return {
+    title: job.title,
+    department: job.department,
+    officeId: job.officeId,
+    hiringManager: '',
+    compRange: job.compRange,
+    startDate: '',
+    headcountJustification: '',
+    description: job.description || '',
+    roleTemplate: job.roleTemplate,
+    boards: job.boards || [],
+    internalOnly: job.isInternal,
+    knockoutRules: job.knockoutRules || [],
+    status: job.status,
+  }
+}
+
+function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offices, roleWorkflows, canEdit }) {
+  const [form, setForm] = useState(() => formFromJob(job))
   const [phase, setPhase] = useState('form') // form | posting | success
+  const readOnly = !!job && !canEdit
+
+  // Re-derive the form whenever the modal opens, so editing job A then job B
+  // (or opening "New Requisition" after an edit) doesn't leak stale field values.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (open) { setForm(formFromJob(job)); setPhase('form') } }, [open, job?.id])
 
   function updateField(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
@@ -193,8 +222,38 @@ function NewRequisitionModal({ open, onClose, onCreate, offices, roleWorkflows }
     handleClose()
   }
 
+  async function handleDelete() {
+    if (!window.confirm(`Delete "${job.title}"? This can't be undone.`)) return
+    const ok = await onDelete(job.id)
+    if (!ok) {
+      window.alert('Could not delete this requisition — the database rejected the delete (permission not enabled yet).')
+      return
+    }
+    handleClose()
+  }
+
   function handleSubmit(e) {
     e.preventDefault()
+    if (readOnly) return
+    if (job) {
+      const office = offices.find((o) => o.id === form.officeId)
+      const template = roleWorkflows[form.roleTemplate]
+      onSave(job.id, {
+        title: form.title || 'Untitled Requisition',
+        department: form.department,
+        location: office ? `${office.city}, ${office.state}` : job.location,
+        officeId: form.officeId,
+        compRange: form.compRange,
+        status: form.status,
+        isInternal: form.internalOnly,
+        roleTemplate: form.roleTemplate,
+        boards: form.internalOnly ? [] : form.boards,
+        knockoutRules: form.knockoutRules,
+        approvalChain: template.approvalChain,
+      })
+      handleClose()
+      return
+    }
     const template = roleWorkflows[form.roleTemplate]
     const status = template.approvalChain.length > 1 ? 'pending_approval' : 'open'
     setPhase('posting')
@@ -208,7 +267,7 @@ function NewRequisitionModal({ open, onClose, onCreate, offices, roleWorkflows }
   const template = roleWorkflows[form.roleTemplate]
 
   return (
-    <Modal open={open} onClose={handleClose} title={phase === 'form' ? 'New Job Requisition' : 'Submitting…'}>
+    <Modal open={open} onClose={handleClose} title={phase === 'form' ? (job ? (readOnly ? 'View Job Requisition' : 'Edit Job Requisition') : 'New Job Requisition') : 'Submitting…'}>
       {phase !== 'form' ? (
         <div className="req-submit-state">
           {phase === 'posting' ? (
@@ -234,11 +293,20 @@ function NewRequisitionModal({ open, onClose, onCreate, offices, roleWorkflows }
         </div>
       ) : (
         <form className="req-form" onSubmit={handleSubmit}>
+          <fieldset className="req-fieldset" disabled={readOnly}>
           <div className="req-grid">
             <label className="req-field">
               <span>Job Title</span>
               <input required value={form.title} onChange={(e) => updateField('title', e.target.value)} placeholder="e.g. Sr. Payroll Analyst" />
             </label>
+            {job && (
+              <label className="req-field">
+                <span>Status</span>
+                <select value={form.status} onChange={(e) => updateField('status', e.target.value)}>
+                  {FILTERS.filter((f) => f.key !== 'all').map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
+                </select>
+              </label>
+            )}
             <label className="req-field">
               <span>Department</span>
               <select value={form.department} onChange={(e) => updateField('department', e.target.value)}>
@@ -357,11 +425,28 @@ function NewRequisitionModal({ open, onClose, onCreate, offices, roleWorkflows }
               ))}
             </div>
           </div>
+          </fieldset>
 
           <div className="req-actions">
-            <Button type="button" variant="ghost" onClick={handleSaveDraft}>Save Draft</Button>
-            <Button type="submit" variant="primary">Submit for Approval →</Button>
+            {readOnly ? (
+              <Button type="button" variant="ghost" onClick={handleClose}>Close</Button>
+            ) : job ? (
+              <Button type="button" variant="ghost" onClick={handleClose}>Cancel</Button>
+            ) : (
+              <Button type="button" variant="ghost" onClick={handleSaveDraft}>Save Draft</Button>
+            )}
+            {!readOnly && (
+              <Button type="submit" variant="primary">{job ? 'Save Changes' : 'Submit for Approval →'}</Button>
+            )}
           </div>
+
+          {job && !readOnly && (
+            <div className="req-danger-zone">
+              <Button type="button" variant="danger" onClick={handleDelete}>
+                <Trash2 size={13} /> Delete Requisition
+              </Button>
+            </div>
+          )}
         </form>
       )}
     </Modal>
@@ -370,12 +455,15 @@ function NewRequisitionModal({ open, onClose, onCreate, offices, roleWorkflows }
 
 export default function JobRequisitions() {
   const navigate = useNavigate()
-  const { jobs: jobsList, loading: jobsLoading, createJob } = useJobs()
+  const { persona } = usePersona()
+  const isRecruiter = persona === 'recruiter'
+  const { jobs: jobsList, loading: jobsLoading, createJob, updateJob, deleteJob } = useJobs()
   const { offices, loading: officesLoading } = useOffices()
   const { candidates, loading: candidatesLoading } = useCandidates()
   const { roleWorkflows, loading: workflowsLoading } = useRoleWorkflowTemplates()
   const [filter, setFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
+  const [editingJob, setEditingJob] = useState(null)
   const [sharedId, setSharedId] = useState(null)
 
   if (jobsLoading || officesLoading || candidatesLoading || workflowsLoading) return <Loading />
@@ -396,6 +484,19 @@ export default function JobRequisitions() {
 
   function handleCreate(job) {
     createJob(job)
+  }
+
+  function handleSave(jobId, updates) {
+    updateJob(jobId, updates)
+  }
+
+  function handleDelete(jobId) {
+    return deleteJob(jobId)
+  }
+
+  function closeModal() {
+    setModalOpen(false)
+    setEditingJob(null)
   }
 
   return (
@@ -429,16 +530,21 @@ export default function JobRequisitions() {
               candidates={candidates}
               onShare={handleShare}
               sharedId={sharedId}
-              onOpen={(j) => navigate(`/pipeline?job=${j.id}`)}
+              onEdit={(j) => setEditingJob(j)}
+              onViewPipeline={(j) => navigate(`/pipeline?job=${j.id}`)}
             />
           ))}
         </div>
       )}
 
-      <NewRequisitionModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
+      <RequisitionModal
+        open={modalOpen || !!editingJob}
+        job={editingJob}
+        onClose={closeModal}
         onCreate={handleCreate}
+        onSave={handleSave}
+        onDelete={handleDelete}
+        canEdit={isRecruiter}
         offices={offices}
         roleWorkflows={roleWorkflows}
       />

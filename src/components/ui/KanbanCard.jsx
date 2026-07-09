@@ -4,11 +4,17 @@ import Badge from './Badge'
 import './KanbanCard.css'
 
 // actions: [{ label, onClick, tone }] — tone: 'default' | 'accent' | 'danger', max 2
-export default function KanbanCard({ candidate, note, noteVariant = 'default', actions = [], showScore = true, dimmed = false, onClick }) {
+export default function KanbanCard({ candidate, note, noteVariant = 'default', actions = [], showScore = true, dimmed = false, onClick, draggable = false, dragging = false, onDragStart, onDragEnd }) {
   const { name, initials, avatarColor, location, source, stage, aiScore, daysInStage, isDuplicate, isStale, isTopCandidate, isInternalApplicant, priorInteraction } = candidate
 
   return (
-    <div className={`kanban-card${isTopCandidate ? ' kc-top-candidate' : ''}${dimmed ? ' kc-dimmed' : ''}`} onClick={onClick}>
+    <div
+      className={`kanban-card${isTopCandidate ? ' kc-top-candidate' : ''}${dimmed ? ' kc-dimmed' : ''}${dragging ? ' kc-dragging' : ''}`}
+      onClick={onClick}
+      draggable={draggable}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+    >
       {isTopCandidate && (
         <div className="kc-top-badge"><Star size={11} /> Top Candidate</div>
       )}
