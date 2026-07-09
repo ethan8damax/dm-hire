@@ -12,6 +12,7 @@ import { useOffices } from '../hooks/useOffices'
 import { useUsers } from '../hooks/useUsers'
 import { useRoleWorkflowTemplates } from '../hooks/useRoleWorkflowTemplates'
 import { usePersona } from '../context/PersonaContext'
+import { useNotifications } from '../hooks/useNotifications'
 import { RequisitionModal } from './JobRequisitions'
 import './RequisitionDetail.css'
 
@@ -25,11 +26,15 @@ const STAGE_LABELS = {
   rejected: 'Not Selected',
 }
 
+const CURRENT_HM_ID = 'user-002' // R. Patel — the assumed logged-in Hiring Manager, matching Pipeline.jsx
+
 export default function RequisitionDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { persona } = usePersona()
   const isRecruiter = persona === 'recruiter'
+  const { addNotification } = useNotifications()
+  const isHiringManager = persona === 'hiring_manager'
   const { jobs, loading: jobsLoading, updateJob, deleteJob } = useJobs()
   const { candidates, loading: candidatesLoading } = useCandidates()
   const { offices, loading: officesLoading } = useOffices()
@@ -43,11 +48,22 @@ export default function RequisitionDetail() {
   if (!job) return <EmptyState icon={Users} title="Requisition not found" subtitle="It may have been deleted." />
 
   const applicants = candidates.filter((c) => c.jobId === job.id)
+  const isMyApproval = isHiringManager && job.hiringManagerId === CURRENT_HM_ID && job.status === 'pending_approval'
 
   async function handleDelete(jobId) {
     const ok = await deleteJob(jobId)
     if (ok) navigate('/jobs')
     return ok
+  }
+
+  function handleApprove() {
+    updateJob(job.id, { status: 'open' })
+  }
+
+  function handleReject() {
+    const reason = window.prompt('Reason for rejecting (optional):')
+    updateJob(job.id, { status: 'draft' })
+    if (reason) addNotification('Requisition rejected', `"${job.title}" was rejected: ${reason}`)
   }
 
   return (
@@ -99,6 +115,25 @@ export default function RequisitionDetail() {
             {applicants.length === 0 && <div className="req-hint">No applicants yet.</div>}
           </Card.Body>
         </Card>
+
+        {job.status === 'pending_approval' && (
+          <Card>
+            <Card.Header><Card.Title>Approval</Card.Title></Card.Header>
+            <Card.Body>
+              {isMyApproval ? (
+                <div className="rd-approval-actions">
+                  <p className="req-hint">This requisition is awaiting your approval as the assigned Hiring Manager.</p>
+                  <div className="rd-approval-buttons">
+                    <Button variant="danger" size="sm" onClick={handleReject}>Reject</Button>
+                    <Button variant="primary" size="sm" onClick={handleApprove}>Approve</Button>
+                  </div>
+                </div>
+              ) : (
+                <p className="req-hint">Awaiting hiring manager approval.</p>
+              )}
+            </Card.Body>
+          </Card>
+        )}
       </div>
 
       <RequisitionModal
