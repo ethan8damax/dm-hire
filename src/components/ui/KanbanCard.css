@@ -13,6 +13,9 @@
 .kanban-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
 .kc-dimmed { opacity: .6; }
 .kc-dimmed:hover { transform: none; }
+.kanban-card[draggable="true"] { cursor: grab; }
+.kanban-card[draggable="true"]:active { cursor: grabbing; }
+.kc-dragging { opacity: .4; }
 
 .kc-top-candidate { box-shadow: 0 0 0 2px var(--color-cyan), var(--shadow-sm); }
 .kc-top-badge {
