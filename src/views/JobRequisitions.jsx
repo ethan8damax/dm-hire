@@ -113,7 +113,7 @@ const EMPTY_FORM = {
   roleTemplate: 'ic',
   boards: ['LinkedIn', 'Indeed', 'Career Site'],
   internalOnly: false,
-  knockoutRules: [{ id: 1, text: 'Minimum years payroll experience: 1', declineNote: 'Auto-decline if < 1' }],
+  knockoutRules: [{ id: 1, type: 'years_experience', value: 1 }],
 }
 
 function formFromJob(job) {
@@ -155,7 +155,7 @@ function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offi
       ...f,
       roleTemplate: key,
       knockoutRules: template.knockoutYears > 0
-        ? [{ id: Date.now(), text: `Minimum years experience: ${template.knockoutYears}`, declineNote: `Auto-decline if < ${template.knockoutYears}` }]
+        ? [{ id: Date.now(), type: 'years_experience', value: template.knockoutYears }]
         : [],
     }))
   }
@@ -170,7 +170,7 @@ function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offi
   function addKnockoutRule() {
     setForm((f) => ({
       ...f,
-      knockoutRules: [...f.knockoutRules, { id: Date.now(), text: '', declineNote: '' }],
+      knockoutRules: [...f.knockoutRules, { id: Date.now(), type: 'years_experience', value: '' }],
     }))
   }
 
@@ -178,6 +178,15 @@ function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offi
     setForm((f) => ({
       ...f,
       knockoutRules: f.knockoutRules.map((r) => (r.id === id ? { ...r, [key]: value } : r)),
+    }))
+  }
+
+  function updateKnockoutRuleType(id, type) {
+    setForm((f) => ({
+      ...f,
+      knockoutRules: f.knockoutRules.map((r) => (r.id === id
+        ? { id: r.id, type, value: '', ...(type === 'yes_no' ? { disqualifyingAnswer: 'no' } : {}) }
+        : r)),
     }))
   }
 
@@ -398,18 +407,62 @@ function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offi
             <div className="req-knockout-list">
               {form.knockoutRules.map((rule) => (
                 <div className="req-knockout-row" key={rule.id}>
-                  <input
-                    className="req-knockout-text"
-                    value={rule.text}
-                    placeholder="Rule description, e.g. Minimum years experience: 3"
-                    onChange={(e) => updateKnockoutRule(rule.id, 'text', e.target.value)}
-                  />
-                  <input
-                    className="req-knockout-decline"
-                    value={rule.declineNote}
-                    placeholder="Auto-decline condition"
-                    onChange={(e) => updateKnockoutRule(rule.id, 'declineNote', e.target.value)}
-                  />
+                  <select
+                    className="req-knockout-type"
+                    value={rule.type}
+                    onChange={(e) => updateKnockoutRuleType(rule.id, e.target.value)}
+                  >
+                    <option value="years_experience">Years of Experience</option>
+                    <option value="certification">Certification Required</option>
+                    <option value="yes_no">Yes/No Question</option>
+                  </select>
+
+                  {rule.type === 'years_experience' && (
+                    <label className="req-knockout-field">
+                      <span>Minimum years</span>
+                      <input
+                        type="number"
+                        min="0"
+                        value={rule.value}
+                        onChange={(e) => updateKnockoutRule(rule.id, 'value', e.target.value)}
+                      />
+                    </label>
+                  )}
+
+                  {rule.type === 'certification' && (
+                    <label className="req-knockout-field">
+                      <span>Certification name</span>
+                      <input
+                        value={rule.value}
+                        placeholder="e.g. CPP Certified"
+                        onChange={(e) => updateKnockoutRule(rule.id, 'value', e.target.value)}
+                      />
+                    </label>
+                  )}
+
+                  {rule.type === 'yes_no' && (
+                    <>
+                      <label className="req-knockout-field">
+                        <span>Question</span>
+                        <input
+                          value={rule.value}
+                          placeholder="e.g. Are you legally authorized to work in the U.S.?"
+                          onChange={(e) => updateKnockoutRule(rule.id, 'value', e.target.value)}
+                        />
+                      </label>
+                      <label className="req-knockout-field req-knockout-disqualify">
+                        <span>Disqualify if answer is</span>
+                        <select
+                          value={rule.disqualifyingAnswer}
+                          onChange={(e) => updateKnockoutRule(rule.id, 'disqualifyingAnswer', e.target.value)}
+                        >
+                          <option value="no">No</option>
+                          <option value="yes">Yes</option>
+                        </select>
+                      </label>
+                    </>
+                  )}
+
                   <button type="button" className="req-knockout-remove" onClick={() => removeKnockoutRule(rule.id)} aria-label="Remove rule">
                     <X size={14} />
                   </button>

@@ -118,11 +118,15 @@
 
 .req-knockout-hdr { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
 .req-knockout-list { display: flex; flex-direction: column; gap: var(--space-2); }
-.req-knockout-row { display: flex; align-items: center; gap: var(--space-2); }
-.req-knockout-text { flex: 2; }
-.req-knockout-decline { flex: 1; }
-.req-knockout-text,
-.req-knockout-decline {
+.req-knockout-row { display: flex; align-items: flex-end; gap: var(--space-2); flex-wrap: wrap; }
+.req-knockout-type { flex: 1; min-width: 170px; }
+.req-knockout-field { display: flex; flex-direction: column; gap: 2px; flex: 2; min-width: 160px; }
+.req-knockout-field span { font-size: 11px; font-weight: 600; color: var(--color-gray-500); }
+.req-knockout-disqualify { flex: 1; min-width: 130px; }
+.req-knockout-type,
+.req-knockout-field input,
+.req-knockout-field select {
+  width: 100%;
   padding: var(--space-2) var(--space-3);
   border: 1.5px solid var(--color-gray-200);
   border-radius: var(--radius-md);
