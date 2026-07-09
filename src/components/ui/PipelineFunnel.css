@@ -7,28 +7,21 @@
   text-align: center;
   position: relative;
 }
-.funnel-stage:not(:last-child)::after {
-  content: '';
+.funnel-arrow {
   position: absolute;
-  right: 0;
+  right: -8px;
   top: 50%;
   transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-top: 12px solid transparent;
-  border-bottom: 12px solid transparent;
-  border-left: 10px solid white;
+  color: rgba(255, 255, 255, .55);
   z-index: 2;
+  pointer-events: none;
 }
 .funnel-stage-inner {
   padding: var(--space-3) var(--space-1);
-  margin-right: 1px;
   position: relative;
 }
-.funnel-count { font-size: var(--text-xl); font-weight: 800; line-height: 1; }
-.funnel-label { font-size: 10px; margin-top: 3px; font-weight: 500; }
+.funnel-count { font-size: var(--text-3xl); font-weight: 800; line-height: 1; }
+.funnel-label { font-size: var(--text-base); margin-top: var(--space-1); font-weight: 500; }
 
-.ink-maroon  { color: var(--color-maroon); }
-.ink-maroon .funnel-label  { color: var(--color-maroon-light); }
 .ink-white { color: white; }
 .ink-white .funnel-label { color: rgba(255,255,255,.85); }
