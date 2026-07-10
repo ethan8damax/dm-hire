@@ -82,7 +82,7 @@ export default function CandidateProfile() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const { candidates, loading: candidatesLoading, addNote, updateCandidate } = useCandidates()
+  const { candidates, loading: candidatesLoading, addNote, updateCandidate, updateStage } = useCandidates()
   const { jobs, loading: jobsLoading } = useJobs()
   const { offers, loading: offersLoading, createOffer, updateOffer } = useOffers()
   const { persona } = usePersona()
@@ -378,7 +378,7 @@ export default function CandidateProfile() {
           )}
           {activeTab === 'schedule' && (
             <div role="tabpanel" id="cp-panel-schedule" aria-labelledby="cp-tab-schedule">
-              <ScheduleTab key={candidate.id} candidate={candidate} />
+              <ScheduleTab key={candidate.id} candidate={candidate} updateStage={updateStage} />
             </div>
           )}
 
@@ -566,13 +566,25 @@ function upcomingWeekdays(count) {
   return days
 }
 
-function ScheduleTab({ candidate }) {
+function ScheduleTab({ candidate, updateStage }) {
   const days = upcomingWeekdays(4)
   const [selected, setSelected] = useState(null)
   const [phase, setPhase] = useState('idle') // idle | sending | sent
 
   function slotUnavailable(dayIdx, slotIdx) {
     return (dayIdx + slotIdx) % 3 === 0
+  }
+
+  function handleSend() {
+    setPhase('sending')
+    setTimeout(() => {
+      // Only advance — don't pull an offer/hired candidate back to "interviewing"
+      // if a recruiter schedules a follow-up call after the fact.
+      if (candidate.stage === 'new' || candidate.stage === 'screening') {
+        updateStage(candidate.id, 'interviewing')
+      }
+      setPhase('sent')
+    }, 900)
   }
 
   if (phase === 'sent') {
@@ -622,7 +634,7 @@ function ScheduleTab({ candidate }) {
           <Button
             variant="primary"
             disabled={!selected || phase === 'sending'}
-            onClick={() => { setPhase('sending'); setTimeout(() => setPhase('sent'), 900) }}
+            onClick={handleSend}
           >
             {phase === 'sending' ? <Loader2 size={14} className="cp-spin" /> : <CalendarClock size={14} />}
             {phase === 'sending' ? 'Sending Outlook invite…' : 'Send Invite'}
