@@ -12,7 +12,7 @@ const NAV_SECTIONS = [
     items: [
       { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
       { to: '/jobs', label: 'Job Requisitions', icon: Briefcase, hmVisible: false },
-      { to: '/pipeline', label: 'Candidate Pipeline', icon: Kanban, hmVisible: true },
+      { to: '/pipeline?job=all', label: 'Candidate Pipeline', icon: Kanban, hmVisible: true },
       { to: '/internal-jobs', label: 'Internal Jobs', icon: Building2, hmVisible: false },
     ],
   },
