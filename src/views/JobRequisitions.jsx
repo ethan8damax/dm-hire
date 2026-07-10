@@ -271,9 +271,14 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
 
   async function handleDelete() {
     if (!window.confirm(`Delete "${job.title}"? This can't be undone.`)) return
-    const ok = await onDelete(job.id)
-    if (!ok) {
-      window.alert('Could not delete this requisition — the database rejected the delete (permission not enabled yet).')
+    const result = await onDelete(job.id)
+    if (!result.ok) {
+      const messages = {
+        'has-applicants': 'Can\'t delete — this requisition still has candidate applications tied to it. Those applications need to be handled first.',
+        'rls-blocked': 'Could not delete this requisition — the database rejected the delete (permission not enabled yet).',
+        error: `Could not delete this requisition: ${result.message}`,
+      }
+      window.alert(messages[result.reason] ?? 'Could not delete this requisition.')
       return
     }
     handleClose()

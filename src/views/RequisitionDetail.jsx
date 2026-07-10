@@ -51,9 +51,9 @@ export default function RequisitionDetail() {
   const isMyApproval = isHiringManager && job.hiringManagerId === CURRENT_HM_ID && job.status === 'pending_approval'
 
   async function handleDelete(jobId) {
-    const ok = await deleteJob(jobId)
-    if (ok) navigate('/jobs')
-    return ok
+    const result = await deleteJob(jobId)
+    if (result.ok) navigate('/jobs')
+    return result
   }
 
   function handleApprove() {

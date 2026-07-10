@@ -45,13 +45,19 @@ export function useJobs() {
     // .select() forces Postgrest to return the deleted rows, so an RLS-blocked
     // delete (which "succeeds" with 0 rows affected, not an error) is detectable.
     const { data, error } = await supabase.from('jobs').delete().eq('id', jobId).select()
-    if (error) { setError(error); return false }
+    if (error) {
+      setError(error)
+      // 23503 = foreign_key_violation — candidates.job_id still references this
+      // job, which Postgres correctly refuses rather than orphaning that data.
+      if (error.code === '23503') return { ok: false, reason: 'has-applicants' }
+      return { ok: false, reason: 'error', message: error.message }
+    }
     if (!data || data.length === 0) {
       setError(new Error('Delete was blocked — no rows removed (check the jobs table\'s delete RLS policy).'))
-      return false
+      return { ok: false, reason: 'rls-blocked' }
     }
     setJobs((list) => list.filter((j) => j.id !== jobId))
-    return true
+    return { ok: true }
   }, [])
 
   // Called when a career-site applicant submits, so the job's applicant count
