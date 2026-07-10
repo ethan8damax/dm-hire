@@ -47,6 +47,11 @@ function slugify(title) {
   return title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
+function locationLabel(offices, officeIds) {
+  const selected = officeIds.map((id) => offices.find((o) => o.id === id)).filter(Boolean)
+  return selected.map((o) => `${o.city}, ${o.state}`).join('; ')
+}
+
 function JobRow({ job, candidates, onShare, sharedId, onOpenDetail, onViewPipeline }) {
   const Icon = DEPT_ICONS[job.department] ?? Briefcase
   const topCandidates = candidates.filter((c) => c.jobId === job.id)
@@ -104,7 +109,7 @@ function JobRow({ job, candidates, onShare, sharedId, onOpenDetail, onViewPipeli
 const EMPTY_FORM = {
   title: '',
   department: 'Finance & Accounting',
-  officeId: 'office-detroit',
+  officeIds: ['office-detroit'],
   hiringManagerId: '',
   compRange: '',
   startDate: '',
@@ -121,7 +126,7 @@ function formFromJob(job) {
   return {
     title: job.title,
     department: job.department,
-    officeId: job.officeId,
+    officeIds: job.officeIds?.length ? job.officeIds : [],
     hiringManagerId: job.hiringManagerId || '',
     compRange: job.compRange,
     startDate: '',
@@ -167,6 +172,13 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
     }))
   }
 
+  function toggleOffice(officeId) {
+    setForm((f) => ({
+      ...f,
+      officeIds: f.officeIds.includes(officeId) ? f.officeIds.filter((id) => id !== officeId) : [...f.officeIds, officeId],
+    }))
+  }
+
   function addKnockoutRule() {
     setForm((f) => ({
       ...f,
@@ -205,14 +217,13 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
   }
 
   function buildJob(status) {
-    const office = offices.find((o) => o.id === form.officeId)
     const template = roleWorkflows[form.roleTemplate]
     return {
       id: `job-${Date.now()}`,
       title: form.title || 'Untitled Requisition',
       department: form.department,
-      location: office ? `${office.city}, ${office.state}` : '',
-      officeId: form.officeId,
+      location: locationLabel(offices, form.officeIds),
+      officeIds: form.officeIds,
       compRange: form.compRange,
       postedDate: new Date().toISOString().slice(0, 10),
       status,
@@ -246,13 +257,12 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
     e.preventDefault()
     if (readOnly) return
     if (job) {
-      const office = offices.find((o) => o.id === form.officeId)
       const template = roleWorkflows[form.roleTemplate]
       onSave(job.id, {
         title: form.title || 'Untitled Requisition',
         department: form.department,
-        location: office ? `${office.city}, ${office.state}` : job.location,
-        officeId: form.officeId,
+        location: form.officeIds.length ? locationLabel(offices, form.officeIds) : job.location,
+        officeIds: form.officeIds,
         hiringManagerId: form.hiringManagerId || null,
         compRange: form.compRange,
         status: form.status,
@@ -325,12 +335,6 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
               </select>
             </label>
             <label className="req-field">
-              <span>Location</span>
-              <select value={form.officeId} onChange={(e) => updateField('officeId', e.target.value)}>
-                {offices.map((o) => <option key={o.id} value={o.id}>{o.name} - {o.city}, {o.state}</option>)}
-              </select>
-            </label>
-            <label className="req-field">
               <span>Hiring Manager</span>
               <select value={form.hiringManagerId} onChange={(e) => updateField('hiringManagerId', e.target.value)}>
                 <option value="">— Select —</option>
@@ -345,6 +349,19 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
               <span>Start Date</span>
               <input type="date" value={form.startDate} onChange={(e) => updateField('startDate', e.target.value)} />
             </label>
+          </div>
+
+          <div className="req-section">
+            <div className="req-section-label">Locations</div>
+            <div className="req-checkbox-row">
+              {offices.map((o) => (
+                <label className="req-checkbox" key={o.id}>
+                  <input type="checkbox" checked={form.officeIds.includes(o.id)} onChange={() => toggleOffice(o.id)} />
+                  {o.name} - {o.city}, {o.state}
+                </label>
+              ))}
+            </div>
+            {form.officeIds.length === 0 && <div className="req-hint">Select at least one location.</div>}
           </div>
 
           <label className="req-field">
@@ -494,7 +511,7 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
               <Button type="button" variant="ghost" onClick={handleSaveDraft}>Save Draft</Button>
             )}
             {!readOnly && (
-              <Button type="submit" variant="primary">{job ? 'Save Changes' : 'Submit for Approval →'}</Button>
+              <Button type="submit" variant="primary" disabled={form.officeIds.length === 0}>{job ? 'Save Changes' : 'Submit for Approval →'}</Button>
             )}
           </div>
 

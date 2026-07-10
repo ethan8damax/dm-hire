@@ -162,10 +162,12 @@ export default function Pipeline() {
   const selectableJobs = isHiringManager
     ? jobs.filter((j) => hmAssignedJobIds.includes(j.id))
     : jobs.filter((j) => j.status !== 'draft')
+  const selectableJobIds = new Set(selectableJobs.map((j) => j.id))
   const visibleColumns = isHiringManager ? COLUMNS.filter((c) => !HM_RESTRICTED_COLUMNS.includes(c.key)) : COLUMNS
   const queryJobId = searchParams.get('job')
-  const selectedJobId = selectableJobs.some((j) => j.id === queryJobId) ? queryJobId : selectableJobs[0]?.id
-  const selectedJob = jobs.find((j) => j.id === selectedJobId)
+  const selectedJobId = queryJobId === 'all' || selectableJobs.some((j) => j.id === queryJobId) ? queryJobId : selectableJobs[0]?.id
+  const isAllView = selectedJobId === 'all'
+  const selectedJob = isAllView ? null : jobs.find((j) => j.id === selectedJobId)
 
   function handleJobChange(jobId) {
     setSearchParams({ job: jobId })
@@ -193,29 +195,40 @@ export default function Pipeline() {
   }
 
   const jobCandidates = useMemo(
-    () => candidates.filter((c) => c.jobId === selectedJobId && matchesFilter(c, filter, offers)),
-    [selectedJobId, filter, candidates, offers],
+    () => candidates.filter((c) => (isAllView ? selectableJobIds.has(c.jobId) : c.jobId === selectedJobId) && matchesFilter(c, filter, offers)),
+    [isAllView, selectedJobId, filter, candidates, offers, selectableJobIds],
   )
 
   const flatCandidateIds = visibleColumns.flatMap((c) => sortCandidates(jobCandidates.filter((jc) => jc.stage === c.key), sort).map((jc) => jc.id))
 
   if (jobsLoading || candidatesLoading || offersLoading || usersLoading) return <Loading />
-  if (!selectedJob) {
+  if (selectableJobs.length === 0) {
     return <EmptyState title="No requisitions yet" subtitle="Create a job requisition to start a pipeline." />
   }
+
+  const allViewCandidateCount = candidates.filter((c) => selectableJobIds.has(c.jobId)).length
 
   return (
     <div className="pipeline">
       <div className="page-header">
         <div>
+          <div className="pipeline-eyebrow">Candidate Pipeline</div>
           <div className="pipeline-title-row">
-            <h1 className="page-title">Candidate Pipeline</h1>
+            <h1
+              className={`page-title${isAllView ? '' : ' pipeline-job-title'}`}
+              onClick={isAllView ? undefined : () => navigate(`/jobs/${selectedJobId}`)}
+            >
+              {isAllView ? 'All Jobs' : selectedJob.title}
+            </h1>
             <select className="pipeline-job-select" value={selectedJobId} onChange={(e) => handleJobChange(e.target.value)}>
+              <option value="all">All Jobs</option>
               {selectableJobs.map((j) => <option key={j.id} value={j.id}>{j.title}</option>)}
             </select>
           </div>
           <div className="page-subtitle">
-            {selectedJob.applicantCount} candidates · {selectedJob.daysOpen} days open
+            {isAllView
+              ? <>{allViewCandidateCount} candidates across {selectableJobs.length} open requisition{selectableJobs.length === 1 ? '' : 's'}</>
+              : <>{selectedJob.applicantCount} candidates · {selectedJob.daysOpen} days open</>}
             {isHiringManager && ' · Hiring Manager view: screened candidates only, no offer management'}
           </div>
         </div>
@@ -249,7 +262,7 @@ export default function Pipeline() {
               <div className="kanban-col-hdr">
                 <div className="col-dot" style={{ background: col.dot }} />
                 <span className="col-name">{col.label}</span>
-                <span className="col-count">{selectedJob.stageCounts[col.key]}</span>
+                <span className="col-count">{columnCandidates.length}</span>
               </div>
               <div className="kanban-cards">
                 {columnCandidates.map((candidate) => (
