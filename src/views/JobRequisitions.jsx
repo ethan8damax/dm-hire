@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Plus, Link2, Check, X, Loader2, CheckCircle2, Trash2,
-  Landmark, Users, Handshake, Code2, Briefcase, LayoutGrid, List,
+  Landmark, Users, Handshake, Code2, Briefcase, Kanban, List,
 } from 'lucide-react'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
@@ -102,6 +102,32 @@ function JobRow({ job, candidates, onShare, sharedId, onOpenDetail, onViewPipeli
           <Users size={13} /> View Pipeline
         </Button>
       </div>
+    </div>
+  )
+}
+
+// Compact card for one department's column in the Kanban view — the department
+// itself is already named by the column header, so it's dropped from the card.
+function JobKanbanCard({ job, onOpenDetail, onViewPipeline }) {
+  return (
+    <div className="jobs-kanban-card" onClick={() => onOpenDetail(job)}>
+      <div className="jkc-title">{job.title}</div>
+      <div className="jkc-meta">{job.location} · {job.compRange}</div>
+      <div className="jkc-badges">
+        <Badge variant={job.status} />
+        {job.isInternal && <span className="job-tag">Internal</span>}
+      </div>
+      <div className="jkc-stats">
+        <span><strong>{job.applicantCount}</strong> applicants</span>
+        <span className={job.daysOpen > 30 ? 'jkc-days-warn' : ''}>{job.daysOpen}d open</span>
+      </div>
+      <button
+        type="button"
+        className="jkc-pipeline-btn"
+        onClick={(e) => { e.stopPropagation(); onViewPipeline(job) }}
+      >
+        <Users size={12} /> Pipeline
+      </button>
     </div>
   )
 }
@@ -540,7 +566,7 @@ export default function JobRequisitions() {
   const [filter, setFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [sharedId, setSharedId] = useState(null)
-  const [view, setView] = useState('grid')
+  const [view, setView] = useState('kanban')
 
   if (jobsLoading || officesLoading || candidatesLoading || workflowsLoading || usersLoading) return <Loading />
 
@@ -593,8 +619,8 @@ export default function JobRequisitions() {
           </FilterChip>
         ))}
         <div className="view-toggle">
-          <button type="button" className={`view-toggle-btn${view === 'grid' ? ' active' : ''}`} onClick={() => setView('grid')} aria-label="Grid view">
-            <LayoutGrid size={15} />
+          <button type="button" className={`view-toggle-btn${view === 'kanban' ? ' active' : ''}`} onClick={() => setView('kanban')} aria-label="Kanban view, grouped by department">
+            <Kanban size={15} />
           </button>
           <button type="button" className={`view-toggle-btn${view === 'list' ? ' active' : ''}`} onClick={() => setView('list')} aria-label="Grouped list view">
             <List size={15} />
@@ -604,19 +630,37 @@ export default function JobRequisitions() {
 
       {filteredJobs.length === 0 ? (
         <Card><EmptyState icon={Briefcase} title="No requisitions here" subtitle="Try a different filter, or create a new one." /></Card>
-      ) : view === 'grid' ? (
-        <div className="jobs-grid">
-          {filteredJobs.map((job) => (
-            <JobRow
-              key={job.id}
-              job={job}
-              candidates={candidates}
-              onShare={handleShare}
-              sharedId={sharedId}
-              onOpenDetail={(j) => navigate(`/jobs/${j.id}`)}
-              onViewPipeline={(j) => navigate(`/pipeline?job=${j.id}`)}
-            />
-          ))}
+      ) : view === 'kanban' ? (
+        <div className="jobs-kanban-board">
+          {Object.entries(
+            filteredJobs.reduce((groups, job) => {
+              (groups[job.department] ??= []).push(job)
+              return groups
+            }, {}),
+          )
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([department, jobsInDept]) => {
+              const DeptIcon = DEPT_ICONS[department] ?? Briefcase
+              return (
+                <div className="jobs-kanban-col" key={department}>
+                  <div className="jobs-kanban-col-hdr">
+                    <div className="jobs-kanban-col-icon"><DeptIcon size={14} /></div>
+                    <span className="jobs-kanban-col-name">{department}</span>
+                    <span className="jobs-kanban-col-count">{jobsInDept.length}</span>
+                  </div>
+                  <div className="jobs-kanban-cards">
+                    {jobsInDept.map((job) => (
+                      <JobKanbanCard
+                        key={job.id}
+                        job={job}
+                        onOpenDetail={(j) => navigate(`/jobs/${j.id}`)}
+                        onViewPipeline={(j) => navigate(`/pipeline?job=${j.id}`)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
         </div>
       ) : (
         <div className="jobs-grouped-list">
