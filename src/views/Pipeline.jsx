@@ -306,7 +306,7 @@ export default function Pipeline() {
                 <span className="col-name">{col.label}</span>
                 <span className="col-count">{columnCandidates.length}</span>
               </div>
-              <div className="kanban-cards">
+              <div className="kanban-cards no-scrollbar">
                 {columnCandidates.map((candidate) => (
                   <KanbanCard
                     key={candidate.id}

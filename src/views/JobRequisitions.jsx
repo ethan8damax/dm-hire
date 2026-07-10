@@ -566,7 +566,7 @@ export default function JobRequisitions() {
   const [filter, setFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [sharedId, setSharedId] = useState(null)
-  const [view, setView] = useState('kanban')
+  const [view, setView] = useState('list')
 
   if (jobsLoading || officesLoading || candidatesLoading || workflowsLoading || usersLoading) return <Loading />
 
@@ -619,11 +619,11 @@ export default function JobRequisitions() {
           </FilterChip>
         ))}
         <div className="view-toggle">
-          <button type="button" className={`view-toggle-btn${view === 'kanban' ? ' active' : ''}`} onClick={() => setView('kanban')} aria-label="Kanban view, grouped by department">
-            <Kanban size={15} />
-          </button>
           <button type="button" className={`view-toggle-btn${view === 'list' ? ' active' : ''}`} onClick={() => setView('list')} aria-label="Grouped list view">
             <List size={15} />
+          </button>
+          <button type="button" className={`view-toggle-btn${view === 'kanban' ? ' active' : ''}`} onClick={() => setView('kanban')} aria-label="Kanban view, grouped by department">
+            <Kanban size={15} />
           </button>
         </div>
       </div>
@@ -648,7 +648,7 @@ export default function JobRequisitions() {
                     <span className="jobs-kanban-col-name">{department}</span>
                     <span className="jobs-kanban-col-count">{jobsInDept.length}</span>
                   </div>
-                  <div className="jobs-kanban-cards">
+                  <div className="jobs-kanban-cards no-scrollbar">
                     {jobsInDept.map((job) => (
                       <JobKanbanCard
                         key={job.id}

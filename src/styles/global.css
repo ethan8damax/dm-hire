@@ -35,6 +35,12 @@ h1, h2, h3, h4 {
   white-space: nowrap;
 }
 
+/* Scrollable but no visible scrollbar chrome — Windows Chrome/Edge/Firefox
+   render a full opaque scrollbar by default (unlike macOS's thin overlay one),
+   which looks out of place on dense scroll containers like a Kanban column. */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 /* Shared tab-panel fade — applies wherever a panel is marked role="tabpanel" */
 [role="tabpanel"] { animation: tabpanel-in 160ms ease-out; }
 @keyframes tabpanel-in { from { opacity: 0; } to { opacity: 1; } }
