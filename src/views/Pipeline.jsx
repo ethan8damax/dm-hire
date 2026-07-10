@@ -191,7 +191,10 @@ export default function Pipeline() {
     setDragOverCol(null)
     const candidate = jobCandidates.find((c) => c.id === draggedId)
     setDraggedId(null)
-    if (candidate && candidate.stage !== columnKey) updateStage(candidate.id, columnKey)
+    if (!candidate || candidate.stage === columnKey) return
+    const columnLabel = COLUMNS.find((c) => c.key === columnKey)?.label ?? columnKey
+    if (!window.confirm(`Move ${candidate.name} to ${columnLabel}?`)) return
+    updateStage(candidate.id, columnKey)
   }
 
   const jobCandidates = useMemo(
