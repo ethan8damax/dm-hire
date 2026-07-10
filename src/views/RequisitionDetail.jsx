@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ChevronLeft, Users } from 'lucide-react'
+import { ChevronLeft, Users, ArchiveRestore } from 'lucide-react'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
@@ -35,8 +35,8 @@ export default function RequisitionDetail() {
   const isRecruiter = persona === 'recruiter'
   const { addNotification } = useNotifications()
   const isHiringManager = persona === 'hiring_manager'
-  const { jobs, loading: jobsLoading, updateJob, deleteJob } = useJobs()
-  const { candidates, loading: candidatesLoading } = useCandidates()
+  const { jobs, loading: jobsLoading, updateJob, archiveJob, unarchiveJob } = useJobs()
+  const { candidates, loading: candidatesLoading, bulkRejectForJob } = useCandidates()
   const { offices, loading: officesLoading } = useOffices()
   const { users, loading: usersLoading } = useUsers()
   const { roleWorkflows, loading: workflowsLoading } = useRoleWorkflowTemplates()
@@ -50,10 +50,15 @@ export default function RequisitionDetail() {
   const applicants = candidates.filter((c) => c.jobId === job.id)
   const isMyApproval = isHiringManager && job.hiringManagerId === CURRENT_HM_ID && job.status === 'pending_approval'
 
-  async function handleDelete(jobId) {
-    const ok = await deleteJob(jobId)
+  async function handleArchive(jobId) {
+    await bulkRejectForJob(jobId)
+    const ok = await archiveJob(jobId)
     if (ok) navigate('/jobs')
     return ok
+  }
+
+  function handleUnarchive(jobId) {
+    return unarchiveJob(jobId)
   }
 
   function handleApprove() {
@@ -75,11 +80,17 @@ export default function RequisitionDetail() {
           </Button>
           <h1 className="page-title">{job.title}</h1>
           <Badge variant={job.status} />
+          {job.archived && <span className="job-tag">Archived</span>}
         </div>
         <div className="rd-header-actions">
           <Button variant="ghost" size="sm" onClick={() => navigate(`/pipeline?job=${job.id}`)}>
             <Users size={14} /> View Pipeline
           </Button>
+          {isRecruiter && job.archived && (
+            <Button variant="outline" size="sm" onClick={() => handleUnarchive(job.id)}>
+              <ArchiveRestore size={14} /> Restore
+            </Button>
+          )}
           {isRecruiter && (
             <Button variant="primary" size="sm" onClick={() => setEditing(true)}>Edit</Button>
           )}
@@ -142,7 +153,8 @@ export default function RequisitionDetail() {
         onClose={() => setEditing(false)}
         onCreate={() => {}}
         onSave={(jobId, updates) => updateJob(jobId, updates)}
-        onDelete={handleDelete}
+        onArchive={handleArchive}
+        onUnarchive={handleUnarchive}
         canEdit={isRecruiter}
         offices={offices}
         roleWorkflows={roleWorkflows}

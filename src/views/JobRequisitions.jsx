@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Plus, Link2, Check, X, Loader2, CheckCircle2, Trash2,
+  Plus, Link2, Check, X, Loader2, CheckCircle2, Archive, ArchiveRestore, ChevronDown,
   Landmark, Users, Handshake, Code2, Briefcase, Kanban, List,
 } from 'lucide-react'
 import Card from '../components/ui/Card'
@@ -166,7 +166,7 @@ function formFromJob(job) {
   }
 }
 
-export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, job, offices, roleWorkflows, hiringManagers, canEdit }) {
+export function RequisitionModal({ open, onClose, onCreate, onSave, onArchive, onUnarchive, job, offices, roleWorkflows, hiringManagers, canEdit }) {
   const [form, setForm] = useState(() => formFromJob(job))
   const [phase, setPhase] = useState('form') // form | posting | success
   const readOnly = !!job && !canEdit
@@ -269,14 +269,23 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
     handleClose()
   }
 
-  async function handleDelete() {
-    if (!window.confirm(`Delete "${job.title}"? This can't be undone.`)) return
-    const ok = await onDelete(job.id)
+  async function handleArchive() {
+    const activeCount = job.applicantCount - (job.stageCounts?.hired ?? 0) - (job.stageCounts?.rejected ?? 0)
+    const message = activeCount > 0
+      ? `Archive "${job.title}"? ${activeCount} applicant${activeCount === 1 ? '' : 's'} will be moved to Not Selected. You can restore this requisition later.`
+      : `Archive "${job.title}"? You can restore it later.`
+    if (!window.confirm(message)) return
+    const ok = await onArchive(job.id)
     if (!ok) {
-      window.alert('Could not delete this requisition — the database rejected the delete (permission not enabled yet).')
+      window.alert('Could not archive this requisition — the database rejected the update.')
       return
     }
     handleClose()
+  }
+
+  async function handleUnarchive() {
+    const ok = await onUnarchive(job.id)
+    if (ok) handleClose()
   }
 
   function handleSubmit(e) {
@@ -543,9 +552,15 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onDelete, jo
 
           {job && !readOnly && (
             <div className="req-danger-zone">
-              <Button type="button" variant="danger" onClick={handleDelete}>
-                <Trash2 size={13} /> Delete Requisition
-              </Button>
+              {job.archived ? (
+                <Button type="button" variant="outline" onClick={handleUnarchive}>
+                  <ArchiveRestore size={13} /> Restore Requisition
+                </Button>
+              ) : (
+                <Button type="button" variant="danger" onClick={handleArchive}>
+                  <Archive size={13} /> Archive Requisition
+                </Button>
+              )}
             </div>
           )}
         </form>
@@ -558,24 +573,28 @@ export default function JobRequisitions() {
   const navigate = useNavigate()
   const { persona } = usePersona()
   const isRecruiter = persona === 'recruiter'
-  const { jobs: jobsList, loading: jobsLoading, createJob, updateJob, deleteJob } = useJobs()
+  const { jobs: jobsList, loading: jobsLoading, createJob, updateJob, archiveJob, unarchiveJob } = useJobs()
   const { offices, loading: officesLoading } = useOffices()
   const { users, loading: usersLoading } = useUsers()
-  const { candidates, loading: candidatesLoading } = useCandidates()
+  const { candidates, loading: candidatesLoading, bulkRejectForJob } = useCandidates()
   const { roleWorkflows, loading: workflowsLoading } = useRoleWorkflowTemplates()
   const [filter, setFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [sharedId, setSharedId] = useState(null)
   const [view, setView] = useState('list')
+  const [archivedOpen, setArchivedOpen] = useState(false)
 
   if (jobsLoading || officesLoading || candidatesLoading || workflowsLoading || usersLoading) return <Loading />
 
+  const activeJobs = jobsList.filter((j) => !j.archived)
+  const archivedJobs = jobsList.filter((j) => j.archived)
+
   const counts = FILTERS.reduce((acc, f) => {
-    acc[f.key] = f.key === 'all' ? jobsList.length : jobsList.filter((j) => j.status === f.key).length
+    acc[f.key] = f.key === 'all' ? activeJobs.length : activeJobs.filter((j) => j.status === f.key).length
     return acc
   }, {})
 
-  const filteredJobs = filter === 'all' ? jobsList : jobsList.filter((j) => j.status === filter)
+  const filteredJobs = filter === 'all' ? activeJobs : activeJobs.filter((j) => j.status === filter)
 
   function handleShare(job) {
     const url = `https://dmhire.com/apply/${slugify(job.title)}`
@@ -592,8 +611,13 @@ export default function JobRequisitions() {
     updateJob(jobId, updates)
   }
 
-  function handleDelete(jobId) {
-    return deleteJob(jobId)
+  async function handleArchive(jobId) {
+    await bulkRejectForJob(jobId)
+    return archiveJob(jobId)
+  }
+
+  function handleUnarchive(jobId) {
+    return unarchiveJob(jobId)
   }
 
   function closeModal() {
@@ -605,7 +629,7 @@ export default function JobRequisitions() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Job Requisitions</h1>
-          <div className="page-subtitle">{counts.open} open position{counts.open === 1 ? '' : 's'} across {new Set(jobsList.map((j) => j.department)).size} departments</div>
+          <div className="page-subtitle">{counts.open} open position{counts.open === 1 ? '' : 's'} across {new Set(activeJobs.map((j) => j.department)).size} departments</div>
         </div>
         <Button variant="primary" size="lg" onClick={() => setModalOpen(true)} data-tour="tour-new-req-btn">
           <Plus size={16} /> New Requisition
@@ -692,13 +716,38 @@ export default function JobRequisitions() {
         </div>
       )}
 
+      {archivedJobs.length > 0 && (
+        <div className="jobs-archived-section">
+          <button type="button" className="jobs-archived-toggle" onClick={() => setArchivedOpen((v) => !v)}>
+            <ChevronDown size={15} className={`jobs-archived-chevron${archivedOpen ? ' open' : ''}`} />
+            Archived ({archivedJobs.length})
+          </button>
+          {archivedOpen && (
+            <div className="jobs-archived-list">
+              {archivedJobs.map((job) => (
+                <div className="jobs-archived-row" key={job.id}>
+                  <span className="jobs-archived-title">{job.title}</span>
+                  <span className="jobs-archived-dept">{job.department}</span>
+                  <Badge variant={job.status} />
+                  <span className="jobs-archived-count">{job.applicantCount} applicant{job.applicantCount === 1 ? '' : 's'}</span>
+                  <Button variant="outline" size="sm" onClick={() => handleUnarchive(job.id)}>
+                    <ArchiveRestore size={13} /> Restore
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <RequisitionModal
         open={modalOpen}
         job={null}
         onClose={closeModal}
         onCreate={handleCreate}
         onSave={handleSave}
-        onDelete={handleDelete}
+        onArchive={handleArchive}
+        onUnarchive={handleUnarchive}
         canEdit={isRecruiter}
         offices={offices}
         roleWorkflows={roleWorkflows}

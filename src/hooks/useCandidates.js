@@ -51,6 +51,26 @@ export function useCandidates() {
       : c)))
   }, [])
 
+  // Used when a job requisition is archived — moves every candidate still
+  // active in that pipeline to Not Selected, leaving Hired candidates alone.
+  const bulkRejectForJob = useCallback(async (jobId) => {
+    const today = new Date().toISOString().slice(0, 10)
+    const toReject = candidates.filter((c) => c.jobId === jobId && c.stage !== 'hired' && c.stage !== 'rejected')
+    if (toReject.length === 0) return
+    const ids = toReject.map((c) => c.id)
+    const { error: updateError } = await supabase.from('candidates').update({ stage: 'rejected' }).in('id', ids)
+    if (updateError) { setError(updateError); return }
+    const { data: eventRows, error: insertError } = await supabase.from('candidate_timeline_events')
+      .insert(ids.map((id) => ({ candidate_id: id, stage: 'rejected', date: today, note: 'Moved to rejected' })))
+      .select()
+    if (insertError) { setError(insertError); return }
+    setCandidates((list) => list.map((c) => {
+      if (!ids.includes(c.id)) return c
+      const event = eventRows.find((e) => e.candidate_id === c.id)
+      return { ...c, stage: 'rejected', timeline: event ? [...c.timeline, rowToCamel(event)] : c.timeline }
+    }))
+  }, [candidates])
+
   const addNote = useCallback(async (id, note) => {
     const { data, error } = await supabase.from('candidate_notes')
       .insert({ candidate_id: id, ...toSnakeRow(note) })
@@ -117,5 +137,5 @@ export function useCandidates() {
     return candidate
   }, [])
 
-  return { candidates, loading, error, updateStage, addNote, updateCandidate, updateCandidateByEmail, addApplication }
+  return { candidates, loading, error, updateStage, bulkRejectForJob, addNote, updateCandidate, updateCandidateByEmail, addApplication }
 }

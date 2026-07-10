@@ -41,16 +41,17 @@ export function useJobs() {
     setJobs((list) => list.map((j) => (j.id === jobId ? { ...j, ...rowToCamel(data) } : j)))
   }, [])
 
-  const deleteJob = useCallback(async (jobId) => {
-    // .select() forces Postgrest to return the deleted rows, so an RLS-blocked
-    // delete (which "succeeds" with 0 rows affected, not an error) is detectable.
-    const { data, error } = await supabase.from('jobs').delete().eq('id', jobId).select()
+  const archiveJob = useCallback(async (jobId) => {
+    const { data, error } = await supabase.from('jobs').update({ archived: true }).eq('id', jobId).select().single()
     if (error) { setError(error); return false }
-    if (!data || data.length === 0) {
-      setError(new Error('Delete was blocked — no rows removed (check the jobs table\'s delete RLS policy).'))
-      return false
-    }
-    setJobs((list) => list.filter((j) => j.id !== jobId))
+    setJobs((list) => list.map((j) => (j.id === jobId ? { ...j, ...rowToCamel(data) } : j)))
+    return true
+  }, [])
+
+  const unarchiveJob = useCallback(async (jobId) => {
+    const { data, error } = await supabase.from('jobs').update({ archived: false }).eq('id', jobId).select().single()
+    if (error) { setError(error); return false }
+    setJobs((list) => list.map((j) => (j.id === jobId ? { ...j, ...rowToCamel(data) } : j)))
     return true
   }, [])
 
@@ -70,5 +71,5 @@ export function useJobs() {
     })
   }, [])
 
-  return { jobs, loading, error, createJob, updateJob, deleteJob, recordApplicant }
+  return { jobs, loading, error, createJob, updateJob, archiveJob, unarchiveJob, recordApplicant }
 }
