@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { CheckCircle2, Wallet, AlertTriangle } from 'lucide-react'
+import { CheckCircle2, Wallet, AlertTriangle, ChevronDown } from 'lucide-react'
 import KanbanCard from '../components/ui/KanbanCard'
 import FilterChip from '../components/ui/FilterChip'
 import EmptyState from '../components/ui/EmptyState'
@@ -153,10 +153,20 @@ export default function Pipeline() {
   const { candidates, loading: candidatesLoading, updateStage } = useCandidates()
   const [draggedId, setDraggedId] = useState(null)
   const [dragOverCol, setDragOverCol] = useState(null)
+  const [jobMenuOpen, setJobMenuOpen] = useState(false)
+  const jobMenuRef = useRef(null)
   const { offers, loading: offersLoading, updateOffer } = useOffers()
   const { users, loading: usersLoading } = useUsers()
   const { sendReminder } = useReminders()
   const isHiringManager = persona === 'hiring_manager'
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (jobMenuRef.current && !jobMenuRef.current.contains(e.target)) setJobMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
 
   const hmAssignedJobIds = users.find((u) => u.id === CURRENT_HM_ID)?.assignedJobIds ?? []
   const selectableJobs = isHiringManager
@@ -171,6 +181,7 @@ export default function Pipeline() {
 
   function handleJobChange(jobId) {
     setSearchParams({ job: jobId })
+    setJobMenuOpen(false)
   }
 
   function handleSendReminder(candidate, offer) {
@@ -223,10 +234,38 @@ export default function Pipeline() {
             >
               {isAllView ? 'All Jobs' : selectedJob.title}
             </h1>
-            <select className="pipeline-job-select" value={selectedJobId} onChange={(e) => handleJobChange(e.target.value)}>
-              <option value="all">All Jobs</option>
-              {selectableJobs.map((j) => <option key={j.id} value={j.id}>{j.title}</option>)}
-            </select>
+            <div className="pipeline-job-switcher" ref={jobMenuRef}>
+              <button
+                type="button"
+                className="pipeline-job-switcher-btn"
+                aria-label="Switch requisition"
+                aria-expanded={jobMenuOpen}
+                onClick={() => setJobMenuOpen((o) => !o)}
+              >
+                <ChevronDown size={16} />
+              </button>
+              {jobMenuOpen && (
+                <div className="pipeline-job-menu">
+                  <button
+                    type="button"
+                    className={`pipeline-job-menu-item${isAllView ? ' active' : ''}`}
+                    onClick={() => handleJobChange('all')}
+                  >
+                    All Jobs
+                  </button>
+                  {selectableJobs.map((j) => (
+                    <button
+                      type="button"
+                      key={j.id}
+                      className={`pipeline-job-menu-item${j.id === selectedJobId ? ' active' : ''}`}
+                      onClick={() => handleJobChange(j.id)}
+                    >
+                      {j.title}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <div className="page-subtitle">
             {isAllView
