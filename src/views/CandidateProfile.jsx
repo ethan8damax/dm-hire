@@ -3,7 +3,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import {
   ChevronLeft, ChevronRight, Mail, CalendarClock, FileSignature, MapPin, Phone,
   Link2, DollarSign, Briefcase, CalendarCheck, Sparkles, FileText, ShieldCheck,
-  BadgeCheck, Loader2, CheckCircle2, Send,
+  BadgeCheck, Loader2, CheckCircle2, Send, ArrowRight,
 } from 'lucide-react'
 import Avatar from '../components/ui/Avatar'
 import Badge from '../components/ui/Badge'
@@ -38,6 +38,16 @@ const FORWARD_STAGES = [
   { key: 'offer', label: 'Offer Management' },
   { key: 'hired', label: 'DM Payroll Handoff' },
 ]
+
+const STAGE_ADVANCE_ORDER = ['new', ...FORWARD_STAGES.map((s) => s.key)]
+
+function nextStageFor(stage) {
+  const idx = STAGE_ADVANCE_ORDER.indexOf(stage)
+  if (idx === -1 || idx === STAGE_ADVANCE_ORDER.length - 1) return null
+  const nextKey = STAGE_ADVANCE_ORDER[idx + 1]
+  const label = FORWARD_STAGES.find((s) => s.key === nextKey)?.label ?? nextKey
+  return { key: nextKey, label }
+}
 
 const TABS = [
   { key: 'timeline', label: 'Timeline' },
@@ -123,6 +133,7 @@ export default function CandidateProfile() {
   const job = jobs.find((j) => j.id === candidate.jobId)
   const persistedOffer = offers.find((o) => o.candidateId === id) ?? null
   const offer = offerDraft ?? persistedOffer
+  const nextStage = nextStageFor(candidate.stage)
 
   const candidateIds = location.state?.candidateIds ?? candidates.filter((c) => c.jobId === candidate.jobId).map((c) => c.id)
   const posInList = candidateIds.indexOf(candidate.id)
@@ -189,6 +200,11 @@ export default function CandidateProfile() {
     setNotSelected(true)
   }
 
+  function handleAdvanceStage() {
+    if (!window.confirm(`Move ${candidate.name} to ${nextStage.label}?`)) return
+    updateStage(candidate.id, nextStage.key)
+  }
+
   return (
     <div className="candidate-profile">
       <div className="page-header cp-header">
@@ -211,6 +227,11 @@ export default function CandidateProfile() {
           {!isHiringManager && (
             <Button variant="accent" size="sm" onClick={() => setActiveTab('offer')}>
               <FileSignature size={14} /> {offer ? 'View Offer' : 'Generate Offer'}
+            </Button>
+          )}
+          {nextStage && (
+            <Button variant="primary" size="sm" onClick={handleAdvanceStage}>
+              <ArrowRight size={14} /> Advance to {nextStage.label}
             </Button>
           )}
         </div>
