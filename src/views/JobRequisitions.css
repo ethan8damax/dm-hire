@@ -1,5 +1,25 @@
 .jobs-grid { display: flex; flex-direction: column; gap: var(--space-3); }
 
+.view-toggle { display: flex; gap: var(--space-1); margin-left: auto; }
+.view-toggle-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: white;
+  color: var(--color-gray-500);
+  cursor: pointer;
+}
+.view-toggle-btn.active { background: var(--color-maroon); border-color: var(--color-maroon); color: white; }
+
+.jobs-grouped-list { display: flex; flex-direction: column; gap: var(--space-5); }
+.jobs-dept-group { display: flex; flex-direction: column; gap: var(--space-3); }
+.jobs-dept-group-hdr { font-size: var(--text-sm); font-weight: 700; color: var(--color-gray-700); }
+.jobs-dept-group-count { font-weight: 400; color: var(--color-gray-400); }
+
 .job-row {
   background: white;
   border-radius: var(--radius-lg);

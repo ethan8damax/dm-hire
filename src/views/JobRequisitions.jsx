@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Plus, Link2, Check, X, Loader2, CheckCircle2, Trash2,
-  Landmark, Users, Handshake, Code2, Briefcase,
+  Landmark, Users, Handshake, Code2, Briefcase, LayoutGrid, List,
 } from 'lucide-react'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
@@ -523,6 +523,7 @@ export default function JobRequisitions() {
   const [filter, setFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [sharedId, setSharedId] = useState(null)
+  const [view, setView] = useState('grid')
 
   if (jobsLoading || officesLoading || candidatesLoading || workflowsLoading || usersLoading) return <Loading />
 
@@ -574,11 +575,19 @@ export default function JobRequisitions() {
             {f.label} ({counts[f.key]})
           </FilterChip>
         ))}
+        <div className="view-toggle">
+          <button type="button" className={`view-toggle-btn${view === 'grid' ? ' active' : ''}`} onClick={() => setView('grid')} aria-label="Grid view">
+            <LayoutGrid size={15} />
+          </button>
+          <button type="button" className={`view-toggle-btn${view === 'list' ? ' active' : ''}`} onClick={() => setView('list')} aria-label="Grouped list view">
+            <List size={15} />
+          </button>
+        </div>
       </div>
 
       {filteredJobs.length === 0 ? (
         <Card><EmptyState icon={Briefcase} title="No requisitions here" subtitle="Try a different filter, or create a new one." /></Card>
-      ) : (
+      ) : view === 'grid' ? (
         <div className="jobs-grid">
           {filteredJobs.map((job) => (
             <JobRow
@@ -591,6 +600,34 @@ export default function JobRequisitions() {
               onViewPipeline={(j) => navigate(`/pipeline?job=${j.id}`)}
             />
           ))}
+        </div>
+      ) : (
+        <div className="jobs-grouped-list">
+          {Object.entries(
+            filteredJobs.reduce((groups, job) => {
+              (groups[job.department] ??= []).push(job)
+              return groups
+            }, {}),
+          )
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([department, jobsInDept]) => (
+              <div className="jobs-dept-group" key={department}>
+                <div className="jobs-dept-group-hdr">
+                  {department} <span className="jobs-dept-group-count">({jobsInDept.length})</span>
+                </div>
+                {jobsInDept.map((job) => (
+                  <JobRow
+                    key={job.id}
+                    job={job}
+                    candidates={candidates}
+                    onShare={handleShare}
+                    sharedId={sharedId}
+                    onOpenDetail={(j) => navigate(`/jobs/${j.id}`)}
+                    onViewPipeline={(j) => navigate(`/pipeline?job=${j.id}`)}
+                  />
+                ))}
+              </div>
+            ))}
         </div>
       )}
 
