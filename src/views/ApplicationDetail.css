@@ -28,20 +28,20 @@
 .app-offer-status-accepted { color: var(--color-success); }
 .app-offer-status-declined, .app-offer-status-expired { color: var(--color-danger); }
 
-.app-offer-agree {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--color-gray-700);
-  margin-top: var(--space-4);
-}
-
 .app-offer-actions {
   display: flex;
   gap: var(--space-3);
   margin-top: var(--space-4);
 }
+
+.app-offer-esig-embed {
+  margin-top: var(--space-4);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-height: 480px;
+}
+.app-offer-esig-embed iframe { display: block; width: 100%; min-height: 480px; border: none; }
 
 .app-offer-spin { animation: app-offer-spin 900ms linear infinite; }
 @keyframes app-offer-spin { to { transform: rotate(360deg); } }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { DocusealForm } from '@docuseal/react'
 import { ChevronLeft, ChevronDown, ChevronUp, MapPin, DollarSign, FileSignature, Loader2, CheckCircle2 } from 'lucide-react'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
@@ -11,6 +12,7 @@ import { useCandidateSession } from '../context/CandidateSessionContext'
 import { useCandidates } from '../hooks/useCandidates'
 import { useJobs } from '../hooks/useJobs'
 import { useOffers } from '../hooks/useOffers'
+import { createDocusealSubmission, buildOfferHtml } from '../lib/docuseal'
 import './ApplicationDetail.css'
 
 const FORWARD_STAGES = [
@@ -53,8 +55,7 @@ export default function ApplicationDetail() {
   const { candidates, loading: candidatesLoading, updateStage } = useCandidates()
   const { jobs, loading: jobsLoading } = useJobs()
   const { offers, loading: offersLoading, updateOffer } = useOffers()
-  const [esigPhase, setEsigPhase] = useState('idle') // idle | signing
-  const [agreed, setAgreed] = useState(false)
+  const [preparingSignature, setPreparingSignature] = useState(false)
 
   if (candidatesLoading || jobsLoading || offersLoading) return <Loading />
 
@@ -89,13 +90,26 @@ export default function ApplicationDetail() {
     updateStage(candidate.id, 'withdrawn')
   }
 
-  function handleAcceptOffer() {
-    setEsigPhase('signing')
-    setTimeout(() => {
-      updateOffer(offer.id, { status: 'accepted', esigViewedDate: offer.esigViewedDate ?? today(), esigSignedDate: today() })
-      updateStage(candidate.id, 'hired')
-      setEsigPhase('idle')
-    }, 900)
+  async function handleStartSigning() {
+    setPreparingSignature(true)
+    try {
+      const slug = await createDocusealSubmission({
+        documentTitle: `Offer Letter — ${candidate.name}`,
+        html: buildOfferHtml({
+          candidateName: candidate.name, jobTitle: job?.title, salary: offer.salary, bonus: offer.bonus, pto: offer.pto, startDate: offer.startDate,
+        }),
+        submitterName: candidate.name,
+        submitterEmail: candidate.email,
+      })
+      await updateOffer(offer.id, { docusealSlug: slug, esigViewedDate: offer.esigViewedDate ?? today() })
+    } finally {
+      setPreparingSignature(false)
+    }
+  }
+
+  function handleSigningComplete() {
+    updateOffer(offer.id, { status: 'accepted', esigSignedDate: today() })
+    updateStage(candidate.id, 'hired')
   }
 
   function handleDeclineOffer() {
@@ -142,17 +156,25 @@ export default function ApplicationDetail() {
             <div className="app-offer-row"><span>Start Date</span><span>{offer.startDate || 'TBD'}</span></div>
             <div className="app-offer-row"><span>Status</span><span className={`app-offer-status app-offer-status-${offer.status}`}>{offer.status.replace('_', ' ')}</span></div>
 
-            {offer.status === 'awaiting' && (
+            {offer.status === 'awaiting' && !offer.docusealSlug && (
+              <div className="app-offer-actions">
+                <Button variant="primary" disabled={preparingSignature} onClick={handleStartSigning}>
+                  {preparingSignature && <Loader2 size={14} className="app-offer-spin" />}
+                  {preparingSignature ? 'Preparing document…' : 'Review & Sign Offer'}
+                </Button>
+                <Button variant="danger" onClick={handleDeclineOffer}>Decline Offer</Button>
+              </div>
+            )}
+            {offer.status === 'awaiting' && offer.docusealSlug && (
               <>
-                <label className="app-offer-agree">
-                  <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
-                  <span>I have reviewed and agree to the terms of this offer.</span>
-                </label>
+                <div className="app-offer-esig-embed">
+                  <DocusealForm
+                    src={`https://docuseal.com/s/${offer.docusealSlug}`}
+                    email={candidate.email}
+                    onComplete={handleSigningComplete}
+                  />
+                </div>
                 <div className="app-offer-actions">
-                  <Button variant="primary" disabled={!agreed || esigPhase === 'signing'} onClick={handleAcceptOffer}>
-                    {esigPhase === 'signing' && <Loader2 size={14} className="app-offer-spin" />}
-                    {esigPhase === 'signing' ? 'Signing…' : 'Accept & Sign Offer'}
-                  </Button>
                   <Button variant="danger" onClick={handleDeclineOffer}>Decline Offer</Button>
                 </div>
               </>

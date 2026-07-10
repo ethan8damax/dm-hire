@@ -263,6 +263,7 @@ export default function ApplyWizard() {
           {currentStep.key === 'wotc' && (
             <StepWotc
               wotc={data.wotc}
+              personal={data.personal}
               errors={errors}
               showErrors={attemptedSteps.has(4)}
               onChange={(patch) => wizard.updateSection('wotc', patch)}
