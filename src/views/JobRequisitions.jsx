@@ -400,7 +400,7 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onArchive, o
           </div>
 
           <label className="req-field">
-            <span>Headcount Justification</span>
+            <span>Position Justification</span>
             <textarea rows={2} value={form.headcountJustification} onChange={(e) => updateField('headcountJustification', e.target.value)} placeholder="Why is this role needed?" />
           </label>
 
@@ -410,7 +410,7 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onArchive, o
           </label>
 
           <div className="req-section">
-            <div className="req-section-label">Role Template</div>
+            <div className="req-section-label">Interview Process</div>
             <div className="req-role-grid">
               {Object.entries(roleWorkflows).map(([key, t]) => (
                 <button
@@ -525,7 +525,7 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onArchive, o
           </div>
 
           <div className="req-section req-approval-preview">
-            <div className="req-section-label">Approval Workflow Preview</div>
+            <div className="req-section-label">Approval Process</div>
             <div className="req-approval-chain">
               {template.approvalChain.map((role, i) => (
                 <span key={role} className="req-approval-step">

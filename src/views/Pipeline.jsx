@@ -312,7 +312,7 @@ export default function Pipeline() {
                     key={candidate.id}
                     candidate={candidate}
                     onClick={() => navigate(`/candidates/${candidate.id}`, { state: { candidateIds: flatCandidateIds } })}
-                    draggable={!isHiringManager}
+                    draggable
                     dragging={draggedId === candidate.id}
                     onDragStart={(e) => { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', candidate.id); setDraggedId(candidate.id) }}
                     onDragEnd={() => { setDraggedId(null); setDragOverCol(null) }}
