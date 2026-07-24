@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Target, Download, ArrowRight,
+  Target, Download, ArrowRight, LayoutGrid,
   Share2, Link2, Bell, BarChart3, LayoutTemplate, Users, History, StickyNote,
   FileSignature, MessageSquare, Package, CheckCircle2, Copy, ArrowLeftRight, Sparkles,
   Building2, Lock, Mail, CalendarClock, ShieldAlert, ClipboardList, Smartphone, Landmark,
@@ -10,6 +11,7 @@ import Button from '../components/ui/Button'
 import { useWhyDmHireFeatures } from '../hooks/useWhyDmHireFeatures'
 import Loading from '../components/ui/Loading'
 import WhyFeatureCard from '../components/why/WhyFeatureCard'
+import WhyDMHireWalkthrough from '../components/why/WhyDMHireWalkthrough'
 import './WhyDMHire.css'
 
 const ICON_MAP = {
@@ -44,27 +46,37 @@ const ICON_MAP = {
 }
 
 const STORY_STAGES = [
-  { label: 'ATS', body: 'Source, screen, and interview candidates through a modern, AI-assisted pipeline.' },
-  { label: 'Onboarding', body: 'State-specific document packets, background checks, and department notifications kick off automatically.' },
-  { label: 'DM Payroll', body: 'The hire syncs straight into payroll with no re-entry and no gap between "hired" and "on payroll."' },
+  { key: 'ats', label: 'ATS', body: 'Source, screen, and interview candidates through a modern, AI-assisted pipeline.' },
+  { key: 'onboarding', label: 'Onboarding', body: 'State-specific document packets, background checks, and department notifications kick off automatically.' },
+  { key: 'payroll', label: 'DM Payroll', body: 'The hire syncs straight into payroll with no re-entry and no gap between "hired" and "on payroll."' },
 ]
 
 export default function WhyDMHire() {
   const navigate = useNavigate()
   const { whyDmHireFeatures, loading } = useWhyDmHireFeatures()
 
+  const [activeStage, setActiveStage] = useState('ats')
+  const [mode, setMode] = useState('walkthrough')
+
+  const stageFeatures = whyDmHireFeatures.filter((f) => f.stage === activeStage)
+
   if (loading) return <Loading />
 
   return (
-    <div className="why-view">
+    <div className={`why-view why-mode-${mode}`}>
       <div className="page-header why-no-print">
         <div>
           <h1 className="page-title">Why DM Hire</h1>
           <div className="page-subtitle">{whyDmHireFeatures.length} confirmed gaps in the current DM ATS, and exactly how we solve them</div>
         </div>
-        <Button variant="primary" onClick={() => window.print()}>
-          <Download size={16} /> Export
-        </Button>
+        <div className="why-header-actions">
+          <Button variant="ghost" onClick={() => setMode((m) => (m === 'walkthrough' ? 'grid' : 'walkthrough'))}>
+            <LayoutGrid size={16} /> {mode === 'walkthrough' ? 'View All' : 'Walkthrough'}
+          </Button>
+          <Button variant="primary" onClick={() => window.print()}>
+            <Download size={16} /> Export
+          </Button>
+        </div>
       </div>
 
       <div className="why-banner">
@@ -81,7 +93,14 @@ export default function WhyDMHire() {
 
       <div className="why-story">
         {STORY_STAGES.map((stage, i) => (
-          <div className="why-story-stage" key={stage.label}>
+          <div
+            className={`why-story-stage${stage.key === activeStage ? ' active' : ''}`}
+            key={stage.key}
+            role="button"
+            tabIndex={0}
+            onClick={() => setActiveStage(stage.key)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveStage(stage.key) }}
+          >
             <div className="why-story-num">{i + 1}</div>
             <div className="why-story-label">{stage.label}</div>
             <div className="why-story-body">{stage.body}</div>
@@ -89,6 +108,13 @@ export default function WhyDMHire() {
           </div>
         ))}
       </div>
+
+      <WhyDMHireWalkthrough
+        features={stageFeatures}
+        iconMap={ICON_MAP}
+        navigate={navigate}
+        key={activeStage}
+      />
 
       <div className="why-grid">
         {whyDmHireFeatures.map((f) => (
