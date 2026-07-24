@@ -1,15 +1,15 @@
 import { useNavigate } from 'react-router-dom'
 import {
-  Target, Download, ArrowRight, Play,
+  Target, Download, ArrowRight,
   Share2, Link2, Bell, BarChart3, LayoutTemplate, Users, History, StickyNote,
   FileSignature, MessageSquare, Package, CheckCircle2, Copy, ArrowLeftRight, Sparkles,
   Building2, Lock, Mail, CalendarClock, ShieldAlert, ClipboardList, Smartphone, Landmark,
   ShieldCheck, TrendingUp, Cog, Brain,
 } from 'lucide-react'
-import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import { useWhyDmHireFeatures } from '../hooks/useWhyDmHireFeatures'
 import Loading from '../components/ui/Loading'
+import WhyFeatureCard from '../components/why/WhyFeatureCard'
 import './WhyDMHire.css'
 
 const ICON_MAP = {
@@ -91,34 +91,14 @@ export default function WhyDMHire() {
       </div>
 
       <div className="why-grid">
-        {whyDmHireFeatures.map((f) => {
-          const Icon = ICON_MAP[f.icon]
-          return (
-          <Card key={f.title} className="why-card">
-            <div className="why-card-hdr">
-              <span className="why-card-icon"><Icon size={18} /></span>
-              <div>
-                <div className="why-card-title">{f.title}</div>
-                <div className="why-card-context">{f.context}</div>
-              </div>
-              <span className="why-gap-badge">Gap Today</span>
-            </div>
-            <div className="why-card-body">
-              <div className="why-pain">
-                <div className="why-pain-label">Current DM ATS</div>
-                <div className="why-pain-text">{f.pain}</div>
-              </div>
-              <div className="why-solution">
-                <div className="why-solution-label">DM Hire</div>
-                <div className="why-solution-text">{f.solution}</div>
-              </div>
-            </div>
-            <button type="button" className="why-action why-no-print" onClick={() => navigate(f.route)}>
-              <Play size={12} /> See it in action: {f.action}
-            </button>
-          </Card>
-          )
-        })}
+        {whyDmHireFeatures.map((f) => (
+          <WhyFeatureCard
+            key={f.title}
+            feature={f}
+            icon={ICON_MAP[f.icon]}
+            onNavigate={() => navigate(f.route)}
+          />
+        ))}
       </div>
     </div>
   )
