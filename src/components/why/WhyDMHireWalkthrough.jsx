@@ -45,21 +45,23 @@ export default function WhyDMHireWalkthrough({ features, iconMap, navigate }) {
         </button>
       </div>
 
-      <div className="why-filmstrip no-scrollbar">
-        {features.map((f, i) => {
-          const Icon = iconMap[f.icon]
-          return (
-            <button
-              type="button"
-              key={f.title}
-              className={`why-filmstrip-chip${i === activeIndex ? ' active' : ''}`}
-              onClick={() => setActiveIndex(i)}
-              aria-label={f.title}
-            >
-              <Icon size={14} />
-            </button>
-          )
-        })}
+      <div className="why-filmstrip-wrap">
+        <div className="why-filmstrip no-scrollbar">
+          {features.map((f, i) => {
+            const Icon = iconMap[f.icon]
+            return (
+              <button
+                type="button"
+                key={f.title}
+                className={`why-filmstrip-chip${i === activeIndex ? ' active' : ''}`}
+                onClick={() => setActiveIndex(i)}
+                aria-label={f.title}
+              >
+                <Icon size={14} />
+              </button>
+            )
+          })}
+        </div>
         <span className="why-filmstrip-pos">{activeIndex + 1} / {features.length}</span>
       </div>
     </div>

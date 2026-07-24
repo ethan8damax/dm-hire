@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Target, Download, ArrowRight, LayoutGrid,
@@ -93,18 +93,19 @@ export default function WhyDMHire() {
 
       <div className="why-story">
         {STORY_STAGES.map((stage, i) => (
-          <button
-            type="button"
-            className={`why-story-stage${stage.key === activeStage ? ' active' : ''}`}
-            key={stage.key}
-            aria-current={stage.key === activeStage ? 'true' : undefined}
-            onClick={() => setActiveStage(stage.key)}
-          >
-            <div className="why-story-num">{i + 1}</div>
-            <div className="why-story-label">{stage.label}</div>
-            <div className="why-story-body">{stage.body}</div>
+          <Fragment key={stage.key}>
+            <button
+              type="button"
+              className={`why-story-stage${stage.key === activeStage ? ' active' : ''}`}
+              aria-current={stage.key === activeStage ? 'true' : undefined}
+              onClick={() => setActiveStage(stage.key)}
+            >
+              <div className="why-story-num">{i + 1}</div>
+              <div className="why-story-label">{stage.label}</div>
+              <div className="why-story-body">{stage.body}</div>
+            </button>
             {i < STORY_STAGES.length - 1 && <ArrowRight size={16} className="why-story-arrow" />}
-          </button>
+          </Fragment>
         ))}
       </div>
 
