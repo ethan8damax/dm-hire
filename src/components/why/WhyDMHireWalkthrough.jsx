@@ -5,6 +5,8 @@ import { clampIndex } from './clampIndex'
 
 export default function WhyDMHireWalkthrough({ features, iconMap, navigate }) {
   const [activeIndex, setActiveIndex] = useState(0)
+  // features is always non-empty: every stage has >=1 feature (see the
+  // 016_why_dm_hire_stage migration backfill), so activeIndex is always valid.
   const feature = features[activeIndex]
 
   return (
