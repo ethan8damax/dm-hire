@@ -93,19 +93,18 @@ export default function WhyDMHire() {
 
       <div className="why-story">
         {STORY_STAGES.map((stage, i) => (
-          <div
+          <button
+            type="button"
             className={`why-story-stage${stage.key === activeStage ? ' active' : ''}`}
             key={stage.key}
-            role="button"
-            tabIndex={0}
+            aria-current={stage.key === activeStage ? 'true' : undefined}
             onClick={() => setActiveStage(stage.key)}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveStage(stage.key) }}
           >
             <div className="why-story-num">{i + 1}</div>
             <div className="why-story-label">{stage.label}</div>
             <div className="why-story-body">{stage.body}</div>
             {i < STORY_STAGES.length - 1 && <ArrowRight size={16} className="why-story-arrow" />}
-          </div>
+          </button>
         ))}
       </div>
 
