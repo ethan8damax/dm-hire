@@ -45,7 +45,6 @@
   cursor: pointer;
   border-radius: var(--radius-md);
 }
-.why-story-stage:focus-visible { outline: 2px solid var(--color-maroon-light); }
 .why-story-stage.active .why-story-num { background: var(--color-cyan-dark); }
 .why-story-stage.active .why-story-label { color: var(--color-cyan-dark); }
 .why-story-num {
