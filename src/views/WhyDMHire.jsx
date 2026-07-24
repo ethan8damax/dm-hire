@@ -91,40 +91,42 @@ export default function WhyDMHire() {
         </div>
       </div>
 
-      <div className="why-story">
-        {STORY_STAGES.map((stage, i) => (
-          <Fragment key={stage.key}>
-            <button
-              type="button"
-              className={`why-story-stage${stage.key === activeStage ? ' active' : ''}`}
-              aria-current={stage.key === activeStage ? 'true' : undefined}
-              onClick={() => setActiveStage(stage.key)}
-            >
-              <div className="why-story-num">{i + 1}</div>
-              <div className="why-story-label">{stage.label}</div>
-              <div className="why-story-body">{stage.body}</div>
-            </button>
-            {i < STORY_STAGES.length - 1 && <ArrowRight size={16} className="why-story-arrow" />}
-          </Fragment>
-        ))}
-      </div>
+      <div className="why-stage-area">
+        <div className="why-story">
+          {STORY_STAGES.map((stage, i) => (
+            <Fragment key={stage.key}>
+              <button
+                type="button"
+                className={`why-story-stage${stage.key === activeStage ? ' active' : ''}`}
+                aria-current={stage.key === activeStage ? 'true' : undefined}
+                onClick={() => setActiveStage(stage.key)}
+              >
+                <div className="why-story-num">{i + 1}</div>
+                <div className="why-story-label">{stage.label}</div>
+                <div className="why-story-body">{stage.body}</div>
+              </button>
+              {i < STORY_STAGES.length - 1 && <ArrowRight size={16} className="why-story-arrow" />}
+            </Fragment>
+          ))}
+        </div>
 
-      <WhyDMHireWalkthrough
-        features={stageFeatures}
-        iconMap={ICON_MAP}
-        navigate={navigate}
-        key={activeStage}
-      />
+        <WhyDMHireWalkthrough
+          features={stageFeatures}
+          iconMap={ICON_MAP}
+          navigate={navigate}
+          key={activeStage}
+        />
 
-      <div className="why-grid">
-        {whyDmHireFeatures.map((f) => (
-          <WhyFeatureCard
-            key={f.title}
-            feature={f}
-            icon={ICON_MAP[f.icon]}
-            onNavigate={() => navigate(f.route)}
-          />
-        ))}
+        <div className="why-grid">
+          {whyDmHireFeatures.map((f) => (
+            <WhyFeatureCard
+              key={f.title}
+              feature={f}
+              icon={ICON_MAP[f.icon]}
+              onNavigate={() => navigate(f.route)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   )
