@@ -5,8 +5,14 @@ import { clampIndex } from './clampIndex'
 
 export default function WhyDMHireWalkthrough({ features, iconMap, navigate }) {
   const [activeIndex, setActiveIndex] = useState(0)
-  // features is always non-empty: every stage has >=1 feature (see the
-  // 016_why_dm_hire_stage migration backfill), so activeIndex is always valid.
+
+  // Every stage has >=1 feature under normal operation (see the
+  // 016_why_dm_hire_stage migration backfill). This guard only fires if the
+  // Supabase fetch itself failed (useWhyDmHireFeatures leaves the list empty
+  // on error) — the grid degrades to zero cards in that case, so the
+  // walkthrough should too instead of crashing on features[activeIndex].
+  if (features.length === 0) return null
+
   const feature = features[activeIndex]
 
   return (
