@@ -68,6 +68,7 @@ export default function Sidebar() {
         >
           {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
         </button>
+        <div className="sidebar-logo-mask" aria-hidden="true" />
       </div>
 
       <nav className="sidebar-nav">
