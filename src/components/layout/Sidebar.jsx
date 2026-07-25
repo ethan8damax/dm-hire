@@ -1,7 +1,8 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Briefcase, Kanban, Building2,
   FileSignature, BarChart3, Plug, Settings, Sparkles,
+  Users, UserCheck, User,
 } from 'lucide-react'
 import { usePersona } from '../../context/PersonaContext'
 import './Sidebar.css'
@@ -34,12 +35,24 @@ const NAV_SECTIONS = [
 
 const DEMO_ITEM = { to: '/why-dm-hire', label: 'Why DM Hire', icon: Sparkles }
 
+const PERSONAS = [
+  { id: 'recruiter', label: 'Recruiter', icon: Users },
+  { id: 'hiring_manager', label: 'Hiring Manager', icon: UserCheck },
+  { id: 'candidate', label: 'Candidate', icon: User },
+]
+
 export default function Sidebar() {
-  const { persona } = usePersona()
+  const navigate = useNavigate()
+  const { persona, setPersona } = usePersona()
   const isHiringManager = persona === 'hiring_manager'
   const navSections = isHiringManager
     ? NAV_SECTIONS.map((s) => ({ ...s, items: s.items.filter((i) => i.hmVisible || i.to === '/') })).filter((s) => s.items.length > 0)
     : NAV_SECTIONS
+
+  function handlePersonaChange(id) {
+    setPersona(id)
+    if (id === 'candidate') navigate('/careers')
+  }
 
   return (
     <aside className="sidebar">
@@ -68,6 +81,19 @@ export default function Sidebar() {
 
         <div className="sidebar-section sidebar-section-demo">
           <div className="sidebar-section-label">Demo</div>
+          {PERSONAS.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              aria-label={p.label}
+              aria-current={persona === p.id ? 'true' : undefined}
+              className={`sidebar-link sidebar-persona-btn${persona === p.id ? ' active' : ''}`}
+              onClick={() => handlePersonaChange(p.id)}
+            >
+              <p.icon size={18} strokeWidth={2} />
+              <span>{p.label}</span>
+            </button>
+          ))}
           <NavLink
             to={DEMO_ITEM.to}
             aria-label={DEMO_ITEM.label}

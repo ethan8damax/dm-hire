@@ -70,7 +70,16 @@
   padding-top: var(--space-4);
 }
 
+.sidebar-persona-btn {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: var(--font-family);
+  cursor: pointer;
+}
+
 .sidebar-link-demo {
+  margin-top: var(--space-3);
   color: var(--color-cyan-light);
 }
 

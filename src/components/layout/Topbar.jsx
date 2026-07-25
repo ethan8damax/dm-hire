@@ -1,19 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Bell, Plus, Play, X, User, Briefcase, FileText } from 'lucide-react'
-import { usePersona } from '../../context/PersonaContext'
 import { useTour } from '../../context/TourContext'
 import { useCandidates } from '../../hooks/useCandidates'
 import { useJobs } from '../../hooks/useJobs'
 import { useNotifications } from '../../hooks/useNotifications'
 import Button from '../ui/Button'
 import './Topbar.css'
-
-const PERSONAS = [
-  { id: 'recruiter', label: 'Recruiter' },
-  { id: 'hiring_manager', label: 'Hiring Manager' },
-  { id: 'candidate', label: 'Candidate' },
-]
 
 function timeAgo(iso) {
   const mins = Math.floor((Date.now() - new Date(iso)) / 60000)
@@ -26,7 +19,6 @@ function timeAgo(iso) {
 
 export default function Topbar() {
   const navigate = useNavigate()
-  const { persona, setPersona } = usePersona()
   const { start: startTour } = useTour()
   const { candidates } = useCandidates()
   const { jobs } = useJobs()
@@ -50,11 +42,6 @@ export default function Topbar() {
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
-
-  function handlePersonaChange(id) {
-    setPersona(id)
-    if (id === 'candidate') navigate('/careers')
-  }
 
   const q = query.trim().toLowerCase()
   const matchedCandidates = q.length < 2 ? [] : candidates.filter((c) => (
@@ -140,20 +127,7 @@ export default function Topbar() {
         )}
       </div>
 
-      <div className="topbar-persona">
-        {PERSONAS.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            className={`topbar-persona-btn${persona === p.id ? ' active' : ''}`}
-            onClick={() => handlePersonaChange(p.id)}
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
-
-      <Button variant="accent" size="sm" onClick={startTour}>
+      <Button variant="accent" size="sm" className="topbar-tour-btn" onClick={startTour}>
         <Play size={14} /> Start Demo Tour
       </Button>
 
