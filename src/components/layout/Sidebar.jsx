@@ -1,8 +1,9 @@
+import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Briefcase, Kanban, Building2,
   FileSignature, BarChart3, Plug, Settings, Sparkles,
-  Users, UserCheck, User,
+  Users, UserCheck, User, PanelLeftClose, PanelLeftOpen,
 } from 'lucide-react'
 import { usePersona } from '../../context/PersonaContext'
 import './Sidebar.css'
@@ -44,6 +45,7 @@ const PERSONAS = [
 export default function Sidebar() {
   const navigate = useNavigate()
   const { persona, setPersona } = usePersona()
+  const [collapsed, setCollapsed] = useState(false)
   const isHiringManager = persona === 'hiring_manager'
   const navSections = isHiringManager
     ? NAV_SECTIONS.map((s) => ({ ...s, items: s.items.filter((i) => i.hmVisible || i.to === '/') })).filter((s) => s.items.length > 0)
@@ -55,10 +57,19 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
       <div className="sidebar-logo">
         DM <span>Hire</span>
       </div>
+
+      <button
+        type="button"
+        className="sidebar-collapse-btn"
+        onClick={() => setCollapsed((c) => !c)}
+        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      >
+        {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+      </button>
 
       <nav className="sidebar-nav">
         {navSections.map((section) => (
