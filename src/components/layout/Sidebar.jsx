@@ -59,17 +59,16 @@ export default function Sidebar() {
   return (
     <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
       <div className="sidebar-logo">
-        DM <span>Hire</span>
+        <div className="sidebar-logo-text">DM <span>Hire</span></div>
+        <button
+          type="button"
+          className="sidebar-collapse-btn"
+          onClick={() => setCollapsed((c) => !c)}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+        </button>
       </div>
-
-      <button
-        type="button"
-        className="sidebar-collapse-btn"
-        onClick={() => setCollapsed((c) => !c)}
-        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-      >
-        {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
-      </button>
 
       <nav className="sidebar-nav">
         {navSections.map((section) => (
