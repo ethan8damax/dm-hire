@@ -5,6 +5,7 @@ import { usePersona } from '../../context/PersonaContext'
 import { useTour } from '../../context/TourContext'
 import { useCandidates } from '../../hooks/useCandidates'
 import { useJobs } from '../../hooks/useJobs'
+import { useUsers } from '../../hooks/useUsers'
 import { useNotifications } from '../../hooks/useNotifications'
 import Button from '../ui/Button'
 import './Topbar.css'
@@ -26,11 +27,13 @@ function timeAgo(iso) {
 
 export default function Topbar() {
   const navigate = useNavigate()
-  const { persona, setPersona } = usePersona()
+  const { persona, setPersona, currentHmId, setCurrentHmId } = usePersona()
   const { start: startTour } = useTour()
   const { candidates } = useCandidates()
   const { jobs } = useJobs()
+  const { users } = useUsers()
   const { notifications, unreadCount, addNotification, markAllRead, dismissNotification } = useNotifications()
+  const hiringManagers = users.filter((u) => u.role === 'Hiring Manager')
 
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
@@ -152,6 +155,17 @@ export default function Topbar() {
           </button>
         ))}
       </div>
+
+      {persona === 'hiring_manager' && (
+        <select
+          className="topbar-hm-select"
+          aria-label="Viewing as which hiring manager"
+          value={currentHmId}
+          onChange={(e) => setCurrentHmId(e.target.value)}
+        >
+          {hiringManagers.map((hm) => <option key={hm.id} value={hm.id}>Viewing as {hm.name}</option>)}
+        </select>
+      )}
 
       <Button variant="accent" size="sm" onClick={startTour}>
         <Play size={14} /> Start Demo Tour

@@ -26,12 +26,10 @@ const STAGE_LABELS = {
   rejected: 'Not Selected',
 }
 
-const CURRENT_HM_ID = 'user-002' // R. Patel — the assumed logged-in Hiring Manager, matching Pipeline.jsx
-
 export default function RequisitionDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { persona } = usePersona()
+  const { persona, currentHmId } = usePersona()
   const isRecruiter = persona === 'recruiter'
   const { addNotification } = useNotifications()
   const isHiringManager = persona === 'hiring_manager'
@@ -48,7 +46,7 @@ export default function RequisitionDetail() {
   if (!job) return <EmptyState icon={Users} title="Requisition not found" subtitle="It may have been deleted." />
 
   const applicants = candidates.filter((c) => c.jobId === job.id)
-  const isMyApproval = isHiringManager && job.hiringManagerId === CURRENT_HM_ID && job.status === 'pending_approval'
+  const isMyApproval = isHiringManager && job.hiringManagerId === currentHmId && job.status === 'pending_approval'
 
   async function handleArchive(jobId) {
     await bulkRejectForJob(jobId)
@@ -63,12 +61,13 @@ export default function RequisitionDetail() {
 
   function handleApprove() {
     updateJob(job.id, { status: 'open' })
+    addNotification('Requisition approved', `"${job.title}" was approved and is now open.`)
   }
 
   function handleReject() {
     const reason = window.prompt('Reason for rejecting (optional):')
     updateJob(job.id, { status: 'draft' })
-    if (reason) addNotification('Requisition rejected', `"${job.title}" was rejected: ${reason}`)
+    addNotification('Requisition rejected', `"${job.title}" was rejected${reason ? `: ${reason}` : '.'}`)
   }
 
   return (

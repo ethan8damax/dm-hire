@@ -14,7 +14,6 @@ import Loading from '../components/ui/Loading'
 import './Pipeline.css'
 
 const CURRENT_RECRUITER = 'T. Smith'
-const CURRENT_HM_ID = 'user-002' // R. Patel — the assumed logged-in Hiring Manager
 const HM_RESTRICTED_COLUMNS = ['new', 'offer'] // no unscreened applicants, no offer management
 const TODAY = '2026-07-07'
 
@@ -148,7 +147,7 @@ export default function Pipeline() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState('score')
-  const { persona } = usePersona()
+  const { persona, currentHmId } = usePersona()
   const { jobs, loading: jobsLoading } = useJobs()
   const { candidates, loading: candidatesLoading, updateStage } = useCandidates()
   const [draggedId, setDraggedId] = useState(null)
@@ -168,7 +167,7 @@ export default function Pipeline() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  const hmAssignedJobIds = users.find((u) => u.id === CURRENT_HM_ID)?.assignedJobIds ?? []
+  const hmAssignedJobIds = users.find((u) => u.id === currentHmId)?.assignedJobIds ?? []
   const selectableJobs = isHiringManager
     ? jobs.filter((j) => hmAssignedJobIds.includes(j.id))
     : jobs.filter((j) => j.status !== 'draft')

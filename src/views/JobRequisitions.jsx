@@ -17,6 +17,7 @@ import { useUsers } from '../hooks/useUsers'
 import { useCandidates } from '../hooks/useCandidates'
 import { useRoleWorkflowTemplates } from '../hooks/useRoleWorkflowTemplates'
 import { usePersona } from '../context/PersonaContext'
+import { useNotifications } from '../hooks/useNotifications'
 import Loading from '../components/ui/Loading'
 import './JobRequisitions.css'
 
@@ -371,7 +372,7 @@ export function RequisitionModal({ open, onClose, onCreate, onSave, onArchive, o
             </label>
             <label className="req-field">
               <span>Hiring Manager</span>
-              <select value={form.hiringManagerId} onChange={(e) => updateField('hiringManagerId', e.target.value)}>
+              <select required value={form.hiringManagerId} onChange={(e) => updateField('hiringManagerId', e.target.value)}>
                 <option value="">— Select —</option>
                 {hiringManagers.map((hm) => <option key={hm.id} value={hm.id}>{hm.name}</option>)}
               </select>
@@ -578,6 +579,7 @@ export default function JobRequisitions() {
   const { users, loading: usersLoading } = useUsers()
   const { candidates, loading: candidatesLoading, bulkRejectForJob } = useCandidates()
   const { roleWorkflows, loading: workflowsLoading } = useRoleWorkflowTemplates()
+  const { addNotification } = useNotifications()
   const [filter, setFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [sharedId, setSharedId] = useState(null)
@@ -605,6 +607,10 @@ export default function JobRequisitions() {
 
   function handleCreate(job) {
     createJob(job)
+    if (job.status === 'pending_approval') {
+      const hm = users.find((u) => u.id === job.hiringManagerId)
+      addNotification('Approval needed', `"${job.title}" needs approval from ${hm?.name ?? 'the assigned hiring manager'}.`)
+    }
   }
 
   function handleSave(jobId, updates) {

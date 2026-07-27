@@ -7,6 +7,7 @@ import CareerShell from './components/layout/CareerShell'
 import Dashboard from './views/Dashboard'
 import JobRequisitions from './views/JobRequisitions'
 import RequisitionDetail from './views/RequisitionDetail'
+import Approvals from './views/Approvals'
 import Pipeline from './views/Pipeline'
 import CandidateProfile from './views/CandidateProfile'
 import Offers from './views/Offers'
@@ -33,6 +34,7 @@ export default function App() {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/jobs" element={<JobRequisitions />} />
                 <Route path="/jobs/:id" element={<RequisitionDetail />} />
+                <Route path="/approvals" element={<Approvals />} />
                 <Route path="/pipeline" element={<Pipeline />} />
                 <Route path="/candidates/:id" element={<CandidateProfile />} />
                 <Route path="/offers" element={<Offers />} />
