@@ -17,6 +17,7 @@ import { useJobs } from '../hooks/useJobs'
 import { useOffers } from '../hooks/useOffers'
 import { useAnalytics } from '../hooks/useAnalytics'
 import { useReminders } from '../hooks/useReminders'
+import { usePersona } from '../context/PersonaContext'
 import Loading from '../components/ui/Loading'
 import './Dashboard.css'
 
@@ -35,6 +36,8 @@ function greetingForHour(hour) {
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const { persona } = usePersona()
+  const isHiringManager = persona === 'hiring_manager'
   const { candidates, loading: candidatesLoading } = useCandidates()
   const { jobs, loading: jobsLoading } = useJobs()
   const { offers, loading: offersLoading } = useOffers()
@@ -177,7 +180,7 @@ export default function Dashboard() {
                     <div className="action-item-title">Hiring approval pending</div>
                     <div className="action-item-sub">{j.title} req · {j.daysOpen} days waiting</div>
                   </div>
-                  <Button size="sm" variant="ghost" onClick={() => navigate('/jobs')}>Chase</Button>
+                  <Button size="sm" variant="ghost" onClick={() => navigate(isHiringManager ? '/approvals' : '/jobs')}>Chase</Button>
                 </div>
               ))}
               {staleCandidates.map((c) => (

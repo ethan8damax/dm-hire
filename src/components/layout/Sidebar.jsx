@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Briefcase, Kanban, Building2,
-  FileSignature, BarChart3, Plug, Settings, Sparkles,
+  FileSignature, BarChart3, Plug, Settings, Sparkles, ClipboardCheck,
   Users, UserCheck, User, PanelLeftClose, PanelLeftOpen,
 } from 'lucide-react'
 import { usePersona } from '../../context/PersonaContext'
@@ -13,6 +13,7 @@ const NAV_SECTIONS = [
     label: 'Recruiting',
     items: [
       { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
+      { to: '/approvals', label: 'Approvals', icon: ClipboardCheck, hmVisible: true, hmOnly: true },
       { to: '/jobs', label: 'Job Requisitions', icon: Briefcase, hmVisible: false },
       { to: '/pipeline?job=all', label: 'Candidate Pipeline', icon: Kanban, hmVisible: true },
       { to: '/internal-jobs', label: 'Internal Jobs', icon: Building2, hmVisible: false },
@@ -47,9 +48,12 @@ export default function Sidebar() {
   const { persona, setPersona } = usePersona()
   const [collapsed, setCollapsed] = useState(false)
   const isHiringManager = persona === 'hiring_manager'
-  const navSections = isHiringManager
-    ? NAV_SECTIONS.map((s) => ({ ...s, items: s.items.filter((i) => i.hmVisible || i.to === '/') })).filter((s) => s.items.length > 0)
-    : NAV_SECTIONS
+  const navSections = NAV_SECTIONS
+    .map((s) => ({
+      ...s,
+      items: s.items.filter((i) => (isHiringManager ? i.hmVisible || i.to === '/' : !i.hmOnly)),
+    }))
+    .filter((s) => s.items.length > 0)
 
   function handlePersonaChange(id) {
     setPersona(id)
